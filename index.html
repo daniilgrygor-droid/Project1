@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..650;1,9..144,400..650&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..600&display=swap"
+      rel="stylesheet"
+    />
+    <meta
+      name="description"
+      content="Small steps back to life — a gentle journal for people recovering from burnout or a long sick leave. We praise the step itself, not your productivity. No streaks, no guilt."
+    />
+    <title>Small Steps — small steps back to life</title>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Small Steps — small steps back to life" />
+    <meta
+      property="og:description"
+      content="A gentle journal for people recovering from burnout or a long sick leave. We praise the step itself, not your productivity. No streaks, no guilt."
+    />
+    <meta property="og:image" content="https://small-steps-seven.vercel.app/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:url" content="https://small-steps-seven.vercel.app/" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <script>
+      (function () {
+        var theme = "light";
+        try {
+          var pref = localStorage.getItem("theme-preference");
+          if (pref === "dark") {
+            theme = "dark";
+          } else if (
+            pref !== "light" &&
+            window.matchMedia("(prefers-color-scheme: dark)").matches
+          ) {
+            theme = "dark";
+          }
+        } catch (e) {
+          /* storage unavailable — fall back to light */
+        }
+        document.documentElement.dataset.theme = theme;
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

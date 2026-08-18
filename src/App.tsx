@@ -1,0 +1,152 @@
+import { useEffect } from "react";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+  useLocation,
+} from "react-router-dom";
+import { AuthProvider } from "./lib/auth";
+import { RequireAuth, RequireOnboarded } from "./components/Guards";
+import { applyTextSize, readTextSize } from "./lib/textSize";
+import { applyTheme, readThemePreference } from "./lib/theme";
+import Landing from "./pages/Landing";
+import Auth from "./pages/Auth";
+import Onboarding from "./pages/Onboarding";
+import CheckIn from "./pages/CheckIn";
+import Settings from "./pages/Settings";
+import ResetPassword from "./pages/ResetPassword";
+import JourneyOverview from "./pages/JourneyOverview";
+import Progress from "./pages/Progress";
+import Growth from "./pages/Growth";
+import Privacy from "./pages/Privacy";
+import UndoToast from "./components/UndoToast";
+
+const PAGE_TITLES: [string, string][] = [
+  ["/", "Small Steps — small steps back to life"],
+  ["/auth", "Sign in · Small Steps"],
+  ["/onboarding", "Almost ready · Small Steps"],
+  ["/check-in", "Check-in · Small Steps"],
+  ["/journey", "Journey · Small Steps"],
+  ["/progress", "Progress · Small Steps"],
+  ["/growth", "Growth · Small Steps"],
+  ["/settings", "Settings · Small Steps"],
+  ["/reset-password", "Reset password · Small Steps"],
+  ["/privacy", "Privacy · Small Steps"],
+];
+
+/** Keeps the browser tab title in step with the route. */
+function RouteTitle() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    const hit = PAGE_TITLES.find(([p]) =>
+      p === "/" ? pathname === "/" : pathname.startsWith(p),
+    );
+    document.title = hit ? hit[1] : "Small Steps";
+  }, [pathname]);
+  return null;
+}
+
+function AnimatedRoutes() {
+  return (
+    <Routes>
+      <Route path="/" element={<Landing />} />
+      <Route path="/auth" element={<Auth />} />
+      <Route
+        path="/onboarding"
+        element={
+          <RequireAuth>
+            <Onboarding />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/check-in"
+        element={
+          <RequireAuth>
+            <RequireOnboarded>
+              <CheckIn />
+            </RequireOnboarded>
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/settings"
+        element={
+          <RequireAuth>
+            <RequireOnboarded>
+              <Settings />
+            </RequireOnboarded>
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/journey"
+        element={
+          <RequireAuth>
+            <RequireOnboarded>
+              <JourneyOverview />
+            </RequireOnboarded>
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/progress"
+        element={
+          <RequireAuth>
+            <RequireOnboarded>
+              <Progress />
+            </RequireOnboarded>
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/growth"
+        element={
+          <RequireAuth>
+            <RequireOnboarded>
+              <Growth />
+            </RequireOnboarded>
+          </RequireAuth>
+        }
+      />
+      <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/privacy" element={<Privacy />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  );
+}
+
+export default function App() {
+  useEffect(() => {
+    applyTextSize(readTextSize());
+  }, []);
+
+  // Apply the saved theme (the inline <head> script already set it pre-paint)
+  // and keep "auto" in sync with the OS while the app is open.
+  useEffect(() => {
+    applyTheme(readThemePreference());
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    const onChange = () => {
+      if (readThemePreference() === "auto") applyTheme("auto");
+    };
+    mq.addEventListener?.("change", onChange);
+    return () => mq.removeEventListener?.("change", onChange);
+  }, []);
+
+  return (
+    <AuthProvider>
+      <BrowserRouter>
+        <div className="ambient" aria-hidden="true">
+          <span className="ambient-glows" />
+          <span className="ambient-blob ambient-blob--a" />
+          <span className="ambient-blob ambient-blob--b" />
+          <span className="ambient-noise" />
+        </div>
+        <RouteTitle />
+        <AnimatedRoutes />
+        <UndoToast />
+      </BrowserRouter>
+    </AuthProvider>
+  );
+}
