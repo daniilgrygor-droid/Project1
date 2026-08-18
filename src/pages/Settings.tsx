@@ -391,7 +391,7 @@ export default function Settings() {
               </button>
               <button
                 type="button"
-                className="btn btn--primary btn--sm"
+                className="btn btn--danger btn--sm"
                 onClick={() => void wipeData()}
                 disabled={deleting}
               >
@@ -401,7 +401,7 @@ export default function Settings() {
           ) : (
             <button
               type="button"
-              className="btn btn--ghost btn--sm"
+              className="btn btn--danger btn--sm"
               onClick={() => setConfirmDelete(true)}
             >
               Delete all my data

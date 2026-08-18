@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import AppShell from "../components/AppShell";
 import Calendar from "../components/Calendar";
 import EntryCard from "../components/EntryCard";
-import SproutLoader from "../components/SproutLoader";
 import { LeafIcon, SearchIcon } from "../components/icons";
 import type { Step } from "../lib/types";
 import { groupDayLabel } from "../lib/constants";
@@ -127,7 +126,21 @@ export function JourneyTimeline() {
 
         <section className="journey-calendar">
           {loading ? (
-            <SproutLoader />
+            <div
+              className="sk-calendar"
+              aria-busy="true"
+              aria-label="Loading your calendar"
+            >
+              <div className="sk-cal-head">
+                <span className="skeleton skeleton--sub" />
+                <span className="skeleton skeleton--mini" />
+              </div>
+              <div className="sk-cal-grid">
+                {Array.from({ length: 35 }).map((_, i) => (
+                  <span key={i} className="skeleton sk-cal-cell" />
+                ))}
+              </div>
+            </div>
           ) : emptyAll ? (
             <div className="steps-empty steps-empty--story">
               <span className="steps-empty-plant">
@@ -179,7 +192,34 @@ export function JourneyTimeline() {
           </div>
 
           {loading ? (
-            <SproutLoader />
+            <div
+              className="sk-timeline"
+              aria-busy="true"
+              aria-label="Loading your timeline"
+            >
+              {Array.from({ length: 2 }).map((_, g) => (
+                <div key={g} className="sk-group">
+                  <div className="sk-group-head">
+                    <span className="skeleton skeleton--tag" />
+                    <span className="skeleton skeleton--mini" />
+                  </div>
+                  <div className="sk-entry">
+                    <span className="sk-entry-dot" />
+                    <div className="sk-entry-lines">
+                      <span className="skeleton skeleton--text" />
+                      <span className="skeleton skeleton--text skeleton--w60" />
+                    </div>
+                  </div>
+                  <div className="sk-entry">
+                    <span className="sk-entry-dot" />
+                    <div className="sk-entry-lines">
+                      <span className="skeleton skeleton--text" />
+                      <span className="skeleton skeleton--text skeleton--w40" />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           ) : emptyAll ? (
             <div className="steps-empty steps-empty--story">
               <span className="steps-empty-plant">

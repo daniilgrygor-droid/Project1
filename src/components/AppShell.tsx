@@ -3,12 +3,19 @@ import { Link, NavLink, useLocation } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import Wordmark from "./Wordmark";
 import CommandPalette from "./CommandPalette";
+import {
+  BookIcon,
+  GearIcon,
+  PencilIcon,
+  SproutIcon,
+  SunIcon,
+} from "./icons";
 
 const LINKS = [
-  { to: "/check-in", label: "Check-in" },
-  { to: "/journey", label: "Journey" },
-  { to: "/progress", label: "Progress" },
-  { to: "/growth", label: "Growth" },
+  { to: "/check-in", label: "Check-in", icon: <PencilIcon size={15} /> },
+  { to: "/journey", label: "Journey", icon: <BookIcon size={15} /> },
+  { to: "/progress", label: "Progress", icon: <SunIcon size={15} /> },
+  { to: "/growth", label: "Growth", icon: <SproutIcon size={15} /> },
 ];
 
 export default function AppShell({ children }: { children: ReactNode }) {
@@ -83,10 +90,16 @@ export default function AppShell({ children }: { children: ReactNode }) {
                   `nav-link${isActive ? " nav-link--active" : ""}`
                 }
               >
+                <span className="nav-link-icon" aria-hidden="true">
+                  {l.icon}
+                </span>
                 {l.label}
               </NavLink>
             ))}
             <Link to="/settings" className="nav-link">
+              <span className="nav-link-icon" aria-hidden="true">
+                <GearIcon size={15} />
+              </span>
               Settings
             </Link>
             <button

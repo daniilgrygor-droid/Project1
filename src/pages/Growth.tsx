@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import AppShell from "../components/AppShell";
 import Plant from "../components/Plant";
-import SproutLoader from "../components/SproutLoader";
 import { DotIcon, LeafIcon } from "../components/icons";
 import type { Step } from "../lib/types";
 import { PLANT_STAGES, plantStageIndexFor } from "../lib/constants";
@@ -50,16 +49,7 @@ export default function Growth() {
     [steps],
   );
 
-  if (!steps) {
-    return (
-      <AppShell>
-        <div className="growth">
-          <SproutLoader />
-        </div>
-      </AppShell>
-    );
-  }
-
+  const loading = !steps;
   const currentStage = stageIndex >= 0 ? PLANT_STAGES[stageIndex] : null;
   const nextStage = stageIndex >= 0 ? PLANT_STAGES[stageIndex + 1] : PLANT_STAGES[0];
   const toNext = nextStage ? nextStage.minSteps - total : 0;
@@ -79,7 +69,21 @@ export default function Growth() {
           </p>
         </div>
 
-        {total === 0 ? (
+        {loading ? (
+          <div
+            className="sk-growth"
+            aria-busy="true"
+            aria-label="Loading your plant"
+          >
+            <span className="skeleton sk-plant-disc" />
+            <span className="skeleton skeleton--head" />
+            <div className="sk-stage-dots">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <span key={i} className="skeleton sk-stage-dot" />
+              ))}
+            </div>
+          </div>
+        ) : total === 0 ? (
           <div className="steps-empty steps-empty--story">
             <span className="steps-empty-plant">
               <LeafIcon size={20} />
