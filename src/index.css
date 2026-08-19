@@ -477,7 +477,8 @@ a {
   line-height: 1.2;
   cursor: pointer;
   transition: background-color var(--t-norm) ease, border-color var(--t-norm) ease,
-    opacity var(--t-norm) ease, transform var(--t-fast) var(--ease-soft);
+    opacity var(--t-norm) ease, transform 0.2s var(--ease-soft),
+    box-shadow 0.2s var(--ease-soft);
 }
 
 .btn:hover:not(:disabled) {
@@ -500,6 +501,10 @@ a {
 
 .btn--primary:hover:not(:disabled) {
   background: var(--charcoal-hover);
+  transform: translateY(-1px) scale(1.02);
+  box-shadow:
+    0 10px 22px -10px rgba(42, 38, 34, 0.4),
+    0 0 18px -4px rgba(113, 139, 112, 0.32);
 }
 
 .btn--ghost {
@@ -542,7 +547,6 @@ a {
 
 .btn--quiet:hover:not(:disabled) {
   color: var(--text);
-  background: var(--hover-wash);
 }
 
 .btn--danger {
@@ -1006,6 +1010,17 @@ a {
   accent-color: var(--success);
 }
 
+/* A checked preference reads clearly — calm, not loud. */
+.choice:has(input:checked) {
+  border-color: var(--success);
+  background: var(--praise-bg);
+  box-shadow: 0 0 0 1px var(--success);
+}
+
+.choice:has(input:checked) strong {
+  color: var(--success-ink);
+}
+
 .choice strong {
   font-weight: 600;
 }
@@ -1237,10 +1252,12 @@ a {
 .onboard-head {
   text-align: center;
   margin-bottom: var(--space-7);
+  animation: onboard-rise 0.7s var(--ease-soft) both;
+  animation-delay: 0s;
 }
 
 .onboard-head h1 {
-  font-size: clamp(1.8rem, 4vw, 2.3rem);
+  font-size: clamp(1.9rem, 4.5vw, 2.5rem);
   margin-bottom: var(--space-4);
 }
 
@@ -1256,12 +1273,28 @@ a {
   margin: 0 auto;
 }
 
-.how-card {
-  background: var(--bg-secondary);
+/* One tactile surface: pressed paper, soft layered shadow, inner highlight. */
+.onboard-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
   border-radius: var(--radius);
-  box-shadow: var(--elevation-1);
-  padding: var(--space-5) var(--space-6);
-  margin-bottom: var(--space-7);
+  box-shadow:
+    0 1px 2px rgba(42, 38, 34, 0.06),
+    0 20px 45px -24px rgba(42, 38, 34, 0.22),
+    inset 0 1px 0 var(--card-highlight);
+  padding: var(--space-6) var(--space-6) var(--space-7);
+  animation: onboard-rise 0.4s var(--ease-soft) both;
+  animation-delay: 0.05s;
+}
+
+/* The intro lives inside the same surface, separated by a soft rule. */
+.onboard-card .how-card {
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+  border-bottom: 1px solid var(--line);
+  padding: 0 0 var(--space-5);
+  margin: 0 0 var(--space-5);
 }
 
 .how-card h2 {
@@ -1286,13 +1319,30 @@ a {
 }
 
 .onboard-questions .hint {
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   color: var(--text-faint);
   margin-top: var(--space-2);
 }
 
 .onboard-actions {
-  margin-top: var(--space-7);
+  margin-top: var(--space-6);
+}
+
+@keyframes onboard-rise {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 480px) {
+  .onboard-card {
+    padding: var(--space-5) var(--space-4) var(--space-6);
+  }
 }
 
 /* ---------------------------------------------------------------- check-in */
@@ -1430,19 +1480,22 @@ a {
   cursor: pointer;
   font-size: 0.92rem;
   color: var(--text-soft);
-  transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+  transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .picker-option:hover {
   border-color: var(--success);
   color: var(--text);
   background: var(--bg-soft);
+  box-shadow: 0 8px 18px -10px rgba(42, 38, 34, 0.28);
 }
 
 .picker-option--on {
   border-color: var(--success);
   background: var(--praise-bg);
   color: var(--text);
+  box-shadow: 0 0 0 1px var(--success), var(--elevation-1);
 }
 
 .picker-option--on .picker-option-dot {
@@ -1474,18 +1527,20 @@ a {
   border-radius: var(--radius-sm);
   background: var(--surface);
   cursor: pointer;
-  transition: border-color 0.2s ease, background-color 0.2s ease,
-    transform var(--t-fast) var(--ease-soft);
+  transition: border-color 0.15s ease, background-color 0.15s ease,
+    box-shadow 0.15s ease, transform var(--t-fast) var(--ease-soft);
 }
 
 .mood-option:hover {
   border-color: var(--success);
   background: var(--bg-soft);
+  box-shadow: 0 8px 18px -10px rgba(42, 38, 34, 0.28);
 }
 
 .mood-option--on {
   border-color: var(--success);
   background: var(--praise-bg);
+  box-shadow: 0 0 0 1px var(--success), var(--elevation-1);
   transform: scale(1.03);
 }
 
@@ -1513,11 +1568,28 @@ a {
   }
 }
 
+/* A breathing impulse when an option is picked — scale up to 1.03 and back,
+   like a soft pulse, no bounce. */
+@keyframes tile-breathe {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.03);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
 .picker-option:active,
-.mood-option:active,
+.mood-option:active {
+  animation: pill-select 180ms var(--ease-soft);
+}
+
 .picker-option.just-selected,
 .mood-option.just-selected {
-  animation: pill-select 180ms var(--ease-soft);
+  animation: tile-breathe 300ms var(--ease-soft);
 }
 
 .checkin-actions {
@@ -1604,28 +1676,64 @@ a {
 
 .warm-loading {
   margin-top: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  min-height: 3.6em;
   font-family: var(--font-serif);
   font-style: italic;
   font-size: 1.02rem;
   color: var(--text-soft);
   text-align: center;
-  opacity: 0;
-  animation: warm-fade 1.4s ease 0.2s forwards, warm-pulse 2.4s ease 1.6s infinite;
 }
 
-@keyframes warm-fade {
+/* Gentle phrases crossfade while the reply is being written. */
+.warm-loading-text {
+  animation: warm-swap 0.5s var(--ease-soft) both;
+}
+
+@keyframes warm-swap {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
   to {
     opacity: 1;
+    transform: translateY(0);
   }
 }
 
-@keyframes warm-pulse {
-  0%,
-  100% {
-    opacity: 1;
+/* A soft indeterminate line — a quiet progress, never a percentage. */
+.warm-loading-line {
+  position: relative;
+  width: min(220px, 60vw);
+  height: 2px;
+  border-radius: 999px;
+  background: var(--praise-bg);
+  overflow: hidden;
+}
+
+.warm-loading-line::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--success);
+  transform-origin: left;
+  animation: warm-line 2.2s var(--ease-soft) infinite;
+}
+
+@keyframes warm-line {
+  0% {
+    transform: translateX(-100%);
   }
-  50% {
-    opacity: 0.55;
+  55% {
+    transform: translateX(20%);
+  }
+  100% {
+    transform: translateX(120%);
   }
 }
 
@@ -2842,6 +2950,17 @@ a {
   accent-color: var(--success);
 }
 
+/* A checked preference reads clearly — calm, not loud. */
+.choice:has(input:checked) {
+  border-color: var(--success);
+  background: var(--praise-bg);
+  box-shadow: 0 0 0 1px var(--success);
+}
+
+.choice:has(input:checked) strong {
+  color: var(--success-ink);
+}
+
 .choice strong {
   font-weight: 600;
 }
@@ -2941,6 +3060,53 @@ a {
   font-size: 0.96rem;
   font-family: var(--font-serif);
   font-style: italic;
+}
+
+/* ---- empty journey: a faint timeline waiting for its first memory ---- */
+
+.journey-empty {
+  padding: var(--space-8) var(--space-6);
+}
+
+.journey-empty-line {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-5);
+}
+
+.journey-empty-line-rail {
+  width: 1px;
+  height: 32px;
+  background: linear-gradient(var(--line-strong), transparent);
+}
+
+.journey-empty-line-marker {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid var(--line-strong);
+  background: var(--surface);
+  color: var(--success);
+  box-shadow: var(--elevation-1);
+  animation: journey-wait 3.6s var(--ease-soft) infinite;
+}
+
+/* The first marker waits — one slow breath, not a spinner. */
+@keyframes journey-wait {
+  0%,
+  100% {
+    opacity: 0.85;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(1px);
+  }
 }
 
 /* ---------------------------------------------------------------- journey timeline */
@@ -3868,6 +4034,7 @@ a {
   .pattern-card,
   .activity-bar,
   .growth-stage-dot,
+  .journey-empty-line-marker,
   .plant-fade-in,
   .plant-fade-out,
   .plant-leaf-idle,
@@ -4002,6 +4169,352 @@ a {
 .privacy-back {
   margin-top: var(--space-7);
   text-align: center;
+}
+
+/* ---------------------------------------------------------------- pricing */
+
+.pricing {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: var(--space-8) 0 var(--space-8);
+}
+
+.pricing-head {
+  text-align: center;
+  margin-bottom: var(--space-8);
+}
+
+.pricing-head h1 {
+  font-size: clamp(2rem, 5vw, 2.8rem);
+  line-height: 1.1;
+}
+
+.pricing-head-accent {
+  font-style: italic;
+  color: var(--success);
+}
+
+.pricing-lead {
+  color: var(--text-soft);
+  max-width: 520px;
+  margin: var(--space-4) auto 0;
+  line-height: 1.7;
+}
+
+.pricing-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-5);
+}
+
+.pricing-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding: var(--space-6);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--elevation-1);
+}
+
+.pricing-card--featured {
+  border-color: var(--success);
+  box-shadow: 0 0 0 1px var(--success), var(--elevation-1);
+}
+
+.pricing-card-top h2 {
+  font-size: 1.3rem;
+  margin-bottom: var(--space-2);
+}
+
+.pricing-card-top p {
+  color: var(--text-soft);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.pricing-price {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  border-bottom: 1px solid var(--line);
+  padding-bottom: var(--space-5);
+}
+
+.pricing-price-amount {
+  font-family: var(--font-serif);
+  font-size: 2.4rem;
+  color: var(--text);
+}
+
+.pricing-price-note {
+  color: var(--text-faint);
+  font-size: 0.9rem;
+}
+
+.pricing-features {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  flex: 1;
+}
+
+.pricing-features li {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  color: var(--text-soft);
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
+.pricing-features li svg {
+  flex: none;
+  color: var(--success);
+  margin-top: 3px;
+}
+
+.pricing-card .btn {
+  margin-top: var(--space-2);
+}
+
+.pricing-faq {
+  margin-top: var(--space-8);
+}
+
+.pricing-faq h2 {
+  text-align: center;
+  font-size: 1.4rem;
+  margin-bottom: var(--space-5);
+}
+
+.pricing-faq-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.pricing-faq-item {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  padding: var(--space-3) var(--space-4);
+}
+
+.pricing-faq-item summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.pricing-faq-item p {
+  color: var(--text-soft);
+  line-height: 1.7;
+  margin: var(--space-2) 0 0;
+}
+
+.pricing-returning {
+  text-align: center;
+  color: var(--text-soft);
+  margin-top: var(--space-6);
+}
+
+.btn--link {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: var(--success-ink);
+  cursor: pointer;
+  border-bottom: 1px solid var(--praise-line);
+}
+
+@media (max-width: 640px) {
+  .pricing-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ------------------------------------------------------------- plan badge */
+
+.plan-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--bg-soft);
+  color: var(--text-soft);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+.plan-badge--private {
+  border-color: var(--success);
+  background: var(--praise-bg);
+  color: var(--success-ink);
+}
+
+.settings-card--plan {
+  background: var(--bg-secondary);
+}
+
+.settings-plan-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-5);
+}
+
+.settings-plan-info h2 {
+  font-size: 1.2rem;
+  margin: var(--space-2) 0 var(--space-2);
+}
+
+.settings-plan-info p {
+  color: var(--text-soft);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  max-width: 460px;
+}
+
+.settings-plan-actions {
+  flex: none;
+}
+
+@media (max-width: 640px) {
+  .settings-plan-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.choice--locked {
+  opacity: 0.6;
+}
+
+/* ----------------------------------------------------------- manual payment */
+
+.manual-pay {
+  margin-top: var(--space-5);
+  padding: var(--space-5);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--bg-soft);
+  box-shadow: 0 20px 45px -28px rgb(0 0 0 / 0.35);
+  max-width: 560px;
+}
+
+.manual-pay--inline {
+  margin-top: var(--space-4);
+  max-width: none;
+}
+
+.manual-pay h3 {
+  font-size: 1.05rem;
+  margin: 0 0 var(--space-2);
+}
+
+.manual-pay-details {
+  color: var(--text);
+  font-size: 0.95rem;
+  line-height: 1.7;
+  padding: var(--space-3) var(--space-4);
+  border: 1px dashed var(--line);
+  border-radius: 12px;
+  background: var(--bg);
+  margin: 0 0 var(--space-4);
+  white-space: pre-wrap;
+}
+
+.manual-pay-actions {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.manual-pay-hint {
+  color: var(--text-faint);
+  font-size: 0.85rem;
+  line-height: 1.55;
+  margin: var(--space-3) 0 0;
+}
+
+.manual-pay-note h3 {
+  color: var(--success-ink);
+}
+
+.manual-pay-note p {
+  color: var(--text-soft);
+  line-height: 1.6;
+}
+
+@media (max-width: 640px) {
+  .manual-pay-actions {
+    flex-wrap: wrap;
+  }
+}
+
+/* ------------------------------------------------------------------- admin */
+
+.admin-list {
+  list-style: none;
+  margin: var(--space-3) 0 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.admin-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--bg);
+}
+
+.admin-item-info {
+  display: grid;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.admin-item-info strong {
+  font-size: 0.95rem;
+  overflow-wrap: anywhere;
+}
+
+.admin-item-info span {
+  color: var(--text-soft);
+  font-size: 0.82rem;
+}
+
+.admin-status--ok {
+  color: var(--success-ink);
+}
+
+.admin-status--warn {
+  color: var(--warn-ink, #b7791f);
+}
+
+.settings-empty {
+  color: var(--text-faint);
+  margin: var(--space-2) 0 0;
+}
+
+@media (max-width: 640px) {
+  .admin-item {
+    align-items: flex-start;
+    flex-direction: column;
+  }
 }
 
 /* ---------------------------------------------------------------- utilities */
@@ -5084,6 +5597,21 @@ a {
     radial-gradient(46vmax 34vmax at 12% -4%, var(--glow-sage), transparent 62%),
     radial-gradient(42vmax 32vmax at 104% 108%, var(--glow-terra), transparent 60%),
     radial-gradient(36vmax 30vmax at 86% 10%, var(--glow-sage), transparent 56%);
+  animation: ambient-breathe 12s ease-in-out infinite;
+  will-change: opacity, transform;
+}
+
+/* The whole light field slowly breathes — barely noticeable, softly alive. */
+@keyframes ambient-breathe {
+  0%,
+  100% {
+    opacity: 0.86;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.02);
+  }
 }
 
 .ambient-noise {
@@ -5106,14 +5634,26 @@ a {
   top: -16vmax;
   left: -12vmax;
   background: radial-gradient(circle at 40% 40%, var(--glow-sage), transparent 68%);
-  animation: ambient-drift-a 34s ease-in-out infinite alternate;
+  animation: ambient-drift-a 34s ease-in-out infinite alternate,
+    ambient-pulse 11s ease-in-out infinite;
 }
 
 .ambient-blob--b {
   bottom: -18vmax;
   right: -14vmax;
   background: radial-gradient(circle at 60% 60%, var(--glow-terra), transparent 68%);
-  animation: ambient-drift-b 42s ease-in-out infinite alternate;
+  animation: ambient-drift-b 42s ease-in-out infinite alternate,
+    ambient-pulse 13s ease-in-out infinite;
+}
+
+@keyframes ambient-pulse {
+  0%,
+  100% {
+    opacity: 0.82;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 
 @keyframes ambient-drift-a {
@@ -5132,6 +5672,24 @@ a {
   to {
     transform: translate3d(-3px, 2px, 0);
   }
+}
+
+/* ---- time-of-day atmosphere: the light quietly shifts with the clock ----
+   Only affects the ambient glow temperature, never the layout or the dark
+   theme. Applied via data-time on <html> (set in App.tsx). */
+html:not([data-theme="dark"])[data-time="morning"] {
+  --glow-sage: rgba(152, 182, 142, 0.13);
+  --glow-terra: rgba(139, 100, 70, 0.05);
+}
+
+html:not([data-theme="dark"])[data-time="evening"] {
+  --glow-sage: rgba(143, 168, 136, 0.08);
+  --glow-terra: rgba(170, 120, 84, 0.13);
+}
+
+html:not([data-theme="dark"])[data-time="night"] {
+  --glow-sage: rgba(124, 152, 122, 0.07);
+  --glow-terra: rgba(126, 96, 74, 0.11);
 }
 
 /* ---- premium buttons: quiet gradient, soft lift, faint glow ---- */
@@ -5226,6 +5784,19 @@ a {
   border: 1px solid var(--praise-line);
   color: var(--success-ink);
   margin-bottom: var(--space-3);
+  transform-origin: 50% 90%;
+  animation: empty-sway 8s ease-in-out infinite;
+}
+
+/* The little leaf in an empty state rocks gently — waiting, not missing. */
+@keyframes empty-sway {
+  0%,
+  100% {
+    transform: rotate(-3deg);
+  }
+  50% {
+    transform: rotate(3deg);
+  }
 }
 
 .steps-empty-cta {
@@ -5350,7 +5921,7 @@ a {
     var(--bg-secondary) 60%
   );
   background-size: 300% 100%;
-  animation: shimmer 1.5s ease-in-out infinite;
+  animation: shimmer 1.2s ease-in-out infinite;
 }
 
 .skeleton--head {
@@ -5677,7 +6248,9 @@ a {
 /* ---- calm motion on request: everything flattens ---- */
 
 @media (prefers-reduced-motion: reduce) {
-  .ambient-blob {
+  .ambient-blob,
+  .ambient-glows,
+  .steps-empty-plant {
     animation: none;
   }
 
@@ -5696,8 +6269,17 @@ a {
   .progress-head,
   .growth-head,
   .checkin-head,
-  .achievement--earned {
+  .achievement--earned,
+  .onboard-head,
+  .onboard-card,
+  .warm-loading-text,
+  .warm-loading-line::after {
     animation: none;
+  }
+
+  .warm-loading-text {
+    opacity: 1;
+    transform: none;
   }
 
   .reflect-tile,

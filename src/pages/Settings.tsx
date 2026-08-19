@@ -4,6 +4,14 @@ import { useAuth } from "../lib/auth";
 import AppShell from "../components/AppShell";
 import SproutLoader from "../components/SproutLoader";
 import { deleteAllSteps } from "../lib/steps";
+import { isPrivate } from "../lib/types";
+import {
+  cancelPrivate,
+  paymentDetails,
+  planLabel,
+  PRICE_YEARLY,
+  requestPrivatePayment,
+} from "../lib/billing";
 import {
   applyTheme,
   readThemePreference,
@@ -59,6 +67,9 @@ export default function Settings() {
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [deletedMsg, setDeletedMsg] = useState(false);
+  const [billingBusy, setBillingBusy] = useState(false);
+  const [paying, setPaying] = useState(false);
+  const [paySent, setPaySent] = useState(false);
 
   const [textSize, setTextSize] = useState<TextSizeId>(() => readTextSize());
   const [themePref, setThemePref] = useState<ThemePreference>(() =>
@@ -87,6 +98,31 @@ export default function Settings() {
     );
   }
   const db = supabase;
+  const privatePlan = isPrivate(profile);
+
+  const goCheckout = async () => {
+    if (billingBusy) return;
+    setPaying(true);
+  };
+
+  const goCancel = async () => {
+    if (billingBusy || !user) return;
+    setBillingBusy(true);
+    const ok = await cancelPrivate(user.id);
+    setBillingBusy(false);
+    if (ok) await refreshProfile();
+  };
+
+  const submitPayment = async () => {
+    if (billingBusy || !user) return;
+    setBillingBusy(true);
+    const row = await requestPrivatePayment(user.id, user.email ?? "");
+    setBillingBusy(false);
+    if (row) {
+      setPaySent(true);
+      setPaying(false);
+    }
+  };
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
@@ -147,6 +183,87 @@ export default function Settings() {
         <div className="settings-head">
           <h1>Settings</h1>
           <p>Small adjustments, no pressure — change them whenever you like.</p>
+        </div>
+
+        <div className="settings-card settings-card--plan">
+          <div className="settings-plan-row">
+            <div className="settings-plan-info">
+              <span className={`plan-badge plan-badge--${profile.plan}`}>
+                {planLabel(profile.plan)}
+              </span>
+              <h2>
+                {privatePlan
+                  ? "Your words stay closer."
+                  : "Keep your words closer."}
+              </h2>
+              <p>
+                {privatePlan
+                  ? "Your replies are processed privately — never used to train AI models. Reminders and weekly notes are on."
+                  : `Private is $${PRICE_YEARLY} once a year — replies processed privately, never used to train models, plus gentle reminders and weekly notes.`}
+              </p>
+            </div>
+            <div className="settings-plan-actions">
+              {privatePlan ? (
+                <button
+                  type="button"
+                  className="btn btn--ghost btn--sm"
+                  onClick={() => void goCancel()}
+                  disabled={billingBusy}
+                >
+                  {billingBusy ? "Working…" : "Cancel Private"}
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className="btn btn--primary btn--sm"
+                  onClick={() => void goCheckout()}
+                  disabled={billingBusy}
+                >
+                  {billingBusy ? "Opening…" : `Go Private — $${PRICE_YEARLY}/yr`}
+                </button>
+              )}
+            </div>
+          </div>
+          {paying && !privatePlan && (
+            <div className="manual-pay manual-pay--inline">
+              {paySent ? (
+                <div className="manual-pay-note">
+                  <h3>Thank you.</h3>
+                  <p>
+                    Your request is in. We'll switch Private on as soon as the
+                    payment arrives — usually within a day. No rush.
+                  </p>
+                </div>
+              ) : (
+                <>
+                  <h3>Private — ${PRICE_YEARLY} once a year</h3>
+                  <p className="manual-pay-details">{paymentDetails()}</p>
+                  <div className="manual-pay-actions">
+                    <button
+                      type="button"
+                      className="btn btn--primary btn--sm"
+                      onClick={() => void submitPayment()}
+                      disabled={billingBusy}
+                    >
+                      {billingBusy ? "Recording…" : "I've paid"}
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn--quiet btn--sm"
+                      onClick={() => setPaying(false)}
+                      disabled={billingBusy}
+                    >
+                      Not yet
+                    </button>
+                  </div>
+                  <p className="manual-pay-hint">
+                    No recurring charges. When the year passes, you can renew —
+                    or quietly stay on the free plan.
+                  </p>
+                </>
+              )}
+            </div>
+          )}
         </div>
 
         {deletedMsg && (
@@ -240,12 +357,13 @@ export default function Settings() {
           <h2>Reminders</h2>
           <p>
             A gentle check-in whenever you're ready — nothing that scolds you
-            for quiet days.
+            for quiet days. A Private feature.
           </p>
-          <label className="choice">
+          <label className={`choice${!privatePlan ? " choice--locked" : ""}`}>
             <input
               type="checkbox"
               checked={reminderEnabled}
+              disabled={!privatePlan}
               onChange={(e) => {
                 setReminderEnabled(e.target.checked);
                 setSaved(false);
@@ -253,6 +371,15 @@ export default function Settings() {
             />
             <span>Daily reminder</span>
           </label>
+          {!privatePlan && (
+            <p className="hint">
+              Reminders come with the Private plan —{" "}
+              <button type="button" className="btn--link" onClick={() => void goCheckout()}>
+                see pricing
+              </button>
+              .
+            </p>
+          )}
 
           {reminderEnabled && (
             <div className="reminder-opts">
@@ -308,12 +435,13 @@ export default function Settings() {
           <h2>Weekly notes</h2>
           <p>
             Once a week you may get a short, warm email looking back at your
-            small steps. You can turn it off here.
+            small steps. You can turn it off here. A Private feature.
           </p>
-          <label className="choice">
+          <label className={`choice${!privatePlan ? " choice--locked" : ""}`}>
             <input
               type="checkbox"
               checked={profile.weekly_email}
+              disabled={!privatePlan}
               onChange={async (e) => {
                 setSaved(false);
                 const { error: err } = await db
@@ -331,6 +459,15 @@ export default function Settings() {
             />
             <span>Send me the weekly note</span>
           </label>
+          {!privatePlan && (
+            <p className="hint">
+              Weekly notes come with the Private plan —{" "}
+              <button type="button" className="btn--link" onClick={() => void goCheckout()}>
+                see pricing
+              </button>
+              .
+            </p>
+          )}
         </div>
 
         <div className="settings-note">

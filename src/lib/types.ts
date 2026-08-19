@@ -7,6 +7,8 @@ export type Category =
   | "people"
   | "other";
 
+export type Plan = "free" | "private";
+
 export interface Profile {
   id: string;
   name: string | null;
@@ -19,6 +21,26 @@ export interface Profile {
   onboarded_at: string | null;
   created_at: string | null;
   updated_at: string | null;
+  plan: Plan;
+  is_admin: boolean;
+  plan_updated_at: string | null;
+}
+
+export function isPrivate(profile: Pick<Profile, "plan">): boolean {
+  return profile.plan === "private";
+}
+
+export interface Payment {
+  id: string;
+  user_id: string;
+  email: string;
+  amount: number;
+  currency: string;
+  status: "pending" | "confirmed" | "cancelled";
+  period_start: string | null;
+  period_end: string | null;
+  created_at: string;
+  confirmed_at: string | null;
 }
 
 export interface Step {

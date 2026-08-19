@@ -57,6 +57,19 @@ function clearDraft() {
 
 type ButtonState = "idle" | "saving" | "saved";
 
+/* Quiet phrases shown while the reply is being written — one at a time,
+   no percentages, no countdowns. */
+const TYPING_HINTS = [
+  "reading what you wrote…",
+  "finding the right words…",
+  "letting the reply settle…",
+];
+
+const SHOWED_UP_HINTS = [
+  "noting that you showed up…",
+  "holding that moment…",
+];
+
 export default function CheckIn() {
   const [note, setNote] = useState(() => readDraft());
   const noteRef = useRef(note);
@@ -74,6 +87,21 @@ export default function CheckIn() {
   const [newStepId, setNewStepId] = useState<string | null>(null);
   const [feedback, setFeedback] = useState(false);
   const [typing, setTyping] = useState(false);
+  const [hintIdx, setHintIdx] = useState(0);
+
+  const hints = note.trim() ? TYPING_HINTS : SHOWED_UP_HINTS;
+
+  useEffect(() => {
+    if (!submitting) {
+      setHintIdx(0);
+      return;
+    }
+    const t = window.setInterval(
+      () => setHintIdx((i) => (i + 1) % hints.length),
+      1800,
+    );
+    return () => window.clearInterval(t);
+  }, [submitting, hints.length]);
 
   const feedCount = steps?.length ?? 0;
   const animatedCount = useCountUp(feedCount);
@@ -252,7 +280,14 @@ export default function CheckIn() {
               {submitting && (
                 <span className="btn-dot" aria-hidden="true" />
               )}
-              {submitting ? "Holding it…" : btnState === "saved" ? "Noticed" : "Mark it"}
+              {submitting ? "Holding it…" : btnState === "saved" ? (
+                <>
+                  <LeafIcon size={15} />
+                  Noticed
+                </>
+              ) : (
+                "Mark it"
+              )}
             </button>
             <button
               type="button"
@@ -265,9 +300,12 @@ export default function CheckIn() {
           </div>
 
           {submitting && (
-            <p className="warm-loading" aria-live="polite">
-              {note.trim() ? "reading what you wrote…" : "noting that you showed up…"}
-            </p>
+            <div className="warm-loading" aria-live="polite">
+              <span key={hintIdx} className="warm-loading-text">
+                {hints[hintIdx % hints.length]}
+              </span>
+              <span className="warm-loading-line" aria-hidden="true" />
+            </div>
           )}
           {feedback && (
             <p className="step-feedback" aria-live="polite">

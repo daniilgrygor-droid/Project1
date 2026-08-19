@@ -151,6 +151,9 @@ export default function Landing() {
             <a href="#why" className="nav-link">
               Why this exists
             </a>
+            <Link to="/pricing" className="nav-link">
+              Pricing
+            </Link>
             <Link to="/privacy" className="nav-link">
               Privacy
             </Link>
@@ -430,6 +433,10 @@ export default function Landing() {
             replies.
           </p>
           <div className="footer-links">
+            <Link to="/pricing">Pricing</Link>
+            <span className="footer-sep" aria-hidden="true">
+              ·
+            </span>
             <Link to="/privacy">Privacy Policy</Link>
             <span className="footer-sep" aria-hidden="true">
               ·

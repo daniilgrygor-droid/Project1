@@ -26,6 +26,20 @@ export async function saveStep(
     return { ok: false, reason: "not-configured" };
   }
 
+  const {
+    data: { user: authUser },
+  } = await supabase.auth.getUser();
+
+  let plan: string | null = null;
+  if (authUser) {
+    const { data: p } = await supabase
+      .from("profiles")
+      .select("plan")
+      .eq("id", authUser.id)
+      .maybeSingle();
+    plan = (p as { plan?: string } | null)?.plan ?? null;
+  }
+
   try {
     const { data, error } = await supabase.functions.invoke<{
       step?: Step;
@@ -35,6 +49,8 @@ export async function saveStep(
         showed_up_only: showedUpOnly,
         category: meta?.category ?? null,
         mood: meta?.mood ?? null,
+        plan,
+        private_replies: plan === "private",
       },
     });
 

@@ -52,17 +52,18 @@ export default function Onboarding() {
           <p>Two gentle questions — answer them however you like. Or skip.</p>
         </div>
 
-        <div className="how-card">
-          <h2>How this works</h2>
-          <p>
-            Every day there's one question: “What's one small thing you did
-            today?” You write anything — from “I got out of bed” to “I replied
-            to one email.” You get a warm, personal response. That's all. No
-            quotas, no points, no “why wasn't there anything yesterday.”
-          </p>
-        </div>
+        <div className="onboard-card">
+          <div className="how-card">
+            <h2>How this works</h2>
+            <p>
+              Every day there's one question: “What's one small thing you did
+              today?” You write anything — from “I got out of bed” to “I replied
+              to one email.” You get a warm, personal response. That's all. No
+              quotas, no points, no “why wasn't there anything yesterday.”
+            </p>
+          </div>
 
-        <form onSubmit={submit}>
+          <form onSubmit={submit}>
           <div className="onboard-questions">
             <div className="field">
               <h2>What can I call you?</h2>
@@ -104,10 +105,12 @@ export default function Onboarding() {
               className="btn btn--primary btn--block"
               disabled={busy}
             >
+              {busy && <span className="btn-dot" aria-hidden="true" />}
               {busy ? "Saving…" : "Continue when you're ready"}
             </button>
           </div>
         </form>
+        </div>
       </div>
     </AppShell>
   );

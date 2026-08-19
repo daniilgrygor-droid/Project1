@@ -20,6 +20,8 @@ import JourneyOverview from "./pages/JourneyOverview";
 import Progress from "./pages/Progress";
 import Growth from "./pages/Growth";
 import Privacy from "./pages/Privacy";
+import Pricing from "./pages/Pricing";
+import Admin from "./pages/Admin";
 import UndoToast from "./components/UndoToast";
 
 const PAGE_TITLES: [string, string][] = [
@@ -33,6 +35,8 @@ const PAGE_TITLES: [string, string][] = [
   ["/settings", "Settings · Small Steps"],
   ["/reset-password", "Reset password · Small Steps"],
   ["/privacy", "Privacy · Small Steps"],
+  ["/pricing", "Pricing · Small Steps"],
+  ["/admin", "Payments · Small Steps"],
 ];
 
 /** Keeps the browser tab title in step with the route. */
@@ -112,6 +116,8 @@ function AnimatedRoutes() {
       />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/privacy" element={<Privacy />} />
+      <Route path="/pricing" element={<Pricing />} />
+      <Route path="/admin" element={<Admin />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
@@ -132,6 +138,26 @@ export default function App() {
     };
     mq.addEventListener?.("change", onChange);
     return () => mq.removeEventListener?.("change", onChange);
+  }, []);
+
+  // Time-of-day: quietly nudge the ambient light (morning / day / evening /
+  // night). A subtle atmosphere shift, never a theme switch.
+  useEffect(() => {
+    const update = () => {
+      const h = new Date().getHours();
+      const time =
+        h >= 5 && h < 10
+          ? "morning"
+          : h >= 10 && h < 17
+            ? "day"
+            : h >= 17 && h < 22
+              ? "evening"
+              : "night";
+      document.documentElement.setAttribute("data-time", time);
+    };
+    update();
+    const t = window.setInterval(update, 15 * 60 * 1000);
+    return () => window.clearInterval(t);
   }, []);
 
   return (

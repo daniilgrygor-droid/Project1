@@ -16,6 +16,34 @@ interface DayGroup {
   entries: Step[];
 }
 
+/* #42 — an empty journal is a page waiting for its first memory, not a
+   missing asset. A faint timeline with one gently breathing marker. */
+function EmptyJourney({ compact = false }: { compact?: boolean }) {
+  return (
+    <div
+      className={`steps-empty steps-empty--story journey-empty${
+        compact ? " journey-empty--compact" : ""
+      }`}
+    >
+      <div className="journey-empty-line" aria-hidden="true">
+        <span className="journey-empty-line-rail" />
+        <span className="journey-empty-line-marker">
+          <LeafIcon size={13} />
+        </span>
+        <span className="journey-empty-line-rail" />
+      </div>
+      <p>
+        {compact
+          ? "Nothing recorded here yet. Whenever you're ready, the first small step can go in."
+          : "Your days will slowly fill with little signs of showing up."}
+      </p>
+      <Link className="btn btn--primary btn--sm steps-empty-cta" to="/check-in">
+        Mark your first step
+      </Link>
+    </div>
+  );
+}
+
 export function JourneyTimeline() {
   const [steps, setSteps] = useState<Step[] | null>(null);
   const [query, setQuery] = useState("");
@@ -142,15 +170,7 @@ export function JourneyTimeline() {
               </div>
             </div>
           ) : emptyAll ? (
-            <div className="steps-empty steps-empty--story">
-              <span className="steps-empty-plant">
-                <LeafIcon size={20} />
-              </span>
-              <p>Your days will slowly fill with little signs of showing up.</p>
-              <Link className="btn btn--primary btn--sm steps-empty-cta" to="/check-in">
-                Mark your first step
-              </Link>
-            </div>
+            <EmptyJourney />
           ) : (
             <Calendar
               steps={steps}
@@ -221,18 +241,7 @@ export function JourneyTimeline() {
               ))}
             </div>
           ) : emptyAll ? (
-            <div className="steps-empty steps-empty--story">
-              <span className="steps-empty-plant">
-                <LeafIcon size={20} />
-              </span>
-              <p>
-                Nothing recorded here yet. Whenever you're ready, the first
-                small step can go in.
-              </p>
-              <Link className="btn btn--primary btn--sm steps-empty-cta" to="/check-in">
-                Mark your first step
-              </Link>
-            </div>
+            <EmptyJourney compact />
           ) : filteredGroups.length === 0 ? (
             <div className="steps-empty steps-empty--story">
               <p>
