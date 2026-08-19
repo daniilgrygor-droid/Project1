@@ -86,7 +86,7 @@ export default function EntryCard({
   return (
     <li
       style={style}
-      className={`step-item${expanded ? " step-item--expanded" : ""}${
+      className={`step-item spot-card${expanded ? " step-item--expanded" : ""}${
         className ? ` ${className}` : ""
       }`}
     >

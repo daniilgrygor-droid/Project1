@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, type ChangeEvent, type FormEvent } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import { saveStep } from "../lib/ai";
@@ -10,9 +10,11 @@ import MoodPicker from "../components/MoodPicker";
 import EntryCard from "../components/EntryCard";
 import SproutLoader from "../components/SproutLoader";
 import PlantIcon from "../components/PlantIcon";
-import { plantStageFor } from "../lib/constants";
-import { LeafIcon } from "../components/icons";
+import Plant from "../components/Plant";
+import { plantStageFor, dayKey } from "../lib/constants";
+import { LeafIcon, SproutIcon, SunIcon } from "../components/icons";
 import { useCountUp } from "../lib/useCountUp";
+import { useToast } from "../lib/toast";
 import { smallStepsNoticed } from "../lib/copy";
 import { registerUndoRestore } from "../lib/undoStore";
 
@@ -82,6 +84,7 @@ export default function CheckIn() {
   const [error, setError] = useState<string | null>(null);
   const [steps, setSteps] = useState<Step[] | null>(null);
   const [latest, setLatest] = useState<Step | null>(null);
+  const toast = useToast();
   const [fallback, setFallback] = useState<string | undefined>(undefined);
   const [showPraise, setShowPraise] = useState(true);
   const [newStepId, setNewStepId] = useState<string | null>(null);
@@ -105,6 +108,14 @@ export default function CheckIn() {
 
   const feedCount = steps?.length ?? 0;
   const animatedCount = useCountUp(feedCount);
+  const weekCount = steps
+    ? steps.filter(
+        (s) => Date.now() - new Date(s.created_at).getTime() < 7 * 86400000,
+      ).length
+    : 0;
+  const activeDays = steps
+    ? new Set(steps.map((s) => s.created_at.slice(0, 10))).size
+    : 0;
 
   const handleNoteChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value;
@@ -204,6 +215,7 @@ export default function CheckIn() {
     }
     if (res.aiFailed) setFallback(res.message);
     clearDraft();
+    toast.push(showedUp ? "Noted. That counts." : "Noticed. That counts.");
     setNote("");
     setCategory(null);
     setMood(null);
@@ -217,6 +229,18 @@ export default function CheckIn() {
   const feedLoaded = steps !== null;
   const empty = feedLoaded && steps.length === 0;
   const stage = plantStageFor(steps?.length ?? 0) ?? null;
+  const markedToday = latest
+    ? dayKey(latest.created_at) === dayKey(new Date().toISOString())
+    : false;
+  const returnGap = useMemo(() => {
+    if (!latest) return 0;
+    const last = dayKey(latest.created_at);
+    const todayKey = dayKey(new Date().toISOString());
+    if (last >= todayKey) return 0;
+    return Math.round(
+      (Date.parse(todayKey) - Date.parse(last)) / 86400000,
+    );
+  }, [latest]);
 
   return (
     <AppShell>
@@ -249,7 +273,57 @@ export default function CheckIn() {
           )}
         </div>
 
-        <form className="checkin-form" onSubmit={submit}>
+        {markedToday && (
+          <p className="today-done">
+            <LeafIcon size={13} />
+            Already noticed today — anything else counts too.
+          </p>
+        )}
+
+        {returnGap >= 2 && (
+          <p className="welcome-back">
+            <SproutIcon size={14} />
+            Welcome back. It's been {returnGap} days since your last step —
+            that quiet return counts too.
+          </p>
+        )}
+
+        {feedCount > 0 && (
+          <div className="reflect-grid checkin-stats" aria-label="A quick summary">
+            <div className="reflect-tile spot-card">
+              <span className="reflect-tile-icon">
+                <SproutIcon size={15} />
+              </span>
+              <span className="reflect-tile-number">{animatedCount}</span>
+              <span className="reflect-tile-label">Small steps</span>
+            </div>
+            <div className="reflect-tile spot-card">
+              <span className="reflect-tile-icon">
+                <SunIcon size={15} />
+              </span>
+              <span className="reflect-tile-number">{weekCount}</span>
+              <span className="reflect-tile-label">This week</span>
+            </div>
+            <div className="reflect-tile spot-card">
+              <span className="reflect-tile-icon">
+                <LeafIcon size={15} />
+              </span>
+              <span className="reflect-tile-number">{activeDays}</span>
+              <span className="reflect-tile-label">Active days</span>
+            </div>
+            <div className="reflect-tile spot-card">
+              <span className="reflect-tile-icon">
+                <PlantIcon size={15} />
+              </span>
+              <span className="reflect-tile-number reflect-tile-number--text">
+                {stage?.label ?? "A seed"}
+              </span>
+              <span className="reflect-tile-label">Your plant</span>
+            </div>
+          </div>
+        )}
+
+        <form className="checkin-form spot-card" onSubmit={submit}>
           <div className="field">
             <label className="visually-hidden" htmlFor="step-note">
               What did you do today
@@ -354,7 +428,8 @@ export default function CheckIn() {
           {!feedLoaded && <SproutLoader />}
 
           {empty && (
-            <div className="steps-empty steps-empty--story">
+            <div className="steps-empty steps-empty--story steps-empty--seed">
+              <Plant steps={0} size={150} showLabel={false} />
               <p>
                 Nothing here yet. And that's okay — your story starts with one
                 small step.

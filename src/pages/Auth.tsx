@@ -18,6 +18,7 @@ export default function Auth() {
   );
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -78,6 +79,11 @@ export default function Auth() {
         await afterAuth();
       }
     } else {
+      if (password !== confirm) {
+        setError("The passwords don't match. Take another look.");
+        setBusy(false);
+        return;
+      }
       const { data, error: err } = await supabase.auth.signUp({
         email: email.trim(),
         password,
@@ -101,7 +107,7 @@ export default function Auth() {
   if (!configured) {
     return (
       <div className="auth-wrap">
-        <div className="auth-card">
+<div className="auth-card spot-card">
           <div className="auth-art">
             <PlantIcon size={52} className="auth-art-icon" />
           </div>
@@ -137,11 +143,14 @@ export default function Auth() {
 
   return (
     <div className="auth-wrap">
-      <div className="auth-card">
+      <div className="auth-card spot-card">
         <div className="auth-art">
           <PlantIcon size={52} className="auth-art-icon" />
         </div>
         <Wordmark />
+        <span className="head-eyebrow">
+          {mode === "in" ? "A quiet door" : "A new seed"}
+        </span>
         <h1>{mode === "in" ? "Welcome back" : "Welcome"}</h1>
         <p className="auth-lead">
           {mode === "in"
@@ -213,6 +222,24 @@ export default function Auth() {
               </button>
             )}
           </div>
+          {mode === "up" && (
+            <div className="field">
+              <label htmlFor="auth-confirm">Confirm password</label>
+              <input
+                id="auth-confirm"
+                className="input"
+                type="password"
+                required
+                autoComplete="new-password"
+                minLength={6}
+                value={confirm}
+                onChange={(e) => {
+                  setConfirm(e.target.value);
+                  setError(null);
+                }}
+              />
+            </div>
+          )}
 
           <div className="auth-submit">
             <button

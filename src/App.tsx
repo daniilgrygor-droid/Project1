@@ -3,10 +3,10 @@ import {
   BrowserRouter,
   Routes,
   Route,
-  Navigate,
   useLocation,
 } from "react-router-dom";
 import { AuthProvider } from "./lib/auth";
+import { ToastProvider } from "./lib/toast";
 import { RequireAuth, RequireOnboarded } from "./components/Guards";
 import { applyTextSize, readTextSize } from "./lib/textSize";
 import { applyTheme, readThemePreference } from "./lib/theme";
@@ -22,6 +22,7 @@ import Growth from "./pages/Growth";
 import Privacy from "./pages/Privacy";
 import Pricing from "./pages/Pricing";
 import Admin from "./pages/Admin";
+import NotFound from "./pages/NotFound";
 import UndoToast from "./components/UndoToast";
 
 const PAGE_TITLES: [string, string][] = [
@@ -37,6 +38,7 @@ const PAGE_TITLES: [string, string][] = [
   ["/privacy", "Privacy · Small Steps"],
   ["/pricing", "Pricing · Small Steps"],
   ["/admin", "Payments · Small Steps"],
+  ["/lost", "Off the path · Small Steps"],
 ];
 
 /** Keeps the browser tab title in step with the route. */
@@ -118,7 +120,7 @@ function AnimatedRoutes() {
       <Route path="/privacy" element={<Privacy />} />
       <Route path="/pricing" element={<Pricing />} />
       <Route path="/admin" element={<Admin />} />
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 }
@@ -167,10 +169,14 @@ export default function App() {
           <span className="ambient-glows" />
           <span className="ambient-blob ambient-blob--a" />
           <span className="ambient-blob ambient-blob--b" />
+          <span className="ambient-dots" />
+          <span className="ambient-vignette" />
           <span className="ambient-noise" />
         </div>
         <RouteTitle />
-        <AnimatedRoutes />
+        <ToastProvider>
+          <AnimatedRoutes />
+        </ToastProvider>
         <UndoToast />
       </BrowserRouter>
     </AuthProvider>

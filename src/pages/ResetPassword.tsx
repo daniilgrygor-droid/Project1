@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import Wordmark from "../components/Wordmark";
+import PlantIcon from "../components/PlantIcon";
 
 export default function ResetPassword() {
   const [password, setPassword] = useState("");
@@ -36,7 +37,10 @@ export default function ResetPassword() {
 
   return (
     <div className="auth-wrap">
-      <div className="auth-card">
+      <div className="auth-card spot-card">
+        <div className="auth-art">
+          <PlantIcon size={52} className="auth-art-icon" />
+        </div>
         <Wordmark />
         {done ? (
           <>

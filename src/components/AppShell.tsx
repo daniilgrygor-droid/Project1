@@ -1,11 +1,14 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { supabase } from "../lib/supabase";
+import { useAuth } from "../lib/auth";
+import { isPrivate } from "../lib/types";
 import Wordmark from "./Wordmark";
 import CommandPalette from "./CommandPalette";
 import {
   BookIcon,
   GearIcon,
+  LeafIcon,
   PencilIcon,
   SproutIcon,
   SunIcon,
@@ -18,9 +21,34 @@ const LINKS = [
   { to: "/growth", label: "Growth", icon: <SproutIcon size={15} /> },
 ];
 
+function initialsOf(email?: string | null): string {
+  if (!email) return "?";
+  const local = email.split("@")[0] ?? "";
+  const parts = local.split(/[._-]+/).filter(Boolean);
+  const letters = (parts.length > 1 ? [parts[0], parts[1]] : [parts[0]])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+  return letters || email.slice(0, 2).toUpperCase();
+}
+
 export default function AppShell({ children }: { children: ReactNode }) {
   const location = useLocation();
+  const { user, profile } = useAuth();
   const navRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const onMove = (e: MouseEvent) => {
+      const target = document.elementFromPoint(e.clientX, e.clientY);
+      const card = target?.closest?.<HTMLElement>(".spot-card");
+      if (!card) return;
+      const r = card.getBoundingClientRect();
+      card.style.setProperty("--mx", `${e.clientX - r.left}px`);
+      card.style.setProperty("--my", `${e.clientY - r.top}px`);
+    };
+    window.addEventListener("mousemove", onMove, { passive: true });
+    return () => window.removeEventListener("mousemove", onMove);
+  }, []);
   const [pill, setPill] = useState({ x: 0, y: 0, w: 0, h: 0, visible: false });
   const [paletteOpen, setPaletteOpen] = useState(false);
 
@@ -61,12 +89,32 @@ export default function AppShell({ children }: { children: ReactNode }) {
     window.scrollTo(0, 0);
   }, [location.pathname]);
 
+  const [routeBusy, setRouteBusy] = useState(false);
+  const [routeOut, setRouteOut] = useState(false);
+
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    setRouteBusy(true);
+    setRouteOut(false);
+    const t = setTimeout(() => setRouteOut(true), 550);
+    return () => clearTimeout(t);
+  }, [location.pathname]);
+
   const signOut = () => {
     void supabase?.auth.signOut();
   };
 
   return (
-    <div className="app">
+    <div className="app app--tabbed">
+      {routeBusy && (
+        <div
+          className={`route-bar${routeOut ? " route-bar--out" : ""}`}
+          onAnimationEnd={() => {
+            if (routeOut) setRouteBusy(false);
+          }}
+          aria-hidden="true"
+        />
+      )}
       <header className="app-header">
         <div className="wrap">
           <Wordmark />
@@ -102,6 +150,23 @@ export default function AppShell({ children }: { children: ReactNode }) {
               </span>
               Settings
             </Link>
+            <span className="header-cluster">
+              <Link
+                to="/pricing"
+                className={`plan-pill${profile && isPrivate(profile) ? " plan-pill--private" : ""}`}
+                title={
+                  profile && isPrivate(profile)
+                    ? "You're on Private"
+                    : "Upgrade to Private"
+                }
+              >
+                <LeafIcon size={12} />
+                {profile && isPrivate(profile) ? "Private" : "Go Private"}
+              </Link>
+              <Link to="/settings" className="app-avatar" title="Settings">
+                {initialsOf(user?.email)}
+              </Link>
+            </span>
             <button
               type="button"
               className="cmd-hint"
@@ -127,6 +192,34 @@ export default function AppShell({ children }: { children: ReactNode }) {
           {children}
         </div>
       </main>
+
+      <nav className="app-tabbar" aria-label="Primary">
+        {LINKS.map((l) => (
+          <NavLink
+            key={l.to}
+            to={l.to}
+            className={({ isActive }) =>
+              `tabbar-link${isActive ? " tabbar-link--active" : ""}`
+            }
+          >
+            <span className="tabbar-icon" aria-hidden="true">
+              {l.icon}
+            </span>
+            {l.label}
+          </NavLink>
+        ))}
+        <NavLink
+          to="/settings"
+          className={({ isActive }) =>
+            `tabbar-link${isActive ? " tabbar-link--active" : ""}`
+          }
+        >
+          <span className="tabbar-icon" aria-hidden="true">
+            <GearIcon size={18} />
+          </span>
+          Settings
+        </NavLink>
+      </nav>
 
       <footer className="app-footer">
         <div className="wrap">

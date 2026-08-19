@@ -4,6 +4,8 @@ import { supabase, supabaseConfigured } from "../lib/supabase";
 import { useAuth } from "../lib/auth";
 import AppShell from "../components/AppShell";
 import PlantIcon from "../components/PlantIcon";
+import { LeafIcon, SproutIcon, SunIcon } from "../components/icons";
+import { Link } from "react-router-dom";
 
 export default function Onboarding() {
   const navigate = useNavigate();
@@ -48,19 +50,50 @@ export default function Onboarding() {
       <div className="onboard">
         <div className="onboard-head">
           <PlantIcon size={48} className="onboard-art" />
+          <span className="head-eyebrow">
+            <LeafIcon size={13} />
+            A quiet start
+          </span>
           <h1>Almost ready</h1>
           <p>Two gentle questions — answer them however you like. Or skip.</p>
         </div>
 
-        <div className="onboard-card">
+        <div className="onboard-card spot-card">
           <div className="how-card">
             <h2>How this works</h2>
-            <p>
-              Every day there's one question: “What's one small thing you did
-              today?” You write anything — from “I got out of bed” to “I replied
-              to one email.” You get a warm, personal response. That's all. No
-              quotas, no points, no “why wasn't there anything yesterday.”
+            <p className="how-lead">
+              Every day there's one question. You write anything — from “I got
+              out of bed” to “I replied to one email.”
             </p>
+            <ul className="how-points">
+              <li>
+                <span className="how-point-icon">
+                  <LeafIcon size={15} />
+                </span>
+                <span>
+                  <strong>One quiet question a day</strong>
+                  <span>No checklists, no quotas.</span>
+                </span>
+              </li>
+              <li>
+                <span className="how-point-icon">
+                  <SproutIcon size={15} />
+                </span>
+                <span>
+                  <strong>A warm reply that hears you</strong>
+                  <span>Never a canned “great job”.</span>
+                </span>
+              </li>
+              <li>
+                <span className="how-point-icon">
+                  <SunIcon size={15} />
+                </span>
+                <span>
+                  <strong>No points or streaks</strong>
+                  <span>Quiet days are fine. Always.</span>
+                </span>
+              </li>
+            </ul>
           </div>
 
           <form onSubmit={submit}>
@@ -108,6 +141,9 @@ export default function Onboarding() {
               {busy && <span className="btn-dot" aria-hidden="true" />}
               {busy ? "Saving…" : "Continue when you're ready"}
             </button>
+            <Link className="auth-inline-link onboard-skip" to="/check-in">
+              Skip — start writing
+            </Link>
           </div>
         </form>
         </div>

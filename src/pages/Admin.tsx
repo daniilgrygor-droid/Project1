@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
 import { useAuth } from "../lib/auth";
+import { useToast } from "../lib/toast";
 import AppShell from "../components/AppShell";
 import SproutLoader from "../components/SproutLoader";
+import { LeafIcon } from "../components/icons";
 import type { Payment } from "../lib/types";
 
 function fmt(d: string | null): string {
@@ -16,6 +18,7 @@ function fmt(d: string | null): string {
 
 export default function Admin() {
   const { user, profile, loading, refreshProfile } = useAuth();
+  const toast = useToast();
   const [payments, setPayments] = useState<Payment[]>([]);
   const [busy, setBusy] = useState<string | null>(null);
 
@@ -49,6 +52,10 @@ export default function Admin() {
       <AppShell>
         <div className="settings">
           <div className="settings-head">
+            <span className="head-eyebrow">
+              <LeafIcon size={13} />
+              Founder only
+            </span>
             <h1>Not for you</h1>
             <p>This little corner is just for the founder. Nothing to see here.</p>
           </div>
@@ -67,6 +74,7 @@ export default function Admin() {
     setBusy(null);
     await reload();
     await refreshProfile();
+    toast.push("Private on. Welcome back.");
   };
 
   const revoke = async (p: Payment) => {
@@ -76,12 +84,17 @@ export default function Admin() {
     setBusy(null);
     await reload();
     await refreshProfile();
+    toast.push("Private off for this account.");
   };
 
   return (
     <AppShell>
       <div className="settings">
         <div className="settings-head">
+          <span className="head-eyebrow">
+            <LeafIcon size={13} />
+            Billing desk
+          </span>
           <h1>Payments</h1>
           <p>
             Confirm arrivals to switch Private on. One quiet glance a day is
@@ -89,7 +102,7 @@ export default function Admin() {
           </p>
         </div>
 
-        <div className="settings-card">
+        <div className="settings-card spot-card">
           <h2>Waiting</h2>
           {pending.length === 0 ? (
             <p className="settings-empty">Nothing waiting. Good.</p>
@@ -117,7 +130,7 @@ export default function Admin() {
           )}
         </div>
 
-        <div className="settings-card">
+        <div className="settings-card spot-card">
           <h2>Private</h2>
           {settled.length === 0 ? (
             <p className="settings-empty">No one yet.</p>

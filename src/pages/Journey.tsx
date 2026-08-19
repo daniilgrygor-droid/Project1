@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import AppShell from "../components/AppShell";
 import Calendar from "../components/Calendar";
 import EntryCard from "../components/EntryCard";
-import { LeafIcon, SearchIcon } from "../components/icons";
+import { LeafIcon, SearchIcon, SproutIcon } from "../components/icons";
 import type { Step } from "../lib/types";
 import { groupDayLabel } from "../lib/constants";
 import { fetchSteps } from "../lib/steps";
@@ -128,6 +128,12 @@ export function JourneyTimeline() {
 
   const loading = steps === null;
   const emptyAll = !loading && steps.length === 0;
+  const activeDays = groups.length;
+  const weekCount = steps
+    ? steps.filter(
+        (s) => Date.now() - new Date(s.created_at).getTime() < 7 * 86400000,
+      ).length
+    : 0;
   const selectedLabel = selectedDay
     ? (groups.find((g) => g.key === selectedDay)?.label ?? selectedDay)
     : "";
@@ -152,7 +158,22 @@ export function JourneyTimeline() {
           </p>
         </div>
 
-        <section className="journey-calendar">
+        {steps && !emptyAll && (
+          <div className="journey-stats" aria-label="A quick summary">
+            <span className="chip">
+              <SproutIcon size={13} />
+              {steps.length} small step{steps.length === 1 ? "" : "s"}
+            </span>
+            <span className="chip">
+              {activeDays} active day{activeDays === 1 ? "" : "s"}
+            </span>
+            <span className="chip">
+              {weekCount} this week
+            </span>
+          </div>
+        )}
+
+        <section className="journey-calendar spot-card">
           {loading ? (
             <div
               className="sk-calendar"

@@ -251,28 +251,28 @@ export function ProgressOverview() {
             </section>
 
             <section className="reflect-grid" aria-label="A quiet summary">
-              <div className="reflect-tile">
+              <div className="reflect-tile spot-card">
                 <span className="reflect-tile-icon">
                   <SproutIcon size={15} />
                 </span>
                 <span className="reflect-tile-number">{animatedActive}</span>
                 <span className="reflect-tile-label">Active days</span>
               </div>
-              <div className="reflect-tile">
+              <div className="reflect-tile spot-card">
                 <span className="reflect-tile-icon">
                   <SunIcon size={15} />
                 </span>
                 <span className="reflect-tile-number">{animatedWeekActive}</span>
                 <span className="reflect-tile-label">Days this week</span>
               </div>
-              <div className="reflect-tile">
+              <div className="reflect-tile spot-card">
                 <span className="reflect-tile-icon">
                   <MoonIcon size={15} />
                 </span>
                 <span className="reflect-tile-number">{animatedMonth}</span>
                 <span className="reflect-tile-label">Days this month</span>
               </div>
-              <div className="reflect-tile">
+              <div className="reflect-tile spot-card">
                 <span className="reflect-tile-icon">
                   <HeartIcon size={15} />
                 </span>
@@ -293,7 +293,7 @@ export function ProgressOverview() {
               </div>
             </section>
 
-            <section className="progress-overview">
+            <section className="progress-overview spot-card">
               <div className="progress-overview-head">
                 <h2>Last 28 days</h2>
                 <span className="progress-overview-note">one bar per day</span>
@@ -492,7 +492,7 @@ export function ProgressOverview() {
               </section>
             </div>
 
-            <section className="progress-open">
+            <section className="progress-open spot-card">
               <h2>Patterns</h2>
               {patterns.length === 0 ? (
                 <div className="empty-state">
@@ -574,7 +574,7 @@ export function ProgressOverview() {
               )}
             </section>
 
-            <section className="recap-hero" aria-label="This week">
+            <section className="recap-hero spot-card" aria-label="This week">
               <div className="recap-hero-top">
                 <span className="recap-hero-eyebrow">This week</span>
                 <div className="recap-mini" aria-hidden="true">
@@ -629,7 +629,7 @@ export function ProgressOverview() {
               </p>
             </section>
 
-            <section className="progress-open progress-looking">
+            <section className="progress-open spot-card progress-looking">
               <h2>Looking back</h2>
               {reflection && (
                 <div className="monthly-reflection">
@@ -646,7 +646,7 @@ export function ProgressOverview() {
               )}
             </section>
 
-            <section className="progress-open">
+            <section className="progress-open spot-card">
               <h2>{MOMENTS_TITLE}</h2>
               <ul className="achievements-list">
                 {achievements.map((a) => (
@@ -693,7 +693,7 @@ export function ProgressOverview() {
             </section>
 
             {monthAgoEntry && (
-              <section className="progress-open progress-month-ago">
+              <section className="progress-open spot-card progress-month-ago">
                 <h2>A month ago, you wrote…</h2>
                 <div className="month-ago-card">
                   <p className="month-ago-note">“{monthAgoEntry.note}”</p>

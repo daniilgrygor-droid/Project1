@@ -148,7 +148,7 @@ export default function Growth() {
               on {daysThisMonth} day{daysThisMonth === 1 ? "" : "s"} this month.
             </p>
 
-            <section className="growth-history">
+            <section className="growth-history spot-card">
               <h2>Growth so far</h2>
               {milestones && (
                 <ol className="milestone-timeline">

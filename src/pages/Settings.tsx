@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { supabase } from "../lib/supabase";
 import { useAuth } from "../lib/auth";
+import { useToast } from "../lib/toast";
 import AppShell from "../components/AppShell";
 import SproutLoader from "../components/SproutLoader";
 import { deleteAllSteps } from "../lib/steps";
@@ -19,6 +20,7 @@ import {
   writeThemePreference,
   type ThemePreference,
 } from "../lib/theme";
+import { LeafIcon } from "../components/icons";
 import {
   applyTextSize,
   readTextSize,
@@ -45,10 +47,23 @@ function parseDays(csv: string): string[] {
   return (csv || "1,2,3,4,5,6,7").split(",").map((d) => d.trim()).filter(Boolean);
 }
 
+function initialsOf(email?: string | null): string {
+  if (!email) return "?";
+  const local = email.split("@")[0] ?? "";
+  const parts = local.split(/[._-]+/).filter(Boolean);
+  const letters = (parts.length > 1 ? [parts[0], parts[1]] : [parts[0]])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+  return letters || email.slice(0, 2).toUpperCase();
+}
+
 export default function Settings() {
   const { user, profile, refreshProfile } = useAuth();
+  const toast = useToast();
 
   const [recovering, setRecovering] = useState(profile?.context ?? "");
+  const [name, setName] = useState(profile?.name ?? "");
   const [replyLength, setReplyLength] = useState<"short" | "long">(
     profile?.reply_length ?? "short",
   );
@@ -69,6 +84,9 @@ export default function Settings() {
   const [deletedMsg, setDeletedMsg] = useState(false);
   const [billingBusy, setBillingBusy] = useState(false);
   const [paying, setPaying] = useState(false);
+  const [newPassword, setNewPassword] = useState("");
+  const [pwBusy, setPwBusy] = useState(false);
+  const [pwError, setPwError] = useState<string | null>(null);
   const [paySent, setPaySent] = useState(false);
 
   const [textSize, setTextSize] = useState<TextSizeId>(() => readTextSize());
@@ -110,7 +128,10 @@ export default function Settings() {
     setBillingBusy(true);
     const ok = await cancelPrivate(user.id);
     setBillingBusy(false);
-    if (ok) await refreshProfile();
+    if (ok) {
+      await refreshProfile();
+      toast.push("Private is off. You're on the free plan again.");
+    }
   };
 
   const submitPayment = async () => {
@@ -121,6 +142,7 @@ export default function Settings() {
     if (row) {
       setPaySent(true);
       setPaying(false);
+      toast.push("We've noted it — Private switches on when the payment arrives.");
     }
   };
 
@@ -134,6 +156,7 @@ export default function Settings() {
     const { error: err } = await db
       .from("profiles")
       .update({
+        name: name.trim() || null,
         context: recovering.trim() || null,
         reply_length: replyLength,
         updated_at: new Date().toISOString(),
@@ -147,6 +170,7 @@ export default function Settings() {
     }
     await refreshProfile();
     setSaved(true);
+    toast.push("Saved.");
   };
 
   const saveReminders = async () => {
@@ -163,6 +187,7 @@ export default function Settings() {
     if (!err) {
       await refreshProfile();
       setSaved(true);
+      toast.push("Reminders saved.");
     }
   };
 
@@ -174,7 +199,24 @@ export default function Settings() {
     if (ok) {
       setConfirmDelete(false);
       setDeletedMsg(true);
+      toast.push("Everything deleted. A fresh start, whenever you're ready.");
     }
+  };
+
+  const updatePassword = async () => {
+    if (!supabase || !newPassword.trim() || pwBusy) return;
+    setPwBusy(true);
+    setPwError(null);
+    const { error: err } = await supabase.auth.updateUser({
+      password: newPassword.trim(),
+    });
+    setPwBusy(false);
+    if (err) {
+      setPwError(err.message);
+      return;
+    }
+    setNewPassword("");
+    toast.push("Password updated.");
   };
 
   return (
@@ -185,7 +227,32 @@ export default function Settings() {
           <p>Small adjustments, no pressure — change them whenever you like.</p>
         </div>
 
-        <div className="settings-card settings-card--plan">
+        <div className="settings-note spot-card settings-account">
+          <div className="settings-account-head">
+            <span className="account-avatar" aria-hidden="true">
+              {initialsOf(user.email)}
+            </span>
+            <div className="settings-account-id">
+              <h2>{profile.name ?? "Your journal"}</h2>
+              <p className="account-email">{user.email}</p>
+            </div>
+          </div>
+          <div className="settings-account-meta">
+            <span className="chip">
+              <LeafIcon size={13} />
+              {planLabel(profile.plan)}
+            </span>
+            <span className="chip">
+              Member since{" "}
+              {new Date(user.created_at).toLocaleDateString("en-US", {
+                month: "long",
+                year: "numeric",
+              })}
+            </span>
+          </div>
+        </div>
+
+        <div className="settings-card spot-card settings-card--plan">
           <div className="settings-plan-row">
             <div className="settings-plan-info">
               <span className={`plan-badge plan-badge--${profile.plan}`}>
@@ -267,7 +334,7 @@ export default function Settings() {
         </div>
 
         {deletedMsg && (
-          <div className="settings-note" role="status">
+          <div className="settings-note spot-card" role="status">
             <h2>All done</h2>
             <p>
               Your entries have been deleted. If you ever come back, you can
@@ -276,7 +343,25 @@ export default function Settings() {
           </div>
         )}
 
-        <form className="settings-card" onSubmit={submit}>
+        <form className="settings-card spot-card" onSubmit={submit}>
+          <div className="field">
+            <label className="field-label" htmlFor="settings-name">
+              What should I call you?
+            </label>
+            <input
+              id="settings-name"
+              className="input"
+              placeholder="Your name — or leave it blank"
+              autoComplete="name"
+              value={name}
+              onChange={(e) => {
+                setName(e.target.value);
+                setSaved(false);
+              }}
+            />
+            <p className="hint">Shown on your account card, and nowhere else.</p>
+          </div>
+
           <div className="field">
             <h2>What are you recovering from?</h2>
             <textarea
@@ -353,7 +438,7 @@ export default function Settings() {
           )}
         </form>
 
-        <div className="settings-note">
+        <div className="settings-note spot-card">
           <h2>Reminders</h2>
           <p>
             A gentle check-in whenever you're ready — nothing that scolds you
@@ -431,7 +516,7 @@ export default function Settings() {
           </div>
         </div>
 
-        <div className="settings-note">
+        <div className="settings-note spot-card">
           <h2>Weekly notes</h2>
           <p>
             Once a week you may get a short, warm email looking back at your
@@ -454,6 +539,11 @@ export default function Settings() {
                 if (!err) {
                   await refreshProfile();
                   setSaved(true);
+                  toast.push(
+                    e.target.checked
+                      ? "Weekly notes on."
+                      : "Weekly notes off.",
+                  );
                 }
               }}
             />
@@ -470,7 +560,7 @@ export default function Settings() {
           )}
         </div>
 
-        <div className="settings-note">
+        <div className="settings-note spot-card">
           <h2>Appearance</h2>
           <p>How the site looks for you — day or evening.</p>
           <div className="choice-row">
@@ -491,7 +581,7 @@ export default function Settings() {
           </div>
         </div>
 
-        <div className="settings-note">
+        <div className="settings-note spot-card">
           <h2>Text size</h2>
           <p>Make everything a little easier to read.</p>
           <div className="text-size-row">
@@ -509,7 +599,47 @@ export default function Settings() {
           </div>
         </div>
 
-        <div className="settings-note settings-note--danger">
+        <div className="settings-note spot-card">
+          <h2>Password</h2>
+          <p>
+            Prefer something new? Set a fresh password — we never see the old
+            one.
+          </p>
+          <div className="field">
+            <label className="field-label" htmlFor="settings-password">
+              New password
+            </label>
+            <input
+              id="settings-password"
+              className="input"
+              type="password"
+              placeholder="8+ characters"
+              autoComplete="new-password"
+              value={newPassword}
+              onChange={(e) => {
+                setNewPassword(e.target.value);
+                setPwError(null);
+              }}
+            />
+          </div>
+          <div className="settings-actions">
+            <button
+              type="button"
+              className="btn btn--ghost"
+              onClick={() => void updatePassword()}
+              disabled={pwBusy || newPassword.trim().length < 8}
+            >
+              {pwBusy ? "Working…" : "Update password"}
+            </button>
+            {pwError && (
+              <p className="form-error" role="alert">
+                {pwError}
+              </p>
+            )}
+          </div>
+        </div>
+
+        <div className="settings-note spot-card settings-note--danger">
           <h2>Your data</h2>
           <p>
             Everything here belongs to you. You can remove it all whenever you
