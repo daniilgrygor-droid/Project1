@@ -1916,51 +1916,6 @@ a {
   margin-top: var(--space-2);
 }
 
-/* The messages in the feed step out as solid green blocks. */
-.steps-list .step-item {
-  background: var(--success);
-  color: var(--on-dark);
-  margin-bottom: 0;
-  border-radius: 0;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22);
-}
-
-.steps-list .step-item:first-child {
-  border-top-left-radius: var(--radius-md);
-  border-top-right-radius: var(--radius-md);
-}
-
-.steps-list .step-item:last-child {
-  border-bottom-left-radius: var(--radius-md);
-  border-bottom-right-radius: var(--radius-md);
-}
-
-.steps-list .step-item:hover {
-  box-shadow: var(--shadow-card), inset 0 1px 0 rgba(255, 255, 255, 0.22);
-}
-
-.steps-list .step-item .step-meta,
-.steps-list .step-item .step-note {
-  color: var(--on-dark);
-}
-
-.steps-list .step-item .step-meta-mark {
-  color: color-mix(in srgb, var(--on-dark) 72%, transparent);
-}
-
-.steps-list .step-item .step-remove {
-  color: color-mix(in srgb, var(--on-dark) 55%, transparent);
-}
-
-.steps-list .step-item .step-remove:hover {
-  color: var(--on-dark);
-}
-
-.steps-list .step-item .btn--ghost {
-  color: var(--on-dark);
-  border-color: color-mix(in srgb, var(--on-dark) 40%, transparent);
-}
-
 .steps-list {
   list-style: none;
   margin: 0;
