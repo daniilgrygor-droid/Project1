@@ -82,6 +82,61 @@ function activityDateLabel(key: string): string {
   });
 }
 
+/* GitHub-style "showing up" heatmap: a rolling window of weeks, one cell per
+   day, colored by how many steps were noticed that day. No streaks — just a
+   quiet map of days you chose to show up. */
+const HEAT_WEEKS = 17;
+
+interface HeatCell {
+  key: string;
+  count: number;
+}
+
+function buildHeatWeeks(steps: Step[]): HeatCell[][] {
+  const byDay = new Map<string, number>();
+  for (const s of steps) {
+    const k = dayKey(s.created_at);
+    byDay.set(k, (byDay.get(k) ?? 0) + 1);
+  }
+  const today = new Date();
+  const dow = (today.getDay() + 6) % 7;
+  const monday = new Date(today);
+  monday.setDate(today.getDate() - dow);
+  const start = new Date(monday);
+  start.setDate(monday.getDate() - (HEAT_WEEKS - 1) * 7);
+  const weeks: HeatCell[][] = [];
+  const cursor = new Date(start);
+  for (let w = 0; w < HEAT_WEEKS; w++) {
+    const week: HeatCell[] = [];
+    for (let d = 0; d < 7; d++) {
+      if (cursor.getTime() > today.getTime()) {
+        week.push({ key: "", count: 0 });
+      } else {
+        const key = dayKey(cursor.toISOString());
+        week.push({ key, count: byDay.get(key) ?? 0 });
+      }
+      cursor.setDate(cursor.getDate() + 1);
+    }
+    weeks.push(week);
+  }
+  return weeks;
+}
+
+function heatLevel(count: number): number {
+  if (count === 0) return 0;
+  if (count === 1) return 1;
+  if (count <= 3) return 2;
+  return 3;
+}
+
+function heatTitle(cell: HeatCell): string {
+  const d = new Date(`${cell.key}T12:00:00`).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+  });
+  return `${d} · ${cell.count} small step${cell.count === 1 ? "" : "s"}`;
+}
+
 export function ProgressOverview() {
   const [steps, setSteps] = useState<Step[] | null>(null);
   const [activeCategory, setActiveCategory] = useState<Category | null>(null);
@@ -152,6 +207,11 @@ export function ProgressOverview() {
   const maxActivity = Math.max(1, ...activity.map((d) => d.count));
   const activeDays28 = activity.filter((d) => d.count > 0).length;
   const todayKey = dayKey(new Date().toISOString());
+  const heatWeeks = useMemo(() => (steps ? buildHeatWeeks(steps) : []), [steps]);
+  const heatCount = heatWeeks.reduce(
+    (acc, week) => acc + week.filter((c) => c.count > 0).length,
+    0,
+  );
 
   const animatedTotal = useCountUp(stats?.total ?? 0);
   const animatedWeek = useCountUp(weekEntryCount);
@@ -336,6 +396,63 @@ export function ProgressOverview() {
                     </span>
                   ))}
                 </div>
+              </div>
+            </section>
+
+            <section className="progress-overview spot-card showing-up">
+              <div className="progress-overview-head">
+                <h2>Showing up</h2>
+                <span className="progress-overview-note">
+                  every day you chose to notice
+                </span>
+              </div>
+              {heatCount < 3 ? (
+                <p className="progress-gentle progress-gentle--chart">
+                  Once you've noticed a few days, this quiet map will start to
+                  fill in.
+                </p>
+              ) : (
+                <div className="heatmap">
+                  <div className="heatmap-gutter" aria-hidden="true">
+                    {[0, 1, 2, 3, 4, 5, 6].map((d) => (
+                      <span key={d} className="heatmap-day-label">
+                        {d === 1 ? "Mon" : d === 3 ? "Wed" : d === 5 ? "Fri" : ""}
+                      </span>
+                    ))}
+                  </div>
+                  <div className="heatmap-grid">
+                    {heatWeeks.map((week, wi) => (
+                      <div className="heatmap-col" key={wi}>
+                        {week.map((cell, di) => (
+                          <span
+                            key={di}
+                            className={`heat-cell heat-cell--${heatLevel(
+                              cell.count,
+                            )}${
+                              cell.key === todayKey
+                                ? " heat-cell--today"
+                                : ""
+                            }${cell.key ? "" : " heat-cell--pad"}`}
+                            title={cell.key ? heatTitle(cell) : ""}
+                          />
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              <div className="heatmap-footer">
+                <span>
+                  {heatCount} noticed day{heatCount === 1 ? "" : "s"} in the
+                  last {heatWeeks.length} weeks.
+                </span>
+                <span className="heatmap-legend" aria-hidden="true">
+                  <span>less</span>
+                  {[0, 1, 2, 3].map((l) => (
+                    <span key={l} className={`heat-cell heat-cell--${l}`} />
+                  ))}
+                  <span>more</span>
+                </span>
               </div>
             </section>
 
