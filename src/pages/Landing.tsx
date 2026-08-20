@@ -158,17 +158,23 @@ const TESTIMONIALS = [
   {
     quote:
       "After burnout, the last thing I needed was another app yelling about streaks. This one just asks how my day went. It helped more than I expected.",
-    author: "Anna, Kyiv",
+    author: "Anna",
+    role: "Recovering from burnout",
+    city: "Kyiv",
   },
   {
     quote:
       "I skipped two weeks and nothing broke. Nothing scolded me. That alone made me trust it.",
-    author: "Maksym, Lviv",
+    author: "Maksym",
+    role: "On his own pace",
+    city: "Lviv",
   },
   {
     quote:
       "The reply isn't a grade. It hears me. That's the whole difference.",
-    author: "Olena, Odesa",
+    author: "Olena",
+    role: "Returning after a hard season",
+    city: "Odesa",
   },
 ];
 
@@ -215,12 +221,55 @@ const FAQ = [
   },
 ];
 
-function TestimonialCard({ quote, author }: { quote: string; author: string }) {
+function Avatar({ name, className }: { name: string; className?: string }) {
+  const initials = name
+    .split(/[\s._-]+/)
+    .filter(Boolean)
+    .map((w) => w[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+  return (
+    <span
+      className={`avatar${className ? ` ${className}` : ""}`}
+      aria-hidden="true"
+    >
+      {initials}
+    </span>
+  );
+}
+
+function TestimonialCard({
+  quote,
+  author,
+  role,
+  city,
+}: {
+  quote: string;
+  author: string;
+  role: string;
+  city: string;
+}) {
   const onMove = useSpotlight<HTMLElement>();
   return (
     <figure className="testimonial spot-card" onMouseMove={onMove}>
-      <blockquote>{quote}</blockquote>
-      <cite>{author}</cite>
+      <blockquote>
+        <span className="testimonial-rating" aria-hidden="true">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <LeafIcon key={i} size={13} />
+          ))}
+        </span>
+        {quote}
+      </blockquote>
+      <figcaption>
+        <Avatar name={author} className={`avatar--${author.toLowerCase()}`} />
+        <span className="testimonial-meta">
+          <strong>{author}</strong>
+          <span>
+            {role}, {city}
+          </span>
+        </span>
+      </figcaption>
     </figure>
   );
 }
@@ -493,6 +542,18 @@ export default function Landing() {
                   Your pace, always
                 </span>
               </p>
+
+              <div className="hero-proof">
+                <span className="avatar-stack" aria-hidden="true">
+                  <Avatar name="Anna" className="avatar--anna" />
+                  <Avatar name="Maksym" className="avatar--maksym" />
+                  <Avatar name="Olena" className="avatar--olena" />
+                  <span className="avatar avatar--plus">+</span>
+                </span>
+                <p>
+                  Quiet notes from people coming back — no streaks, no scores.
+                </p>
+              </div>
             </div>
 
             <ProductMockup />
@@ -633,7 +694,12 @@ export default function Landing() {
                   style={{ transitionDelay: `${i * 80}ms` }}
                   key={t.author}
                 >
-                  <TestimonialCard quote={t.quote} author={t.author} />
+                  <TestimonialCard
+                    quote={t.quote}
+                    author={t.author}
+                    role={t.role}
+                    city={t.city}
+                  />
                 </div>
               ))}
             </div>
