@@ -1908,12 +1908,25 @@ a {
 
 .feed-head h2 {
   font-size: clamp(1.35rem, 3.4vw, 1.6rem);
+  display: inline-block;
+  width: fit-content;
+  margin: 0;
+  padding: 3px 14px 5px;
+  background: var(--success);
+  color: var(--on-dark);
+  border-radius: 8px;
+  box-shadow: var(--shadow-xs), inset 0 1px 0 rgba(255, 255, 255, 0.18);
 }
 
 .feed-head p {
-  color: var(--text-faint);
+  color: var(--success-ink);
   font-size: 0.94rem;
   margin-top: var(--space-2);
+  display: inline-block;
+  padding: 2px 12px;
+  background: color-mix(in srgb, var(--success) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--success) 26%, transparent);
+  border-radius: 6px;
 }
 
 .steps-list {
