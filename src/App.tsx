@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { Suspense, lazy, useEffect } from "react";
 import {
   BrowserRouter,
   Routes,
@@ -11,19 +11,21 @@ import { RequireAuth, RequireOnboarded } from "./components/Guards";
 import { applyTextSize, readTextSize } from "./lib/textSize";
 import { applyTheme, readThemePreference } from "./lib/theme";
 import Landing from "./pages/Landing";
-import Auth from "./pages/Auth";
-import Onboarding from "./pages/Onboarding";
-import CheckIn from "./pages/CheckIn";
-import Settings from "./pages/Settings";
-import ResetPassword from "./pages/ResetPassword";
-import JourneyOverview from "./pages/JourneyOverview";
-import Progress from "./pages/Progress";
-import Growth from "./pages/Growth";
-import Privacy from "./pages/Privacy";
-import Pricing from "./pages/Pricing";
-import Admin from "./pages/Admin";
-import NotFound from "./pages/NotFound";
+import SproutLoader from "./components/SproutLoader";
 import UndoToast from "./components/UndoToast";
+
+const Auth = lazy(() => import("./pages/Auth"));
+const Onboarding = lazy(() => import("./pages/Onboarding"));
+const CheckIn = lazy(() => import("./pages/CheckIn"));
+const Settings = lazy(() => import("./pages/Settings"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
+const JourneyOverview = lazy(() => import("./pages/JourneyOverview"));
+const Progress = lazy(() => import("./pages/Progress"));
+const Growth = lazy(() => import("./pages/Growth"));
+const Privacy = lazy(() => import("./pages/Privacy"));
+const Pricing = lazy(() => import("./pages/Pricing"));
+const Admin = lazy(() => import("./pages/Admin"));
+const NotFound = lazy(() => import("./pages/NotFound"));
 
 const PAGE_TITLES: [string, string][] = [
   ["/", "Small Steps — small steps back to life"],
@@ -175,7 +177,9 @@ export default function App() {
         </div>
         <RouteTitle />
         <ToastProvider>
-          <AnimatedRoutes />
+          <Suspense fallback={<SproutLoader />}>
+            <AnimatedRoutes />
+          </Suspense>
         </ToastProvider>
         <UndoToast />
       </BrowserRouter>
