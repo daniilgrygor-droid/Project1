@@ -1916,23 +1916,37 @@ a {
   margin-top: var(--space-2);
 }
 
-/* The messages in the feed step out as soft green cards. */
+/* The messages in the feed step out as solid green blocks. */
 .steps-list .step-item {
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--success) 9%, var(--surface)),
-    var(--bg-soft)
-  );
-  box-shadow: inset 0 0 0 1px
-      color-mix(in srgb, var(--success) 45%, var(--line)),
-    var(--shadow-sm),
-    inset 0 1px 0 color-mix(in srgb, var(--success) 16%, transparent);
+  background: var(--success);
+  color: var(--on-dark);
+  box-shadow: var(--shadow-sm), inset 0 1px 0 rgba(255, 255, 255, 0.22);
 }
 
 .steps-list .step-item:hover {
-  box-shadow: inset 0 0 0 1px
-      color-mix(in srgb, var(--success) 60%, var(--line-strong)),
-    var(--shadow-card);
+  box-shadow: var(--shadow-card), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+}
+
+.steps-list .step-item .step-meta,
+.steps-list .step-item .step-note {
+  color: var(--on-dark);
+}
+
+.steps-list .step-item .step-meta-mark {
+  color: color-mix(in srgb, var(--on-dark) 72%, transparent);
+}
+
+.steps-list .step-item .step-remove {
+  color: color-mix(in srgb, var(--on-dark) 55%, transparent);
+}
+
+.steps-list .step-item .step-remove:hover {
+  color: var(--on-dark);
+}
+
+.steps-list .step-item .btn--ghost {
+  color: var(--on-dark);
+  border-color: color-mix(in srgb, var(--on-dark) 40%, transparent);
 }
 
 .steps-list {
