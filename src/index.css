@@ -8667,6 +8667,164 @@ body {
   }
 }
 
+/* ================================================================
+   LANDING MICRO-ANIMATIONS — quiet life in the marketing layer
+   ================================================================ */
+
+/* Nav links: a calm underline grows from the left on hover. */
+.nav-links--landing .nav-link {
+  position: relative;
+}
+
+.nav-links--landing .nav-link::after {
+  content: "";
+  position: absolute;
+  left: var(--space-3);
+  right: var(--space-3);
+  bottom: 6px;
+  height: 1px;
+  border-radius: 1px;
+  background: currentColor;
+  opacity: 0.7;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.28s var(--ease-soft);
+}
+
+.nav-links--landing .nav-link:hover::after,
+.nav-links--landing .nav-link:focus-visible::after {
+  transform: scaleX(1);
+}
+
+/* Primary CTA: a soft shine sweeps across once on hover (landing only). */
+.landing .btn--primary {
+  position: relative;
+  overflow: hidden;
+}
+
+.landing .btn--primary::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -55%;
+  width: 35%;
+  height: 100%;
+  background: linear-gradient(
+    100deg,
+    transparent,
+    rgba(255, 255, 255, 0.32),
+    transparent
+  );
+  transform: skewX(-20deg);
+  transition: left 0.55s var(--ease-soft);
+  pointer-events: none;
+}
+
+.landing .btn--primary:hover::after {
+  left: 125%;
+}
+
+/* Stat chips lift softly with the card. */
+.stat-chip {
+  transition: transform var(--t-norm) var(--ease-soft),
+    border-color var(--t-norm) ease, box-shadow var(--t-norm) var(--ease-soft);
+}
+
+.stat-chip:hover {
+  transform: translateY(-3px);
+  border-color: var(--line-strong);
+  box-shadow: var(--shadow-md), inset 0 1px 0 var(--card-highlight);
+}
+
+/* Step cards: the number chip pops as the card lifts. */
+.step-num {
+  transition: transform 0.3s var(--ease-soft), box-shadow 0.3s ease;
+}
+
+.step-card:hover .step-num {
+  transform: translateY(-1px) scale(1.06);
+  box-shadow: var(--shadow-xs);
+}
+
+/* Marquee holds still when you look at it. */
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+
+/* Showcase tabs: the active tab grows a thin underline. */
+.showcase-tab {
+  position: relative;
+}
+
+.showcase-tab::after {
+  content: "";
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 4px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--success-ink);
+  opacity: 0.85;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.3s var(--ease-soft);
+}
+
+.showcase-tab--active::after {
+  transform: scaleX(1);
+}
+
+/* Testimonials lift a touch on hover. */
+.testimonial {
+  transition: transform var(--t-norm) var(--ease-soft),
+    border-color var(--t-norm) ease, box-shadow var(--t-norm) var(--ease-soft);
+}
+
+.testimonial:hover {
+  transform: translateY(-3px);
+  border-color: var(--line-strong);
+  box-shadow: var(--shadow-md), inset 0 1px 0 var(--card-highlight);
+}
+
+/* FAQ rows gently firm up on hover. */
+.faq-item {
+  transition: border-color var(--t-norm) ease;
+}
+
+.faq-item:hover {
+  border-color: var(--line-strong);
+}
+
+/* ---- dark-mode finishing touches ---- */
+
+/* No pale overscroll edges in dark: the html canvas shares the palette. */
+html {
+  background-color: var(--bg);
+}
+
+/* Deep, warm shadows for the evening palette — same layering, darker ink. */
+[data-theme="dark"] {
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4),
+    0 2px 8px -2px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.4),
+    0 12px 32px -12px rgba(0, 0, 0, 0.6);
+  --shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.45),
+    0 28px 56px -16px rgba(0, 0, 0, 0.7);
+}
+
+/* Autofill shouldn't flash pale blue or white — follow the theme. */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px var(--surface) inset;
+  -webkit-text-fill-color: var(--text);
+  caret-color: var(--text);
+  transition: background-color 9999s ease-out 0s;
+}
+
 /* ---- calm motion on request: everything flattens ---- */
 
 @media (prefers-reduced-motion: reduce) {
@@ -8761,10 +8919,22 @@ body {
 
   .feature-card,
   .step-card,
+  .stat-chip,
+  .testimonial,
+  .faq-item,
+  .step-num,
   .pricing-card,
   .mockup {
     transition: none;
     transform: none;
+  }
+
+  .nav-links--landing .nav-link::after,
+  .showcase-tab::after,
+  .landing .btn--primary::after {
+    transition: none;
+    transform: scaleX(0);
+    opacity: 0;
   }
 }
 

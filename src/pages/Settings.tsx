@@ -4,7 +4,7 @@ import { useAuth } from "../lib/auth";
 import { useToast } from "../lib/toast";
 import AppShell from "../components/AppShell";
 import SproutLoader from "../components/SproutLoader";
-import { deleteAllSteps } from "../lib/steps";
+import { deleteAllSteps, fetchSteps } from "../lib/steps";
 import { isPrivate } from "../lib/types";
 import {
   cancelPrivate,
@@ -88,6 +88,7 @@ export default function Settings() {
   const [pwBusy, setPwBusy] = useState(false);
   const [pwError, setPwError] = useState<string | null>(null);
   const [paySent, setPaySent] = useState(false);
+  const [exporting, setExporting] = useState(false);
 
   const [textSize, setTextSize] = useState<TextSizeId>(() => readTextSize());
   const [themePref, setThemePref] = useState<ThemePreference>(() =>
@@ -221,6 +222,44 @@ export default function Settings() {
 
   const signOut = () => {
     void supabase?.auth.signOut();
+  };
+
+  const exportJournal = async () => {
+    if (exporting) return;
+    setExporting(true);
+    try {
+      const steps = await fetchSteps();
+      const payload = {
+        app: "Small Steps",
+        exported_at: new Date().toISOString(),
+        account: {
+          email: user.email,
+          plan: profile.plan,
+          name: profile.name ?? null,
+        },
+        steps: steps.map((s) => ({
+          id: s.id,
+          created_at: s.created_at,
+          note: s.note,
+          category: s.category ?? null,
+          mood: s.mood ?? null,
+        })),
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], {
+        type: "application/json;charset=utf-8",
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `small-steps-journal-${new Date().toISOString().slice(0, 10)}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      toast.push("Your journal is downloaded.");
+    } finally {
+      setExporting(false);
+    }
   };
 
   return (
@@ -649,6 +688,25 @@ export default function Settings() {
                 {pwError}
               </p>
             )}
+          </div>
+        </div>
+
+        <div className="settings-note spot-card">
+          <h2>Backup your journal</h2>
+          <p>
+            Everything you've written, in one portable file — keep it anywhere,
+            import it later, or just have it close. A JSON file with all your
+            steps, moods and categories.
+          </p>
+          <div className="settings-actions">
+            <button
+              type="button"
+              className="btn btn--ghost"
+              onClick={() => void exportJournal()}
+              disabled={exporting}
+            >
+              {exporting ? "Preparing…" : "Download my journal"}
+            </button>
           </div>
         </div>
 
