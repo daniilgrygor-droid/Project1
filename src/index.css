@@ -4747,137 +4747,6 @@ a {
   animation: tab-fade 0.3s var(--ease-soft) both;
 }
 
-/* ---- your months: a month-by-month look back at the journal ---- */
-.months-head {
-  margin: var(--space-5) 0 var(--space-4);
-}
-
-.months-head h1 {
-  font-size: clamp(1.6rem, 3.5vw, 2.1rem);
-  letter-spacing: -0.015em;
-}
-
-.months-head p {
-  color: var(--text-soft);
-  max-width: 52ch;
-}
-
-.months-grid {
-  display: grid;
-  gap: var(--space-4);
-}
-
-.month-card {
-  border: 1px solid var(--line);
-  border-radius: var(--radius-card);
-  background: var(--grad-card);
-  box-shadow: var(--shadow-sm), inset 0 1px 0 var(--card-highlight);
-  padding: var(--space-5);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-}
-
-.month-card-head {
-  appearance: none;
-  border: none;
-  background: none;
-  cursor: pointer;
-  padding: 0;
-  margin: 0;
-  text-align: left;
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: var(--space-4);
-  width: 100%;
-  font: inherit;
-  color: inherit;
-}
-
-.month-card-title {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.month-card-title strong {
-  font-family: var(--font-serif);
-  font-size: 1.2rem;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  color: var(--text);
-}
-
-.month-card-title span {
-  font-size: 0.86rem;
-  color: var(--text-soft);
-}
-
-.month-chevron {
-  color: var(--text-faint);
-  font-size: 0.8rem;
-  padding-top: 6px;
-  transition: transform var(--t-norm) var(--ease-soft);
-}
-
-.month-card--open .month-chevron {
-  transform: rotate(180deg);
-}
-
-.month-dots {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 3px;
-}
-
-.month-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 2px;
-  background: var(--line);
-  flex: none;
-}
-
-.month-dot--on {
-  background: var(--success);
-}
-
-.month-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-}
-
-.month-moments {
-  display: grid;
-  gap: var(--space-2);
-}
-
-.month-moment {
-  margin: 0;
-  font-size: 0.9rem;
-  line-height: 1.55;
-  color: var(--text-soft);
-}
-
-.month-moment span {
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--text-faint);
-  margin-right: 8px;
-}
-
-.month-entries {
-  display: grid;
-  gap: 10px;
-  padding-top: var(--space-2);
-  border-top: 1px solid var(--line);
-  animation: tab-fade 0.25s var(--ease-soft) both;
-}
-
 @keyframes tab-fade {
   from {
     opacity: 0;
@@ -9149,9 +9018,7 @@ textarea:-webkit-autofill {
   .onboard-head,
   .onboard-card,
   .warm-loading-text,
-  .warm-loading-line::after,
-  .months-head,
-  .month-entries {
+  .warm-loading-line::after {
     animation: none;
   }
 
@@ -9162,8 +9029,7 @@ textarea:-webkit-autofill {
 
   .reflect-tile,
   .reflect-tile-icon,
-  .cmd-item,
-  .month-chevron {
+  .cmd-item {
     transition: none;
   }
 

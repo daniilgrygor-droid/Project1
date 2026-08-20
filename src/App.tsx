@@ -19,7 +19,7 @@ const Onboarding = lazy(() => import("./pages/Onboarding"));
 const CheckIn = lazy(() => import("./pages/CheckIn"));
 const Settings = lazy(() => import("./pages/Settings"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
-const JourneyOverview = lazy(() => import("./pages/JourneyOverview"));
+const Journey = lazy(() => import("./pages/Journey"));
 const Progress = lazy(() => import("./pages/Progress"));
 const Growth = lazy(() => import("./pages/Growth"));
 const Privacy = lazy(() => import("./pages/Privacy"));
@@ -95,7 +95,7 @@ function AnimatedRoutes() {
         element={
           <RequireAuth>
             <RequireOnboarded>
-              <JourneyOverview />
+              <Journey />
             </RequireOnboarded>
           </RequireAuth>
         }
