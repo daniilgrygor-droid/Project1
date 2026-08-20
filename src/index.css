@@ -8200,6 +8200,34 @@ body {
   margin-bottom: var(--space-5);
 }
 
+/* Check-in stat tiles step in one by one, like pages of the journal. */
+.checkin-stats .reflect-tile {
+  animation: tile-rise 0.55s var(--ease-soft) backwards;
+}
+
+.checkin-stats .reflect-tile:nth-child(2) {
+  animation-delay: 0.09s;
+}
+
+.checkin-stats .reflect-tile:nth-child(3) {
+  animation-delay: 0.18s;
+}
+
+.checkin-stats .reflect-tile:nth-child(4) {
+  animation-delay: 0.27s;
+}
+
+@keyframes tile-rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 /* Check-in: the first empty state shows a resting seed, not a blank box */
 .steps-empty--seed > svg {
   display: block;
@@ -9018,7 +9046,8 @@ textarea:-webkit-autofill {
   .onboard-head,
   .onboard-card,
   .warm-loading-text,
-  .warm-loading-line::after {
+  .warm-loading-line::after,
+  .checkin-stats .reflect-tile {
     animation: none;
   }
 
