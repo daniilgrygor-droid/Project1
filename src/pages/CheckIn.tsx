@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent, ty
 import { Link } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import { saveStep } from "../lib/ai";
+import { useAuth } from "../lib/auth";
 import { type Category, type Step } from "../lib/types";
 import AppShell from "../components/AppShell";
 import PraiseCard from "../components/PraiseCard";
@@ -73,6 +74,7 @@ const SHOWED_UP_HINTS = [
 ];
 
 export default function CheckIn() {
+  const { profile } = useAuth();
   const [note, setNote] = useState(() => readDraft());
   const noteRef = useRef(note);
   noteRef.current = note;
@@ -241,12 +243,26 @@ export default function CheckIn() {
       (Date.parse(todayKey) - Date.parse(last)) / 86400000,
     );
   }, [latest]);
+  const hour = new Date().getHours();
+  const greeting =
+    hour < 5
+      ? "Resting well"
+      : hour < 12
+        ? "Good morning"
+        : hour < 18
+          ? "Good afternoon"
+          : "Good evening";
 
   return (
     <AppShell>
       <div className="checkin">
         <div className="checkin-head">
           <div className="checkin-date">{today}</div>
+          <span className="head-eyebrow">
+            <SproutIcon size={13} />
+            {greeting}
+            {profile?.name ? `, ${profile.name}` : ""}
+          </span>
           <h1>What's one small thing you did today?</h1>
           <p>
             Any step counts — even the one that felt like “nothing”. Write it

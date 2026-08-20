@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import Wordmark from "../components/Wordmark";
+import MarketingFooter from "../components/MarketingFooter";
 import { HeartIcon, LeafIcon, SunIcon } from "../components/icons";
 
 export default function Privacy() {
@@ -88,14 +89,7 @@ export default function Privacy() {
         </div>
       </main>
 
-      <footer className="app-footer">
-        <div className="wrap">
-          <Wordmark />
-          <p>
-            © {new Date().getFullYear()} Small Steps. No streaks, no guilt.
-          </p>
-        </div>
-      </footer>
+      <MarketingFooter />
     </div>
   );
 }

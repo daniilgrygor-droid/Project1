@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import Wordmark from "../components/Wordmark";
+import MarketingFooter from "../components/MarketingFooter";
 import { useAuth } from "../lib/auth";
 import { isPrivate, type Plan } from "../lib/types";
 import {
@@ -337,14 +338,7 @@ export default function Pricing() {
         </div>
       )}
 
-      <footer className="app-footer">
-        <div className="wrap">
-          <Wordmark />
-          <p>
-            © {new Date().getFullYear()} Small Steps. No streaks, no guilt.
-          </p>
-        </div>
-      </footer>
+      <MarketingFooter />
     </div>
   );
 }
