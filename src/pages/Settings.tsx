@@ -219,6 +219,10 @@ export default function Settings() {
     toast.push("Password updated.");
   };
 
+  const signOut = () => {
+    void supabase?.auth.signOut();
+  };
+
   return (
     <AppShell>
       <div className="settings">
@@ -249,6 +253,15 @@ export default function Settings() {
                 year: "numeric",
               })}
             </span>
+          </div>
+          <div className="settings-account-actions">
+            <button
+              type="button"
+              className="btn btn--quiet btn--sm"
+              onClick={signOut}
+            >
+              Sign out
+            </button>
           </div>
         </div>
 

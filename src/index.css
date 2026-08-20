@@ -8180,6 +8180,10 @@ body {
   margin-top: var(--space-4);
 }
 
+.settings-account-actions {
+  margin-top: var(--space-4);
+}
+
 /* Privacy: a calm, card-based policy page */
 .privacy {
   max-width: 760px;
@@ -8546,6 +8550,11 @@ body {
 
   /* The header keeps wordmark + cluster; the tab bar takes over navigation. */
   .app--tabbed .nav-links--main .nav-link {
+    display: none;
+  }
+
+  .app--tabbed .cmd-hint,
+  .app--tabbed .nav-signout {
     display: none;
   }
 
