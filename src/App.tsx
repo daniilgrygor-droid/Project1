@@ -23,6 +23,7 @@ const JourneyOverview = lazy(() => import("./pages/JourneyOverview"));
 const Progress = lazy(() => import("./pages/Progress"));
 const Growth = lazy(() => import("./pages/Growth"));
 const Privacy = lazy(() => import("./pages/Privacy"));
+const Terms = lazy(() => import("./pages/Terms"));
 const Pricing = lazy(() => import("./pages/Pricing"));
 const Admin = lazy(() => import("./pages/Admin"));
 const NotFound = lazy(() => import("./pages/NotFound"));
@@ -38,6 +39,7 @@ const PAGE_TITLES: [string, string][] = [
   ["/settings", "Settings · Small Steps"],
   ["/reset-password", "Reset password · Small Steps"],
   ["/privacy", "Privacy · Small Steps"],
+  ["/terms", "Terms · Small Steps"],
   ["/pricing", "Pricing · Small Steps"],
   ["/admin", "Payments · Small Steps"],
   ["/lost", "Off the path · Small Steps"],
@@ -120,6 +122,7 @@ function AnimatedRoutes() {
       />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/privacy" element={<Privacy />} />
+      <Route path="/terms" element={<Terms />} />
       <Route path="/pricing" element={<Pricing />} />
       <Route path="/admin" element={<Admin />} />
       <Route path="*" element={<NotFound />} />

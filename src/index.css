@@ -8914,6 +8914,10 @@ html {
   background-color: var(--bg);
 }
 
+#refunds {
+  scroll-margin-top: 96px;
+}
+
 /* Deep, warm shadows for the evening palette — same layering, darker ink. */
 [data-theme="dark"] {
   --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.4);

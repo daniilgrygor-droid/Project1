@@ -637,8 +637,8 @@ export default function Landing() {
             <form className="waitlist waitlist--center" onSubmit={submit}>
               {state === "done" ? (
                 <div className="waitlist-thanks" role="status">
-                  Thank you. We'll write when it's ready — no reminders, no
-                  rush.
+                  Thank you. If something genuinely new happens, we'll write —
+                  no reminders, no rush.
                 </div>
               ) : (
                 <>
@@ -671,8 +671,8 @@ export default function Landing() {
                     </p>
                   )}
                   <p className="hero-note">
-                    One email when something new arrives. No newsletters, no
-                    “last chance”.
+                    One email if something genuinely new happens. No
+                    newsletters, no “last chance”.
                   </p>
                 </>
               )}
