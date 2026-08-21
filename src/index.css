@@ -9162,3 +9162,140 @@ textarea:-webkit-autofill {
   padding: var(--space-2);
 }
 
+/* ---- final polish: character counter, celebration, page transition ---- */
+
+/* Character counter */
+.char-count {
+  display: block;
+  text-align: right;
+  font-size: 0.78rem;
+  color: var(--text-faint);
+  margin-top: var(--space-1);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Growth celebration banner */
+.growth-celebrate {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-5);
+  background: var(--praise-bg);
+  border: 1px solid var(--praise-line);
+  border-radius: var(--radius-sm);
+  color: var(--success-ink);
+  font-size: 0.92rem;
+  line-height: 1.5;
+  margin-bottom: var(--space-5);
+  animation: celebrate-in 0.5s var(--ease-soft) both;
+}
+
+.growth-celebrate strong {
+  color: var(--text);
+}
+
+@keyframes celebrate-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Page content fade-in */
+.checkin,
+.journey,
+.progress,
+.growth,
+.settings,
+.pricing,
+.auth-page,
+.onboard {
+  animation: page-in 0.35s var(--ease-soft) both;
+}
+
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Checkin form submit pulse */
+.checkin-submit {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.checkin-submit:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+/* Empty state hint */
+.steps-empty-hint {
+  color: var(--text-faint);
+  font-size: 0.88rem;
+  line-height: 1.6;
+  max-width: 340px;
+  margin: var(--space-2) auto 0;
+}
+
+/* Pricing: stronger value proposition */
+.pricing-lead {
+  max-width: 480px;
+  margin: 0 auto;
+  text-align: center;
+  color: var(--text-soft);
+  line-height: 1.65;
+  font-size: 1.05rem;
+}
+
+/* Pricing: card trust note */
+.pricing-card-trust {
+  text-align: center;
+  font-size: 0.82rem;
+  color: var(--text-faint);
+  margin-top: var(--space-2);
+}
+
+/* Pricing: trust strip */
+.pricing-guarantee {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-6);
+  margin-top: var(--space-6);
+  font-size: 0.88rem;
+  color: var(--text-soft);
+}
+
+.pricing-guarantee span {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* Reduced motion: kill all polish animations */
+@media (prefers-reduced-motion: reduce) {
+  .growth-celebrate,
+  .checkin,
+  .journey,
+  .progress,
+  .growth,
+  .settings,
+  .pricing,
+  .auth-page,
+  .onboard {
+    animation: none;
+  }
+
+  .checkin-submit:active:not(:disabled) {
+    transform: none;
+  }
+}
+

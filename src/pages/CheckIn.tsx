@@ -353,6 +353,11 @@ export default function CheckIn() {
               maxLength={2000}
               rows={4}
             />
+            {note.length > 0 && (
+              <span className="char-count" aria-live="polite">
+                {note.length}/2000
+              </span>
+            )}
           </div>
 
           <CategoryPicker value={category} onChange={setCategory} />
@@ -459,8 +464,11 @@ export default function CheckIn() {
             <div className="steps-empty steps-empty--story steps-empty--seed">
               <Plant steps={0} size={150} showLabel={false} />
               <p>
-                Nothing here yet. And that's okay — your story starts with one
-                small step.
+                Your journal is ready. Nothing here yet — and that's okay.
+              </p>
+              <p className="steps-empty-hint">
+                Write one small thing you did today. It can be anything: "got out
+                of bed", "drank water", "sat in the sun for a minute."
               </p>
             </div>
           )}

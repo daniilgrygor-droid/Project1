@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import AppShell from "../components/AppShell";
 import Plant from "../components/Plant";
-import { DotIcon, LeafIcon } from "../components/icons";
+import { DotIcon, LeafIcon, SproutIcon } from "../components/icons";
 import type { Step } from "../lib/types";
 import { PLANT_STAGES, plantStageIndexFor } from "../lib/constants";
 import { fetchSteps } from "../lib/steps";
@@ -98,6 +98,16 @@ export default function Growth() {
             <div className="growth-plant">
               <Plant steps={total} size={320} />
             </div>
+
+            {stageIndex > 0 && (
+              <div className="growth-celebrate" role="status">
+                <SproutIcon size={18} />
+                <span>
+                  Your plant has grown to <strong>{currentStage?.label}</strong>
+                  {total >= 50 ? " — quietly thriving." : `. ${toNext > 0 ? `${toNext} step${toNext === 1 ? "" : "s"} to the next stage.` : "The journey continues."}`}
+                </span>
+              </div>
+            )}
 
             <p className="growth-stage" key={stageIndex}>
               {currentStage?.label}.{" "}

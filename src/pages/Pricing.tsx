@@ -96,6 +96,12 @@ function TierCard({
       >
         {cta}
       </button>
+      {plan === "free" && (
+        <p className="pricing-card-trust">No credit card required</p>
+      )}
+      {plan === "private" && (
+        <p className="pricing-card-trust">One payment, no surprises</p>
+      )}
     </div>
   );
 }
@@ -234,6 +240,10 @@ export default function Pricing() {
             <span>
               <LeafIcon size={14} />
               Cancel anytime, no guilt
+            </span>
+            <span>
+              <LeafIcon size={14} />
+              Your data stays yours
             </span>
           </div>
 
