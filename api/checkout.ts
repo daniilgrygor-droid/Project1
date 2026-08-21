@@ -3,7 +3,8 @@ import Stripe from "stripe";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
-const PRICE_ID = process.env.STRIPE_PRICE_ID!;
+const PRICE_YEARLY = process.env.STRIPE_PRICE_ID!;
+const PRICE_MONTHLY = process.env.STRIPE_PRICE_ID_MONTHLY || "";
 const APP_URL = process.env.APP_URL || "https://small-steps-seven.vercel.app";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -11,9 +12,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const { user_id, email } = req.body as {
+  const { user_id, email, interval } = req.body as {
     user_id?: string;
     email?: string;
+    interval?: string;
   };
 
   if (!user_id || !email) {
@@ -41,10 +43,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     // Create Checkout Session
+    const priceId = interval === "month" && PRICE_MONTHLY ? PRICE_MONTHLY : PRICE_YEARLY;
     const session = await (stripe.checkout.sessions.create as any)({
       customer: customer.id,
       mode: "subscription",
-      line_items: [{ price: PRICE_ID, quantity: 1 }],
+      line_items: [{ price: priceId, quantity: 1 }],
       success_url: `${APP_URL}/settings?upgraded=true`,
       cancel_url: `${APP_URL}/pricing?cancelled=true`,
       metadata: { supabase_user_id: user_id },

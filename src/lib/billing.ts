@@ -1,6 +1,7 @@
 import type { Plan } from "./types";
 
 export const PRICE_YEARLY = 48;
+export const PRICE_MONTHLY = 5;
 
 export const PLANS: Record<
   Plan,
@@ -24,7 +25,7 @@ export const PLANS: Record<
       "Everything in the quiet journal",
       "AI replies processed privately — never used to train models",
       "Gentle daily reminders and weekly notes",
-      "One quiet payment a year — no recurring charges",
+      "Yearly $48 or monthly $5 — cancel anytime",
     ],
   },
 };

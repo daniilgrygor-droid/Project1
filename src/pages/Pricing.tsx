@@ -4,7 +4,7 @@ import Wordmark from "../components/Wordmark";
 import MarketingFooter from "../components/MarketingFooter";
 import { useAuth } from "../lib/auth";
 import { isPrivate, type Plan } from "../lib/types";
-import { PLANS, PRICE_YEARLY } from "../lib/billing";
+import { PLANS, PRICE_MONTHLY, PRICE_YEARLY } from "../lib/billing";
 import { LeafIcon } from "../components/icons";
 import { useSpotlight } from "../lib/useSpotlight";
 
@@ -23,7 +23,7 @@ const COMPARE: { feature: string; free: boolean; priv: boolean }[] = [
 const FAQ = [
   {
     q: "How does payment work?",
-    a: "Private is a simple Stripe checkout — $48 once a year. No cards saved on our end, no recurring charges you forget about.",
+    a: "Private is a simple Stripe checkout — $5 a month or $48 a year (save $12). No cards saved on our end, cancel anytime.",
   },
   {
     q: "Can I cancel anytime?",
@@ -44,11 +44,13 @@ function TierCard({
   featured,
   cta,
   onCta,
+  interval,
 }: {
   plan: Plan;
   featured?: boolean;
   cta: string;
   onCta?: () => void;
+  interval?: "month" | "year";
 }) {
   const p = PLANS[plan];
   const onMove = useSpotlight<HTMLDivElement>();
@@ -72,10 +74,15 @@ function TierCard({
             <span className="pricing-price-amount">$0</span>
             <span className="pricing-price-note">forever</span>
           </>
+        ) : interval === "month" ? (
+          <>
+            <span className="pricing-price-amount">${PRICE_MONTHLY}</span>
+            <span className="pricing-price-note">per month</span>
+          </>
         ) : (
           <>
             <span className="pricing-price-amount">${PRICE_YEARLY}</span>
-            <span className="pricing-price-note">one quiet payment a year</span>
+            <span className="pricing-price-note">per year</span>
           </>
         )}
       </div>
@@ -107,6 +114,7 @@ function TierCard({
 export default function Pricing() {
   const { session, profile, loading } = useAuth();
   const [busy, setBusy] = useState(false);
+  const [interval, setInterval] = useState<"month" | "year">("year");
   const [showSticky, setShowSticky] = useState(false);
   const gridRef = useRef<HTMLDivElement>(null);
 
@@ -138,6 +146,7 @@ export default function Pricing() {
         body: JSON.stringify({
           user_id: session.user.id,
           email: session.user.email,
+          interval,
         }),
       });
       const data = await res.json();
@@ -205,6 +214,26 @@ export default function Pricing() {
             </p>
           </div>
 
+          <div className="pricing-toggle" role="group" aria-label="Billing interval">
+            <button
+              type="button"
+              className={`pricing-toggle-btn${interval === "month" ? " pricing-toggle-btn--active" : ""}`}
+              onClick={() => setInterval("month")}
+              aria-pressed={interval === "month"}
+            >
+              Monthly — ${PRICE_MONTHLY}/mo
+            </button>
+            <button
+              type="button"
+              className={`pricing-toggle-btn${interval === "year" ? " pricing-toggle-btn--active" : ""}`}
+              onClick={() => setInterval("year")}
+              aria-pressed={interval === "year"}
+            >
+              Yearly — ${PRICE_YEARLY}/yr
+              <span className="pricing-toggle-save">Save $12</span>
+            </button>
+          </div>
+
           <div className="pricing-grid" ref={gridRef}>
             <TierCard
               plan="free"
@@ -226,6 +255,7 @@ export default function Pricing() {
             <TierCard
               plan="private"
               featured
+              interval={interval}
               cta={
                 !loading
                   ? session
@@ -294,9 +324,11 @@ export default function Pricing() {
                   </tr>
                 ))}
                 <tr className="compare-price">
-                  <td>One quiet payment</td>
+                  <td>Starting from</td>
                   <td>$0</td>
-                  <td className="col--featured">${PRICE_YEARLY}/year</td>
+                  <td className="col--featured">
+                    ${PRICE_MONTHLY}/mo or ${PRICE_YEARLY}/yr
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -321,7 +353,9 @@ export default function Pricing() {
 
       {showSticky && session && !privateActive && (
         <div className="pricing-sticky">
-          <span>Private — ${PRICE_YEARLY} once a year</span>
+          <span>
+            Private — ${interval === "month" ? `${PRICE_MONTHLY}/mo` : `${PRICE_YEARLY}/yr`}
+          </span>
           <button
             type="button"
             className="btn btn--primary btn--sm"

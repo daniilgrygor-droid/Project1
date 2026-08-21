@@ -7091,6 +7091,46 @@ body {
   margin-top: var(--space-2);
 }
 
+.pricing-toggle {
+  display: flex;
+  justify-content: center;
+  gap: 0;
+  background: var(--bg-warm);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 4px;
+  width: fit-content;
+  margin: 0 auto var(--space-6);
+}
+
+.pricing-toggle-btn {
+  padding: 8px 20px;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--text-soft);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pricing-toggle-btn--active {
+  background: var(--charcoal);
+  color: var(--on-dark);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.pricing-toggle-save {
+  margin-left: 6px;
+  background: var(--success);
+  color: #fff;
+  padding: 2px 7px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
 .pricing-guarantee {
   display: flex;
   flex-wrap: wrap;
