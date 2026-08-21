@@ -6121,6 +6121,41 @@ html:not([data-theme="dark"])[data-time="night"] {
 
 /* ---- journey & growth skeletons: loading states shaped like the page ---- */
 
+.sk-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.sk-feed-entry {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  background: var(--bg-secondary);
+  border-radius: 0;
+}
+
+.sk-feed-entry:first-child {
+  border-top-left-radius: var(--radius-md);
+  border-top-right-radius: var(--radius-md);
+}
+
+.sk-feed-entry:last-child {
+  border-bottom-left-radius: var(--radius-md);
+  border-bottom-right-radius: var(--radius-md);
+}
+
+.sk-feed-meta {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.sk-feed-meta .skeleton--mini {
+  width: 60px;
+  height: 12px;
+}
+
 .sk-calendar,
 .sk-timeline {
   display: flex;

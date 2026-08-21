@@ -47,6 +47,7 @@ function EmptyJourney({ compact = false }: { compact?: boolean }) {
 export function JourneyTimeline() {
   const [steps, setSteps] = useState<Step[] | null>(null);
   const [query, setQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
   const [tlIntro, setTlIntro] = useState(false);
   const [switching, setSwitching] = useState(false);
@@ -56,6 +57,11 @@ export function JourneyTimeline() {
   useEffect(() => {
     void fetchSteps().then(setSteps);
   }, []);
+
+  useEffect(() => {
+    const t = window.setTimeout(() => setDebouncedQuery(query), 250);
+    return () => window.clearTimeout(t);
+  }, [query]);
 
   useEffect(
     () =>
@@ -83,7 +89,7 @@ export function JourneyTimeline() {
   }, [steps]);
 
   const filteredGroups = useMemo<DayGroup[]>(() => {
-    const q = query.trim().toLowerCase();
+    const q = debouncedQuery.trim().toLowerCase();
     let source = groups;
     if (selectedDay) source = groups.filter((g) => g.key === selectedDay);
     if (!q) return source;
@@ -93,7 +99,7 @@ export function JourneyTimeline() {
         entries: g.entries.filter((s) => s.note.toLowerCase().includes(q)),
       }))
       .filter((g) => g.entries.length > 0);
-  }, [groups, query, selectedDay]);
+  }, [groups, debouncedQuery, selectedDay]);
 
   useEffect(() => {
     if (selectedDay && !groups.some((g) => g.key === selectedDay)) {
@@ -265,11 +271,23 @@ export function JourneyTimeline() {
             <EmptyJourney compact />
           ) : filteredGroups.length === 0 ? (
             <div className="steps-empty steps-empty--story">
-              <p>
-                {query
-                  ? "No small steps found here yet."
-                  : "Nothing here yet."}
-              </p>
+              {query ? (
+                <>
+                  <SearchIcon size={32} />
+                  <p>
+                    No steps match "<strong>{query}</strong>".
+                  </p>
+                  <button
+                    type="button"
+                    className="btn btn--ghost btn--sm"
+                    onClick={() => setQuery("")}
+                  >
+                    Clear search
+                  </button>
+                </>
+              ) : (
+                <p>Nothing here yet.</p>
+              )}
             </div>
           ) : (
             <ol

@@ -9,7 +9,6 @@ import PraiseCard from "../components/PraiseCard";
 import CategoryPicker from "../components/CategoryPicker";
 import MoodPicker from "../components/MoodPicker";
 import EntryCard from "../components/EntryCard";
-import SproutLoader from "../components/SproutLoader";
 import PlantIcon from "../components/PlantIcon";
 import Plant from "../components/Plant";
 import { plantStageFor, dayKey } from "../lib/constants";
@@ -441,7 +440,20 @@ export default function CheckIn() {
             <p>Everything you've marked, newest first.</p>
           </div>
 
-          {!feedLoaded && <SproutLoader />}
+          {!feedLoaded && (
+            <div className="sk-feed" aria-busy="true" aria-label="Loading your steps">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="sk-feed-entry">
+                  <div className="sk-feed-meta">
+                    <span className="skeleton skeleton--mini" />
+                    <span className="skeleton skeleton--mini" />
+                  </div>
+                  <span className="skeleton skeleton--text" />
+                  <span className="skeleton skeleton--text skeleton--w60" />
+                </div>
+              ))}
+            </div>
+          )}
 
           {empty && (
             <div className="steps-empty steps-empty--story steps-empty--seed">
