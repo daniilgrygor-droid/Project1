@@ -9083,3 +9083,40 @@ textarea:-webkit-autofill {
   }
 }
 
+/* Error boundary */
+.error-boundary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  padding: var(--space-6) var(--space-4);
+}
+
+.error-boundary-card {
+  max-width: 400px;
+  text-align: center;
+}
+
+.error-boundary-icon {
+  color: var(--text-faint);
+  margin-bottom: var(--space-3);
+}
+
+.error-boundary-card h1 {
+  font-size: 1.3rem;
+  margin-bottom: var(--space-2);
+}
+
+.error-boundary-msg {
+  color: var(--text-faint);
+  font-size: 0.94rem;
+  line-height: 1.6;
+  margin-bottom: var(--space-4);
+}
+
+.error-boundary-actions {
+  display: flex;
+  gap: var(--space-3);
+  justify-content: center;
+}
+

@@ -52,6 +52,21 @@ function json(body: unknown, status = 200): Response {
   });
 }
 
+// --- Rate limiting (in-memory, per-user, 30 req/min) ---
+const RATE_LIMIT = 30;
+const RATE_WINDOW = 60_000;
+const hits = new Map<string, number[]>();
+
+function rateLimit(userId: string): boolean {
+  const now = Date.now();
+  const timestamps = hits.get(userId) ?? [];
+  const recent = timestamps.filter((t) => now - t < RATE_WINDOW);
+  if (recent.length >= RATE_LIMIT) return false;
+  recent.push(now);
+  hits.set(userId, recent);
+  return true;
+}
+
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -59,6 +74,7 @@ function sleep(ms: number): Promise<void> {
 async function callGemini(
   userMessage: string,
   replyLength: "short" | "long" = "short",
+  isPrivate = false,
 ): Promise<string | null> {
   const key = Deno.env.get("GEMINI_API_KEY");
   if (!key) return null;
@@ -68,10 +84,13 @@ async function callGemini(
     encodeURIComponent(key);
 
   const guidance = LENGTH_GUIDANCE[replyLength];
+  const privateNote = isPrivate
+    ? "\nThis user has a Private plan. Their data is processed privately and never used to improve models. You may gently acknowledge this trust if it fits naturally — e.g. 'Your words stay yours.' — but never make it the focus."
+    : "";
   const payload = {
     systemInstruction: {
       parts: [
-        { text: SYSTEM_PROMPT },
+        { text: SYSTEM_PROMPT + privateNote },
         { text: guidance.system },
       ],
     },
@@ -198,6 +217,10 @@ Deno.serve(async (req: Request) => {
   const { data, error: userError } = await supabase.auth.getUser();
   if (userError || !data.user) return json({ error: "unauthorized" }, 401);
 
+  if (!rateLimit(data.user.id)) {
+    return json({ error: "too many requests — try again in a minute" }, 429);
+  }
+
   let body: { note?: unknown; showed_up_only?: unknown; category?: unknown; mood?: unknown };
   try {
     body = await req.json();
@@ -228,7 +251,7 @@ Deno.serve(async (req: Request) => {
   const [{ data: profile }, { data: recent }] = await Promise.all([
     supabase
       .from("profiles")
-      .select("name, context, reply_length")
+      .select("name, context, reply_length, plan")
       .eq("id", data.user.id)
       .maybeSingle(),
     supabase
@@ -243,6 +266,8 @@ Deno.serve(async (req: Request) => {
   const replyLength: "short" | "long" =
     profile?.reply_length === "long" ? "long" : "short";
 
+  const isPrivate = profile?.plan === "private";
+
   const aiResponse = await callGemini(
     buildUserMessage(
       trimmed,
@@ -254,6 +279,7 @@ Deno.serve(async (req: Request) => {
       showedUpOnly,
     ),
     replyLength,
+    isPrivate,
   );
 
   if (aiResponse) {

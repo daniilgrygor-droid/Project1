@@ -13,6 +13,7 @@ import { applyTheme, readThemePreference } from "./lib/theme";
 import Landing from "./pages/Landing";
 import SproutLoader from "./components/SproutLoader";
 import UndoToast from "./components/UndoToast";
+import ErrorBoundary from "./components/ErrorBoundary";
 
 const Auth = lazy(() => import("./pages/Auth"));
 const Onboarding = lazy(() => import("./pages/Onboarding"));
@@ -124,7 +125,13 @@ function AnimatedRoutes() {
       <Route path="/privacy" element={<Privacy />} />
       <Route path="/terms" element={<Terms />} />
       <Route path="/pricing" element={<Pricing />} />
-      <Route path="/admin" element={<Admin />} />
+      <Route path="/admin" element={
+          <RequireAuth>
+            <RequireOnboarded>
+              <Admin />
+            </RequireOnboarded>
+          </RequireAuth>
+        } />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
@@ -180,9 +187,11 @@ export default function App() {
         </div>
         <RouteTitle />
         <ToastProvider>
-          <Suspense fallback={<SproutLoader />}>
-            <AnimatedRoutes />
-          </Suspense>
+          <ErrorBoundary>
+            <Suspense fallback={<SproutLoader />}>
+              <AnimatedRoutes />
+            </Suspense>
+          </ErrorBoundary>
         </ToastProvider>
         <UndoToast />
       </BrowserRouter>

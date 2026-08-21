@@ -5,7 +5,6 @@ import { useAuth } from "../lib/auth";
 import AppShell from "../components/AppShell";
 import PlantIcon from "../components/PlantIcon";
 import { LeafIcon, SproutIcon, SunIcon } from "../components/icons";
-import { Link } from "react-router-dom";
 
 export default function Onboarding() {
   const navigate = useNavigate();
@@ -19,8 +18,8 @@ export default function Onboarding() {
   if (!supabaseConfigured || !supabase || !user) return null;
   const db = supabase;
 
-  const submit = async (e: FormEvent) => {
-    e.preventDefault();
+  const submit = async (e?: FormEvent) => {
+    e?.preventDefault();
     if (busy) return;
     setBusy(true);
     setError(null);
@@ -42,6 +41,20 @@ export default function Onboarding() {
     }
 
     await refreshProfile();
+    navigate("/check-in", { replace: true });
+  };
+
+  const skip = async () => {
+    if (busy) return;
+    setBusy(true);
+    const { error: err } = await db
+      .from("profiles")
+      .upsert({
+        id: user.id,
+        onboarded_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      });
+    if (!err) await refreshProfile();
     navigate("/check-in", { replace: true });
   };
 
@@ -141,9 +154,14 @@ export default function Onboarding() {
               {busy && <span className="btn-dot" aria-hidden="true" />}
               {busy ? "Saving…" : "Continue when you're ready"}
             </button>
-            <Link className="auth-inline-link onboard-skip" to="/check-in">
+            <button
+              type="button"
+              className="auth-inline-link onboard-skip"
+              onClick={skip}
+              disabled={busy}
+            >
               Skip — start writing
-            </Link>
+            </button>
           </div>
         </form>
         </div>
