@@ -5137,10 +5137,69 @@ a {
 
 /* form: lighter, warmer — the textarea is the single focus */
 .checkin-form {
-  background: var(--bg-soft);
-  border: 1px solid var(--line);
+  background: #fdfaf5;
+  border: 1px solid #e8ddd0;
+  border-radius: 16px;
   box-shadow: none;
-  padding: var(--space-5) var(--space-5);
+  padding: 20px;
+}
+
+.checkin-form .textarea {
+  background: #ffffff;
+  border: 1px solid #e8ddd0;
+  border-radius: 10px;
+  min-height: 110px;
+}
+
+.checkin-form .textarea::placeholder {
+  color: #9a9590;
+}
+
+.checkin-form .picker-label {
+  font-size: 0.84rem;
+  color: #8a847c;
+  margin-top: 14px;
+}
+
+.checkin-form .picker-option,
+.checkin-form .mood-option {
+  border-color: #e8ddd0;
+  background: #ffffff;
+  font-size: 0.84rem;
+}
+
+.checkin-form .picker-option--on,
+.checkin-form .mood-option--on {
+  border-color: #a8c4a0;
+  background: #eef4eb;
+  box-shadow: 0 0 0 1px #a8c4a0;
+}
+
+.checkin-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.checkin-actions .btn {
+  flex: 1;
+  margin-top: 0;
+  border-radius: 10px;
+  padding: 12px;
+  font-weight: 600;
+}
+
+.checkin-actions .btn--primary:disabled {
+  background: #9a9590;
+  border-color: #9a9590;
+  color: #fff;
+  opacity: 1;
+}
+
+.checkin-actions .btn--ghost {
+  background: #ffffff;
+  border: 1px solid #e8ddd0;
+  color: #2b2823;
 }
 
 /* "You've noticed N small steps" — an editorial serif line, not a box */
