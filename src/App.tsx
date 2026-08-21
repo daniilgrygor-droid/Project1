@@ -7,6 +7,7 @@ import {
 } from "react-router-dom";
 import { AuthProvider } from "./lib/auth";
 import { ToastProvider } from "./lib/toast";
+import { StepsProvider } from "./lib/stepsContext";
 import { RequireAuth, RequireOnboarded } from "./components/Guards";
 import { applyTextSize, readTextSize } from "./lib/textSize";
 import { applyTheme, readThemePreference } from "./lib/theme";
@@ -187,11 +188,13 @@ export default function App() {
         </div>
         <RouteTitle />
         <ToastProvider>
-          <ErrorBoundary>
-            <Suspense fallback={<SproutLoader />}>
-              <AnimatedRoutes />
-            </Suspense>
-          </ErrorBoundary>
+          <StepsProvider>
+            <ErrorBoundary>
+              <Suspense fallback={<SproutLoader />}>
+                <AnimatedRoutes />
+              </Suspense>
+            </ErrorBoundary>
+          </StepsProvider>
         </ToastProvider>
         <UndoToast />
       </BrowserRouter>
