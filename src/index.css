@@ -1556,8 +1556,10 @@ a {
 }
 
 .mood-emoji {
-  font-size: 1.05rem;
+  font-size: 1.45rem;
   line-height: 1;
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+  filter: saturate(1.05);
 }
 
 .mood-caption {

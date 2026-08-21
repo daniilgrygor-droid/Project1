@@ -21,11 +21,11 @@ export const CATEGORY_LABEL: Record<Category, string> = {
 };
 
 export const MOODS: { value: number; label: string; emoji: string }[] = [
-  { value: 1, label: "Very low", emoji: "😞" },
-  { value: 2, label: "Low", emoji: "😕" },
+  { value: 1, label: "Very low", emoji: "🥺" },
+  { value: 2, label: "Low", emoji: "😔" },
   { value: 3, label: "Neutral", emoji: "😐" },
-  { value: 4, label: "Good", emoji: "🙂" },
-  { value: 5, label: "Very good", emoji: "😊" },
+  { value: 4, label: "Good", emoji: "😊" },
+  { value: 5, label: "Very good", emoji: "🥰" },
 ];
 
 export const MOOD_LABEL: Record<number, string> = {
