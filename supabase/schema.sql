@@ -133,3 +133,17 @@ create policy "steps delete own" on public.steps for delete using (auth.uid() = 
 --     );
 --     $$
 --   );
+
+-- ---------- Автоматический expiry плана ----------------------------------------
+-- Каждый день проверяет, истёк ли Private план, и откатывает на free:
+--   select cron.schedule(
+--     'expire-private-plans',
+--     '0 3 * * *',
+--     $$
+--     update public.profiles
+--     set plan = 'free', updated_at = now()
+--     where plan = 'private'
+--       and period_end is not null
+--       and period_end < now();
+--     $$
+--   );

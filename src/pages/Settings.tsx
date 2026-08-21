@@ -27,6 +27,7 @@ import {
   TEXT_SIZES,
   type TextSizeId,
 } from "../lib/textSize";
+import { deleteAccount, requestEmailChange } from "../lib/account";
 
 const THEME_OPTIONS: { id: ThemePreference; label: string; hint: string }[] = [
   { id: "light", label: "Light", hint: "The warm daytime palette." },
@@ -89,6 +90,13 @@ export default function Settings() {
   const [pwError, setPwError] = useState<string | null>(null);
   const [paySent, setPaySent] = useState(false);
   const [exporting, setExporting] = useState(false);
+
+  const [newEmail, setNewEmail] = useState("");
+  const [emailBusy, setEmailBusy] = useState(false);
+  const [emailMsg, setEmailMsg] = useState<string | null>(null);
+
+  const [confirmDeleteAccount, setConfirmDeleteAccount] = useState(false);
+  const [deletingAccount, setDeletingAccount] = useState(false);
 
   const [textSize, setTextSize] = useState<TextSizeId>(() => readTextSize());
   const [themePref, setThemePref] = useState<ThemePreference>(() =>
@@ -259,6 +267,34 @@ export default function Settings() {
       toast.push("Your journal is downloaded.");
     } finally {
       setExporting(false);
+    }
+  };
+
+  const changeEmail = async () => {
+    if (emailBusy || !newEmail.trim()) return;
+    setEmailBusy(true);
+    setEmailMsg(null);
+    const result = await requestEmailChange(newEmail.trim());
+    setEmailBusy(false);
+    if (result.ok) {
+      setEmailMsg("Check your new email for a confirmation link.");
+      setNewEmail("");
+      toast.push("Confirmation sent to your new email.");
+    } else {
+      setEmailMsg(result.error || "Could not update email.");
+    }
+  };
+
+  const wipeAccount = async () => {
+    if (deletingAccount) return;
+    setDeletingAccount(true);
+    const result = await deleteAccount();
+    setDeletingAccount(false);
+    if (result.ok) {
+      toast.push("Your account and all data have been removed.");
+    } else {
+      toast.push(result.error || "Could not delete account. Try again.");
+      setConfirmDeleteAccount(false);
     }
   };
 
@@ -692,6 +728,46 @@ export default function Settings() {
         </div>
 
         <div className="settings-note spot-card">
+          <h2>Email</h2>
+          <p>
+            Your current email: <strong>{user.email}</strong>. To change it,
+            enter a new one below — we'll send a confirmation link.
+          </p>
+          <div className="field">
+            <label className="field-label" htmlFor="settings-email">
+              New email
+            </label>
+            <input
+              id="settings-email"
+              className="input"
+              type="email"
+              placeholder="new@email.com"
+              autoComplete="email"
+              value={newEmail}
+              onChange={(e) => {
+                setNewEmail(e.target.value);
+                setEmailMsg(null);
+              }}
+            />
+          </div>
+          <div className="settings-actions">
+            <button
+              type="button"
+              className="btn btn--ghost"
+              onClick={() => void changeEmail()}
+              disabled={emailBusy || !newEmail.trim()}
+            >
+              {emailBusy ? "Sending…" : "Change email"}
+            </button>
+            {emailMsg && (
+              <p className="form-error" role="status">
+                {emailMsg}
+              </p>
+            )}
+          </div>
+        </div>
+
+        <div className="settings-note spot-card">
           <h2>Backup your journal</h2>
           <p>
             Everything you've written, in one portable file — keep it anywhere,
@@ -743,6 +819,43 @@ export default function Settings() {
               onClick={() => setConfirmDelete(true)}
             >
               Delete all my data
+            </button>
+          )}
+        </div>
+
+        <div className="settings-note spot-card settings-note--danger">
+          <h2>Delete account</h2>
+          <p>
+            This removes your profile, all steps, and signs you out. Your email
+            can then be used to create a new account anytime.
+          </p>
+          {confirmDeleteAccount ? (
+            <div className="step-confirm-inline">
+              <span>Permanently delete your account? This can't be undone.</span>
+              <button
+                type="button"
+                className="btn btn--ghost btn--sm"
+                onClick={() => setConfirmDeleteAccount(false)}
+                disabled={deletingAccount}
+              >
+                Keep my account
+              </button>
+              <button
+                type="button"
+                className="btn btn--danger btn--sm"
+                onClick={() => void wipeAccount()}
+                disabled={deletingAccount}
+              >
+                {deletingAccount ? "Deleting…" : "Delete account"}
+              </button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              className="btn btn--danger btn--sm"
+              onClick={() => setConfirmDeleteAccount(true)}
+            >
+              Delete my account
             </button>
           )}
         </div>
