@@ -41,7 +41,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     // Create Checkout Session
-    const session = await stripe.checkout.sessions.create({
+    const session = await (stripe.checkout.sessions.create as any)({
       customer: customer.id,
       mode: "subscription",
       line_items: [{ price: PRICE_ID, quantity: 1 }],
@@ -51,6 +51,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       subscription_data: {
         metadata: { supabase_user_id: user_id },
       },
+      payment_method_types: ["card"],
     });
 
     return res.status(200).json({ url: session.url });
