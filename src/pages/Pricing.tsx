@@ -4,13 +4,7 @@ import Wordmark from "../components/Wordmark";
 import MarketingFooter from "../components/MarketingFooter";
 import { useAuth } from "../lib/auth";
 import { isPrivate, type Plan } from "../lib/types";
-import {
-  cancelPrivate,
-  paymentDetails,
-  PLANS,
-  PRICE_YEARLY,
-  requestPrivatePayment,
-} from "../lib/billing";
+import { PLANS, PRICE_YEARLY } from "../lib/billing";
 import { LeafIcon } from "../components/icons";
 import { useSpotlight } from "../lib/useSpotlight";
 
@@ -19,13 +13,17 @@ const COMPARE: { feature: string; free: boolean; priv: boolean }[] = [
   { feature: "Warm, personal AI replies", free: true, priv: true },
   { feature: "Mood & category markers", free: true, priv: true },
   { feature: "Gentle reminders & weekly notes", free: false, priv: true },
-  { feature: "Private AI processing — never trains models", free: false, priv: true },
+  {
+    feature: "Private AI processing — never trains models",
+    free: false,
+    priv: true,
+  },
 ];
 
 const FAQ = [
   {
     q: "How does payment work?",
-    a: "Private is one quiet payment of $48 a year. You transfer it to the details shown, press “I've paid”, and Private is switched on as soon as the payment arrives — usually within a day. No recurring charges, no cards saved.",
+    a: "Private is a simple Stripe checkout — $48 once a year. No cards saved on our end, no recurring charges you forget about.",
   },
   {
     q: "Can I cancel anytime?",
@@ -100,16 +98,14 @@ function TierCard({
         <p className="pricing-card-trust">No credit card required</p>
       )}
       {plan === "private" && (
-        <p className="pricing-card-trust">One payment, no surprises</p>
+        <p className="pricing-card-trust">Secure checkout via Stripe</p>
       )}
     </div>
   );
 }
 
 export default function Pricing() {
-  const { session, profile, loading, refreshProfile } = useAuth();
-  const [paying, setPaying] = useState(false);
-  const [sent, setSent] = useState(false);
+  const { session, profile, loading } = useAuth();
   const [busy, setBusy] = useState(false);
   const [showSticky, setShowSticky] = useState(false);
   const gridRef = useRef<HTMLDivElement>(null);
@@ -135,23 +131,44 @@ export default function Pricing() {
     }
     if (busy) return;
     setBusy(true);
-    const row = await requestPrivatePayment(
-      session.user.id,
-      session.user.email ?? "",
-    );
-    setBusy(false);
-    if (row) {
-      setSent(true);
-      setPaying(false);
+    try {
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          user_id: session.user.id,
+          email: session.user.email,
+        }),
+      });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      }
+    } catch (err) {
+      console.error("Checkout failed:", err);
+    } finally {
+      setBusy(false);
     }
   };
 
-  const goCancel = async () => {
-    if (!session || busy) return;
+  const openPortal = async () => {
+    if (!profile?.stripe_customer_id || busy) return;
     setBusy(true);
-    const ok = await cancelPrivate(session.user.id);
-    setBusy(false);
-    if (ok) await refreshProfile();
+    try {
+      const res = await fetch("/api/portal", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ customer_id: profile.stripe_customer_id }),
+      });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      }
+    } catch (err) {
+      console.error("Portal failed:", err);
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
@@ -213,16 +230,18 @@ export default function Pricing() {
                 !loading
                   ? session
                     ? privateActive
-                      ? "Cancel Private"
-                      : "Go Private"
+                      ? "Manage subscription"
+                      : busy
+                        ? "Redirecting…"
+                        : "Go Private"
                     : "Sign in to go Private"
                   : "…"
               }
               onCta={
                 session
                   ? privateActive
-                    ? goCancel
-                    : () => setPaying(true)
+                    ? openPortal
+                    : goPrivate
                   : () => (window.location.href = "/auth?mode=up")
               }
             />
@@ -231,64 +250,26 @@ export default function Pricing() {
           <div className="pricing-guarantee">
             <span>
               <LeafIcon size={14} />
-              Pay once a year
+              Secure checkout via Stripe
             </span>
             <span>
               <LeafIcon size={14} />
-              No cards saved
-            </span>
-            <span>
-              <LeafIcon size={14} />
-              Cancel anytime, no guilt
+              Cancel anytime from settings
             </span>
             <span>
               <LeafIcon size={14} />
               Your data stays yours
             </span>
+            <span>
+              <LeafIcon size={14} />
+              No ads, no tracking
+            </span>
           </div>
 
-          {paying && session && !privateActive && (
-            <div className="manual-pay" role="region" aria-label="Pay for Private">
-              {sent ? (
-                <div className="manual-pay-note">
-                  <h3>Thank you.</h3>
-                  <p>
-                    Your request is in. We'll switch Private on as soon as the
-                    payment arrives — usually within a day. No rush.
-                  </p>
-                </div>
-              ) : (
-                <>
-                  <h3>Private — ${PRICE_YEARLY} once a year</h3>
-                  <p className="manual-pay-details">{paymentDetails()}</p>
-                  <div className="manual-pay-actions">
-                    <button
-                      type="button"
-                      className="btn btn--primary"
-                      onClick={() => void goPrivate()}
-                      disabled={busy}
-                    >
-                      {busy ? "Recording…" : "I've paid"}
-                    </button>
-                    <button
-                      type="button"
-                      className="btn btn--quiet"
-                      onClick={() => setPaying(false)}
-                      disabled={busy}
-                    >
-                      Not yet
-                    </button>
-                  </div>
-                  <p className="manual-pay-hint">
-                    No recurring charges. When the year passes, you can renew —
-                    or quietly stay on the free plan.
-                  </p>
-                </>
-              )}
-            </div>
-          )}
-
-          <section className="pricing-compare reveal" aria-label="Compare plans">
+          <section
+            className="pricing-compare reveal"
+            aria-label="Compare plans"
+          >
             <h2>Free vs Private</h2>
             <table className="compare">
               <thead>
@@ -321,7 +302,10 @@ export default function Pricing() {
             </table>
           </section>
 
-          <section className="pricing-faq" aria-label="Frequently asked questions">
+          <section
+            className="pricing-faq"
+            aria-label="Frequently asked questions"
+          >
             <h2>A few honest answers</h2>
             <div className="pricing-faq-list">
               {FAQ.map((item) => (
@@ -341,9 +325,10 @@ export default function Pricing() {
           <button
             type="button"
             className="btn btn--primary btn--sm"
-            onClick={() => setPaying(true)}
+            onClick={goPrivate}
+            disabled={busy}
           >
-            Go Private
+            {busy ? "Redirecting…" : "Go Private"}
           </button>
         </div>
       )}

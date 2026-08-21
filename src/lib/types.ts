@@ -24,6 +24,8 @@ export interface Profile {
   plan: Plan;
   is_admin: boolean;
   plan_updated_at: string | null;
+  stripe_customer_id: string | null;
+  stripe_subscription_id: string | null;
 }
 
 export function isPrivate(profile: Pick<Profile, "plan">): boolean {

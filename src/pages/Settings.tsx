@@ -6,13 +6,7 @@ import AppShell from "../components/AppShell";
 import SproutLoader from "../components/SproutLoader";
 import { deleteAllSteps, fetchSteps } from "../lib/steps";
 import { isPrivate } from "../lib/types";
-import {
-  cancelPrivate,
-  paymentDetails,
-  planLabel,
-  PRICE_YEARLY,
-  requestPrivatePayment,
-} from "../lib/billing";
+import { planLabel, PRICE_YEARLY } from "../lib/billing";
 import {
   applyTheme,
   readThemePreference,
@@ -84,11 +78,9 @@ export default function Settings() {
   const [deleting, setDeleting] = useState(false);
   const [deletedMsg, setDeletedMsg] = useState(false);
   const [billingBusy, setBillingBusy] = useState(false);
-  const [paying, setPaying] = useState(false);
   const [newPassword, setNewPassword] = useState("");
   const [pwBusy, setPwBusy] = useState(false);
   const [pwError, setPwError] = useState<string | null>(null);
-  const [paySent, setPaySent] = useState(false);
   const [exporting, setExporting] = useState(false);
 
   const [newEmail, setNewEmail] = useState("");
@@ -128,30 +120,47 @@ export default function Settings() {
   const privatePlan = isPrivate(profile);
 
   const goCheckout = async () => {
-    if (billingBusy) return;
-    setPaying(true);
-  };
-
-  const goCancel = async () => {
     if (billingBusy || !user) return;
     setBillingBusy(true);
-    const ok = await cancelPrivate(user.id);
-    setBillingBusy(false);
-    if (ok) {
-      await refreshProfile();
-      toast.push("Private is off. You're on the free plan again.");
+    try {
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          user_id: user.id,
+          email: user.email,
+        }),
+      });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      }
+    } catch (err) {
+      console.error("Checkout failed:", err);
+      toast.push("Something went wrong. Please try again.");
+    } finally {
+      setBillingBusy(false);
     }
   };
 
-  const submitPayment = async () => {
-    if (billingBusy || !user) return;
+  const openPortal = async () => {
+    if (billingBusy || !profile?.stripe_customer_id) return;
     setBillingBusy(true);
-    const row = await requestPrivatePayment(user.id, user.email ?? "");
-    setBillingBusy(false);
-    if (row) {
-      setPaySent(true);
-      setPaying(false);
-      toast.push("We've noted it — Private switches on when the payment arrives.");
+    try {
+      const res = await fetch("/api/portal", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ customer_id: profile.stripe_customer_id }),
+      });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      }
+    } catch (err) {
+      console.error("Portal failed:", err);
+      toast.push("Something went wrong. Please try again.");
+    } finally {
+      setBillingBusy(false);
     }
   };
 
@@ -362,10 +371,10 @@ export default function Settings() {
                 <button
                   type="button"
                   className="btn btn--ghost btn--sm"
-                  onClick={() => void goCancel()}
+                  onClick={() => void openPortal()}
                   disabled={billingBusy}
                 >
-                  {billingBusy ? "Working…" : "Cancel Private"}
+                  {billingBusy ? "Opening…" : "Manage subscription"}
                 </button>
               ) : (
                 <button
@@ -374,51 +383,11 @@ export default function Settings() {
                   onClick={() => void goCheckout()}
                   disabled={billingBusy}
                 >
-                  {billingBusy ? "Opening…" : `Go Private — $${PRICE_YEARLY}/yr`}
+                  {billingBusy ? "Redirecting…" : `Go Private — $${PRICE_YEARLY}/yr`}
                 </button>
               )}
             </div>
           </div>
-          {paying && !privatePlan && (
-            <div className="manual-pay manual-pay--inline">
-              {paySent ? (
-                <div className="manual-pay-note">
-                  <h3>Thank you.</h3>
-                  <p>
-                    Your request is in. We'll switch Private on as soon as the
-                    payment arrives — usually within a day. No rush.
-                  </p>
-                </div>
-              ) : (
-                <>
-                  <h3>Private — ${PRICE_YEARLY} once a year</h3>
-                  <p className="manual-pay-details">{paymentDetails()}</p>
-                  <div className="manual-pay-actions">
-                    <button
-                      type="button"
-                      className="btn btn--primary btn--sm"
-                      onClick={() => void submitPayment()}
-                      disabled={billingBusy}
-                    >
-                      {billingBusy ? "Recording…" : "I've paid"}
-                    </button>
-                    <button
-                      type="button"
-                      className="btn btn--quiet btn--sm"
-                      onClick={() => setPaying(false)}
-                      disabled={billingBusy}
-                    >
-                      Not yet
-                    </button>
-                  </div>
-                  <p className="manual-pay-hint">
-                    No recurring charges. When the year passes, you can renew —
-                    or quietly stay on the free plan.
-                  </p>
-                </>
-              )}
-            </div>
-          )}
         </div>
 
         {deletedMsg && (
