@@ -17,7 +17,7 @@
   --accent-ochre: #b08a52;
   --text: #2c2925;
   --text-soft: #756f67;
-  --text-faint: #a39b90;
+  --text-faint: #7a736a;
   --line: #ddd6ca;
   --line-strong: #cfc6b4;
   --danger: #8a5a44;
@@ -95,6 +95,16 @@
   --space-8: 64px;
   --space-9: 96px;
 
+  /* z-index scale */
+  --z-ambient: -1;
+  --z-base: 0;
+  --z-dropdown: 10;
+  --z-sticky: 20;
+  --z-overlay: 60;
+  --z-toast: 80;
+  --z-progress: 90;
+  --z-modal: 100;
+
   --base-font-size: 16px;
 
   /* Type scale (Phase 1 §3): semantic sizes. Pages keep their own heading
@@ -139,7 +149,7 @@
   --accent-ochre: #d0a568;
   --text: #f0ebe2;
   --text-soft: #b0a99e;
-  --text-faint: #a19a90;
+  --text-faint: #b8b1a6;
   --line: #4a443c;
   --line-strong: #5a534a;
   --danger: #d49a7a;
@@ -300,17 +310,6 @@ textarea {
 a {
   color: inherit;
   text-decoration: none;
-}
-
-::selection {
-  background: var(--praise-bg);
-  color: var(--text);
-}
-
-:focus-visible {
-  outline: 2px solid var(--text);
-  outline-offset: 3px;
-  border-radius: 4px;
 }
 
 /* ---------------------------------------------------------------- app shell */
@@ -1046,7 +1045,7 @@ a {
 
 .settings-saved {
   font-size: 0.92rem;
-  color: var(--success);
+  color: var(--success-ink);
 }
 
 .settings-note {
@@ -1792,7 +1791,7 @@ a {
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  color: var(--success-ink);
+  color: var(--text);
   font-size: 0.85rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -2886,123 +2885,6 @@ a {
   background: linear-gradient(to right, var(--success), var(--sage-grad-end));
   transform-origin: left;
   animation: bar-fill 0.5s var(--ease-soft) both;
-}
-
-/* ---------------------------------------------------------------- settings */
-
-.settings {
-  max-width: 580px;
-  margin: 0 auto;
-  padding: var(--space-8) 0 var(--space-8);
-}
-
-.settings-head {
-  text-align: center;
-  margin-bottom: var(--space-7);
-}
-
-.settings-head h1 {
-  font-size: clamp(1.8rem, 4vw, 2.3rem);
-  margin-bottom: var(--space-3);
-}
-
-.settings-head p {
-  color: var(--text-soft);
-  max-width: 440px;
-  margin: 0 auto;
-}
-
-.settings-card {
-  background: var(--bg-secondary);
-  border-radius: var(--radius);
-  box-shadow: var(--elevation-1);
-  padding: var(--space-6) var(--space-6);
-}
-
-.settings-card .field + .field {
-  margin-top: var(--space-6);
-}
-
-.settings-card h2,
-.settings-note h2 {
-  font-size: 1.1rem;
-  margin-bottom: var(--space-3);
-}
-
-.settings-card .hint,
-.settings-note p {
-  font-size: 0.92rem;
-  color: var(--text-soft);
-  margin-top: var(--space-2);
-  line-height: 1.65;
-}
-
-.choice-row {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-}
-
-.choice {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--space-3);
-  padding: var(--space-4) var(--space-4);
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  font-size: 0.96rem;
-  color: var(--text);
-  transition: border-color 0.15s ease;
-}
-
-.choice:hover {
-  border-color: var(--line-strong);
-}
-
-.choice input {
-  margin-top: var(--space-1);
-  accent-color: var(--success);
-}
-
-/* A checked preference reads clearly — calm, not loud. */
-.choice:has(input:checked) {
-  border-color: var(--success);
-  background: var(--praise-bg);
-  box-shadow: 0 0 0 1px var(--success);
-}
-
-.choice:has(input:checked) strong {
-  color: var(--success-ink);
-}
-
-.choice strong {
-  font-weight: 600;
-}
-
-.settings-actions {
-  display: flex;
-  align-items: center;
-  gap: var(--space-4);
-  margin-top: var(--space-5);
-}
-
-.settings-saved {
-  font-size: 0.92rem;
-  color: var(--success);
-}
-
-.settings-note {
-  margin-top: var(--space-6);
-  background: var(--bg-secondary);
-  border-radius: var(--radius);
-  box-shadow: var(--elevation-1);
-  padding: var(--space-5) var(--space-6);
-}
-
-.settings-note .choice {
-  margin-top: var(--space-4);
 }
 
 .reminder-opts {
@@ -9153,5 +9035,130 @@ textarea:-webkit-autofill {
   display: flex;
   gap: var(--space-3);
   justify-content: center;
+}
+
+/* ---- design polish: hover, focus, transitions, responsive ---- */
+
+/* Interactive elements: consistent focus-visible ring */
+.auth-inline-link:focus-visible,
+.footer-links a:focus-visible,
+.privacy-contact a:focus-visible,
+.privacy-back a:focus-visible,
+.cmd-item:focus-visible,
+.showcase-tab:focus-visible,
+.calendar-nav:focus-visible,
+.day-chip:focus-visible,
+.tabbar-link:focus-visible,
+.nav-signout:focus-visible {
+  outline: 2px solid var(--success);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Hover states for interactive elements */
+.auth-inline-link:hover {
+  color: var(--success);
+}
+
+.day-chip {
+  transition: background-color 0.15s ease, border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.day-chip:hover {
+  background: var(--hover-wash);
+  border-color: var(--success);
+}
+
+.nav-signout {
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.nav-signout:hover {
+  background: var(--hover-wash);
+}
+
+/* Achievement and milestone transitions */
+.achievement,
+.milestone {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.achievement:hover,
+.milestone:hover {
+  transform: translateY(-1px);
+}
+
+/* Heatmap cell hover */
+.heatmap-cell:hover {
+  outline: 2px solid var(--success);
+  outline-offset: 1px;
+}
+
+/* Sticky CTA: hide on mobile to avoid tab bar overlap */
+@media (max-width: 640px) {
+  .pricing-sticky {
+    display: none;
+  }
+}
+
+/* Footer: single column on very small screens */
+@media (max-width: 480px) {
+  .footer-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Pricing grid: collapse earlier for consistency */
+@media (max-width: 860px) {
+  .pricing-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Dark mode: activity bars and admin status */
+[data-theme="dark"] .activity-bars {
+  background-image: repeating-linear-gradient(
+    to top,
+    rgba(157, 181, 150, 0.12) 0,
+    rgba(157, 181, 150, 0.12) 1px,
+    transparent 1px,
+    transparent 4px
+  );
+}
+
+[data-theme="dark"] .admin-status--warn {
+  color: #d4a574;
+}
+
+/* Settings: consistent card padding */
+.settings-note {
+  padding: var(--space-5) var(--space-6);
+}
+
+/* Mockup: use tokens for padding */
+.mockup-bar {
+  padding: var(--space-3) var(--space-4);
+}
+
+.mockup-body {
+  padding: var(--space-5) var(--space-5) var(--space-6);
+  gap: var(--space-4);
+}
+
+/* Compare table: use tokens */
+.compare th,
+.compare td {
+  padding: var(--space-3) var(--space-4);
+}
+
+/* Page tabs: use tokens */
+.page-tabs {
+  padding: var(--space-2);
+}
+
+/* Showcase: use tokens */
+.showcase {
+  padding: var(--space-2);
 }
 
