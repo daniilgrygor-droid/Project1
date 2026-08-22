@@ -1,53 +1,65 @@
 :root {
   color-scheme: light;
-  --bg: #fcfbf7;
-  --bg-soft: #f8f5ee;
-  --bg-warm: #f3eee5;
+  --bg: #fdfcf8;
+  --bg-soft: #f9f6f0;
+  --bg-warm: #f4efe6;
   --bg-warm-2: #ece6d9;
-  --surface: #fbfaf6;
-  --bg-secondary: #f3eee5;
-  --praise-bg: #e6eee3;
-  --praise-line: #d2e0ce;
-  --success: #718b70;
-  --success-ink: #5d755e;
+  --surface: #fefcf7;
+  --bg-secondary: #f4efe6;
+  --praise-bg: #eef4eb;
+  --praise-line: #d6e4d2;
+  --success: #7a9a78;
+  --success-ink: #5d7a5b;
   --accent-secondary: #8b6446;
   --accent-clay: var(--accent-secondary);
-  --accent-sage: #7f967a;
+  --accent-sage: #7a9a78;
   --accent-rose: #b0847c;
   --accent-ochre: #b08a52;
-  --text: #2c2925;
-  --text-soft: #756f67;
-  --text-faint: #7a736a;
-  --line: #ddd6ca;
-  --line-strong: #cfc6b4;
+  --text: #2b2824;
+  --text-soft: #6e6860;
+  --text-faint: #8a847c;
+  --line: #e8ddd0;
+  --line-strong: #d6c8b6;
   --danger: #8a5a44;
   --charcoal: #2b2823;
   --charcoal-hover: #3a362f;
-  --on-dark: #f8f4ec;
+  --on-dark: #fdfcf8;
 
-  --header-bg: rgba(252, 251, 248, 0.86);
+  --header-bg: rgba(253, 252, 248, 0.88);
   --hover-wash: rgba(244, 239, 230, 0.5);
-  --focus-ring: rgba(113, 139, 112, 0.14);
+  --focus-ring: rgba(122, 154, 120, 0.14);
   --focus-ring-danger: rgba(138, 90, 68, 0.16);
-  --shadow-card: 0 2px 10px rgba(60, 54, 44, 0.05);
-  --shadow-raised: 0 6px 24px rgba(60, 54, 44, 0.12);
-  --shadow-soft: 0 1px 4px rgba(60, 54, 44, 0.1);
+  --shadow-card: 0 1px 3px rgba(43, 40, 36, 0.04), 0 4px 16px rgba(43, 40, 36, 0.06);
+  --shadow-raised: 0 8px 32px rgba(43, 40, 36, 0.10), 0 2px 8px rgba(43, 40, 36, 0.06);
+  --shadow-soft: 0 1px 4px rgba(43, 40, 36, 0.06);
   --elevation-0: none;
-  --elevation-1: 0 1px 3px rgba(42, 38, 34, 0.06), 0 1px 2px rgba(42, 38, 34, 0.04);
-  --elevation-2: 0 4px 12px rgba(42, 38, 34, 0.08), 0 2px 4px rgba(42, 38, 34, 0.04);
-  --sage-grad-end: #9db49a;
+  --elevation-1: 0 1px 3px rgba(43, 40, 36, 0.05), 0 1px 2px rgba(43, 40, 36, 0.04);
+  --elevation-2: 0 4px 12px rgba(43, 40, 36, 0.07), 0 2px 4px rgba(43, 40, 36, 0.04);
+  --sage-grad-end: #a8c4a0;
+
+  --radius: 16px;
+  --radius-sm: 10px;
+  --radius-pill: 999px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 32px;
+  --space-8: 40px;
 
   /* calm-premium ambient: very faint sage/terra glows + film grain */
-  --glow-sage: rgba(143, 168, 136, 0.1);
-  --glow-terra: rgba(139, 100, 70, 0.08);
+  --glow-sage: rgba(122, 154, 120, 0.08);
+  --glow-terra: rgba(139, 100, 70, 0.06);
   --glow-top: rgba(255, 255, 255, 0.6);
-  --glow-sun: rgba(211, 178, 122, 0.16);
-  --blob-a: rgba(143, 168, 136, 0.24);
-  --blob-b: rgba(211, 178, 122, 0.2);
-  --dot-line: rgba(44, 41, 37, 0.05);
-  --vignette: rgba(44, 41, 37, 0.05);
-  --card-highlight: rgba(255, 255, 255, 0.55);
-  --cmd-scrim: rgba(42, 38, 34, 0.3);
+  --glow-sun: rgba(211, 178, 122, 0.14);
+  --blob-a: rgba(122, 154, 120, 0.20);
+  --blob-b: rgba(211, 178, 122, 0.16);
+  --dot-line: rgba(43, 40, 36, 0.04);
+  --vignette: rgba(43, 40, 36, 0.04);
+  --card-highlight: rgba(255, 255, 255, 0.6);
+  --cmd-scrim: rgba(43, 40, 36, 0.3);
 
   /* SVG plant illustration — reacts to the theme, one inline asset. */
   --plant-pot: #d9cfc0;
@@ -9538,5 +9550,157 @@ textarea:-webkit-autofill {
 
 .landing .faq-item summary:hover {
   color: var(--text);
+}
+
+/* ── AppShell polish: header, nav, pills ── */
+.app-header {
+  backdrop-filter: blur(14px) saturate(1.2);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+  border-bottom: 1px solid var(--line);
+  height: 60px;
+}
+
+.app-header .wrap {
+  height: 100%;
+  align-items: center;
+}
+
+.nav-links--main .nav-link {
+  font-size: 0.88rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.nav-links--main .nav-link:hover {
+  background: var(--bg-warm);
+  color: var(--text);
+}
+
+.nav-links--main .nav-link--active {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.nav-pill {
+  background: var(--bg-warm);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  box-shadow: 0 1px 4px rgba(43, 40, 36, 0.06);
+  transition: transform 0.28s cubic-bezier(0.22, 0.61, 0.36, 1), width 0.28s ease, height 0.28s ease;
+}
+
+.plan-pill {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.plan-pill:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(43, 40, 36, 0.10);
+}
+
+.app-avatar {
+  width: 32px;
+  height: 32px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  background: var(--charcoal);
+  color: var(--on-dark);
+  border: 2px solid var(--surface);
+  box-shadow: 0 2px 8px rgba(43, 40, 36, 0.12);
+}
+
+/* ── EntryCard / feed polish ── */
+.steps-list {
+  gap: 14px;
+}
+
+.step-item {
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.step-item:hover {
+  border-color: var(--line-strong);
+  box-shadow: var(--elevation-2);
+  transform: translateY(-1px);
+}
+
+.step-item .step-note {
+  font-size: 0.96rem;
+  line-height: 1.6;
+  color: var(--text);
+}
+
+.step-item .step-meta {
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+  color: var(--text-faint);
+}
+
+/* ── Journey polish ── */
+.journey .steps-list {
+  position: relative;
+  padding-left: 18px;
+}
+
+.journey .steps-list::before {
+  content: "";
+  position: absolute;
+  left: 6px;
+  top: 12px;
+  bottom: 12px;
+  width: 1px;
+  background: var(--line);
+}
+
+/* ── Progress polish ── */
+.progress .stat-strip,
+.progress .reflect-grid {
+  gap: 12px;
+}
+
+.progress .reflect-tile {
+  border-radius: 14px;
+  padding: 16px;
+  text-align: center;
+}
+
+/* ── Settings polish ── */
+.settings-card {
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  padding: 24px;
+}
+
+.settings-card h2 {
+  font-size: 1.05rem;
+  font-weight: 650;
+  letter-spacing: -0.015em;
+  margin-bottom: 16px;
+}
+
+.settings .field label {
+  font-size: 0.84rem;
+  font-weight: 500;
+  color: var(--text-soft);
+}
+
+.settings .field input,
+.settings .field textarea,
+.settings .field select {
+  border-radius: 10px;
+  border: 1px solid var(--line-strong);
+  background: var(--bg);
 }
 
