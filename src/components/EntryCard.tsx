@@ -1,4 +1,4 @@
-import { useEffect, useState, type CSSProperties, type FormEvent } from "react";
+import { useEffect, useState, type CSSProperties, type FormEvent, type ReactNode } from "react";
 import type { Category, Step } from "../lib/types";
 import { dayLabel, moodEmoji, MOOD_LABEL, timeLabel } from "../lib/constants";
 import { relativeDate } from "../lib/types";
@@ -9,6 +9,23 @@ import { CategoryIcon, PencilIcon, SunIcon } from "./icons";
 import CategoryPicker from "./CategoryPicker";
 import MoodPicker from "./MoodPicker";
 
+function Highlight({ text, query }: { text: string; query?: string }): ReactNode {
+  if (!query?.trim()) return text;
+  const q = query.trim();
+  const idx = text.toLowerCase().indexOf(q.toLowerCase());
+  if (idx === -1) return text;
+  const before = text.slice(0, idx);
+  const match = text.slice(idx, idx + q.length);
+  const after = text.slice(idx + q.length);
+  return (
+    <>
+      {before}
+      <mark className="hl">{match}</mark>
+      {after}
+    </>
+  );
+}
+
 interface EntryCardProps {
   step: Step;
   onChanged: (step: Step) => void;
@@ -17,6 +34,7 @@ interface EntryCardProps {
   showTime?: boolean;
   className?: string;
   inlineReply?: boolean;
+  highlight?: string;
   style?: CSSProperties;
 }
 
@@ -28,6 +46,7 @@ export default function EntryCard({
   showTime = false,
   className,
   inlineReply = false,
+  highlight,
   style,
 }: EntryCardProps) {
   const [expanded, setExpanded] = useState(defaultExpanded);
@@ -128,7 +147,13 @@ export default function EntryCard({
           )}
         </div>
 
-        <div className="step-note">{step.showed_up_only ? "showed up today" : step.note}</div>
+        <div className="step-note">
+          {step.showed_up_only ? (
+            "showed up today"
+          ) : (
+            <Highlight text={step.note} query={highlight} />
+          )}
+        </div>
 
         {inlineReply && step.ai_response && (
           <div className="step-ai">

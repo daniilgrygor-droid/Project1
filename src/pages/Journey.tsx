@@ -316,6 +316,7 @@ export function JourneyTimeline() {
                           step={step}
                           showTime
                           inlineReply
+                          highlight={debouncedQuery}
                           className="timeline-entry"
                           style={{ animationDelay: `${delay}s` }}
                           onChanged={updateStep}

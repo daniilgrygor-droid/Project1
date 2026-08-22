@@ -2033,6 +2033,18 @@ a {
   display: block;
 }
 
+.hl {
+  background: #fef08a;
+  color: inherit;
+  padding: 0 2px;
+  border-radius: 3px;
+}
+
+[data-theme="dark"] .hl {
+  background: #854d0e;
+  color: #fefce8;
+}
+
 .step-confirm {
   margin-top: var(--space-3);
   padding: var(--space-4) var(--space-4);
