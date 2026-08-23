@@ -731,6 +731,14 @@ export default function Landing() {
                 and no one is required to notice them. Except us.”
               </blockquote>
               <FaintBranch className="quote-branch--right" />
+              <div className="quote-foliage" aria-hidden="true">
+                <button type="button" className="foliage-item" style={{ top: "-8px", left: "2%", fontSize: "16px" }} onClick={(e) => e.currentTarget.classList.toggle("foliage-popped")}>🌸</button>
+                <button type="button" className="foliage-item" style={{ top: "12px", right: "4%", fontSize: "14px" }} onClick={(e) => e.currentTarget.classList.toggle("foliage-popped")}>🍃</button>
+                <button type="button" className="foliage-item" style={{ bottom: "-6px", left: "18%", fontSize: "13px" }} onClick={(e) => e.currentTarget.classList.toggle("foliage-popped")}>🌼</button>
+                <button type="button" className="foliage-item" style={{ bottom: "8px", right: "16%", fontSize: "15px" }} onClick={(e) => e.currentTarget.classList.toggle("foliage-popped")}>🍂</button>
+                <button type="button" className="foliage-item" style={{ top: "42%", left: "-6px", fontSize: "12px" }} onClick={(e) => e.currentTarget.classList.toggle("foliage-popped")}>🌿</button>
+                <button type="button" className="foliage-item" style={{ top: "48%", right: "-8px", fontSize: "13px" }} onClick={(e) => e.currentTarget.classList.toggle("foliage-popped")}>🌷</button>
+              </div>
             </div>
           </div>
         </section>

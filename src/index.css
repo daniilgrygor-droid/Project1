@@ -10058,3 +10058,10 @@ textarea:-webkit-autofill {
 :root{--font-sans:'Inter',system-ui,-apple-system,sans-serif;--font-serif:'Fraunces',Georgia,serif}
 body{font-family:var(--font-sans);line-height:1.6;letter-spacing:-0.01em;-webkit-font-smoothing:antialiased}
 h1,h2,h3{font-family:var(--font-serif);font-weight:650;letter-spacing:-0.02em;line-height:1.15}
+
+.quote-foliage{position:absolute;inset:0;pointer-events:none}
+.foliage-item{pointer-events:auto;position:absolute;background:none;border:none;cursor:pointer;opacity:.55;filter:saturate(.8);transition:transform .25s var(--ease-soft),opacity .2s;font-family:'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif;line-height:1}
+.foliage-item:hover{transform:scale(1.45) rotate(-8deg);opacity:1;filter:saturate(1.1)}
+.foliage-item:active{transform:scale(.85)}
+.foliage-popped{animation:foliage-pop .5s var(--ease-soft)}
+@keyframes foliage-pop{0%{transform:scale(1)}40%{transform:scale(1.7) rotate(12deg)}100%{transform:scale(1.15) rotate(-4deg);opacity:.9}}
