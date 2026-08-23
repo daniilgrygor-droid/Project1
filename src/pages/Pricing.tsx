@@ -115,6 +115,10 @@ export default function Pricing() {
   const { session, profile, loading } = useAuth();
   const [busy, setBusy] = useState(false);
   const [interval, setInterval] = useState<"month" | "year">("year");
+
+  useEffect(() => {
+    (window as any).plausible?.("pricing_toggle", { props: { interval } });
+  }, [interval]);
   const [showSticky, setShowSticky] = useState(false);
   const gridRef = useRef<HTMLDivElement>(null);
 
@@ -139,6 +143,7 @@ export default function Pricing() {
     }
     if (busy) return;
     setBusy(true);
+    (window as any).plausible?.("checkout_start", { props: { interval } });
     try {
       const res = await fetch("/api/checkout", {
         method: "POST",

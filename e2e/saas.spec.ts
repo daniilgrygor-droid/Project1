@@ -80,6 +80,17 @@ test.describe("SaaS — Journey & Progress", () => {
     await expect(page).toHaveURL(/journey|auth/);
   });
 
+  test("journey filters exist when authenticated", async ({ page }) => {
+    await page.goto("/journey");
+    const authInput = page.locator('input[type="email"]').first();
+    const filters = page.locator(".journey-filters").first();
+    await expect(authInput.or(filters)).toBeVisible({ timeout: 8000 });
+    if (await filters.isVisible()) {
+      await expect(filters).toBeVisible();
+      await expect(page.locator(".chip--filter").first()).toBeVisible();
+    }
+  });
+
   test("progress page loads", async ({ page }) => {
     await page.goto("/progress");
     await expect(page).toHaveURL(/progress|auth/);
@@ -93,6 +104,17 @@ test.describe("SaaS — Journey & Progress", () => {
   test("settings page loads", async ({ page }) => {
     await page.goto("/settings");
     await expect(page).toHaveURL(/settings|auth/);
+  });
+
+  test("settings has CSV export when authenticated", async ({ page }) => {
+    await page.goto("/settings");
+    const authInput = page.locator('input[type="email"]').first();
+    const csvBtn = page.locator('button:has-text("Download CSV")').first();
+    await expect(authInput.or(csvBtn)).toBeVisible({ timeout: 8000 });
+    if (await csvBtn.isVisible()) {
+      await expect(csvBtn).toBeVisible();
+      await expect(page.locator('button:has-text("Download JSON")')).toBeVisible();
+    }
   });
 });
 

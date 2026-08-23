@@ -217,6 +217,7 @@ export default function CheckIn() {
     if (res.aiFailed) setFallback(res.message);
     clearDraft();
     toast.push(showedUp ? "Noted. That counts." : "Noticed. That counts.");
+    (window as any).plausible?.("checkin", { props: { showedUp: String(showedUp), category: category ?? "none", mood: mood ? String(mood) : "none" } });
     setNote("");
     setCategory(null);
     setMood(null);

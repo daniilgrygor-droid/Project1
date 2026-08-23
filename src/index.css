@@ -6712,10 +6712,54 @@ body {
 
 .hero-eyebrow {
   color: var(--success-ink);
-  border-color: color-mix(in srgb, var(--praise-line) 70%, var(--line));
-  background: var(--praise-bg);
-  box-shadow: inset 0 1px 0 var(--card-highlight);
 }
+
+.journey-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin: 18px 0;
+  padding: 16px;
+  background: var(--bg-soft);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.journey-filter-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.journey-filter-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-soft);
+  min-width: 68px;
+}
+
+.chip--filter {
+  cursor: pointer;
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 500;
+  background: var(--surface);
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.chip--filter:hover {
+  border-color: var(--line-strong);
+  background: var(--bg-warm);
+}
+
+.chip--on {
+  background: var(--praise-bg) !important;
+  border-color: var(--success) !important;
+  color: var(--text) !important;
+}
+
+/* ---- landing hero: product mock beside the copy ---- */
 
 /* ---- landing hero: product mock beside the copy ---- */
 .hero {

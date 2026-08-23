@@ -4,8 +4,8 @@ import AppShell from "../components/AppShell";
 import Calendar from "../components/Calendar";
 import EntryCard from "../components/EntryCard";
 import { LeafIcon, SearchIcon, SproutIcon } from "../components/icons";
-import type { Step } from "../lib/types";
-import { groupDayLabel } from "../lib/constants";
+import type { Category, Step } from "../lib/types";
+import { CATEGORIES, MOODS, groupDayLabel } from "../lib/constants";
 import { fetchSteps } from "../lib/steps";
 import { groupByDay } from "../lib/stats";
 import { registerUndoRestore } from "../lib/undoStore";
@@ -49,6 +49,8 @@ export function JourneyTimeline() {
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
+  const [filterCat, setFilterCat] = useState<Category | null>(null);
+  const [filterMood, setFilterMood] = useState<number | null>(null);
   const [tlIntro, setTlIntro] = useState(false);
   const [switching, setSwitching] = useState(false);
   const timelineRef = useRef<HTMLElement>(null);
@@ -92,14 +94,31 @@ export function JourneyTimeline() {
     const q = debouncedQuery.trim().toLowerCase();
     let source = groups;
     if (selectedDay) source = groups.filter((g) => g.key === selectedDay);
-    if (!q) return source;
+    if (!q && !filterCat && !filterMood) return source;
     return source
       .map((g) => ({
         ...g,
-        entries: g.entries.filter((s) => s.note.toLowerCase().includes(q)),
+        entries: g.entries.filter((s) => {
+          const matchQ = !q || s.note.toLowerCase().includes(q);
+          const matchCat = !filterCat || s.category === filterCat;
+          const matchMood = !filterMood || s.mood === filterMood;
+          return matchQ && matchCat && matchMood;
+        }),
       }))
       .filter((g) => g.entries.length > 0);
-  }, [groups, debouncedQuery, selectedDay]);
+  }, [groups, debouncedQuery, selectedDay, filterCat, filterMood]);
+
+  useEffect(() => {
+    if (debouncedQuery) (window as any).plausible?.("search", { props: { query: debouncedQuery } });
+  }, [debouncedQuery]);
+
+  useEffect(() => {
+    if (filterCat) (window as any).plausible?.("filter", { props: { type: "category", value: filterCat } });
+  }, [filterCat]);
+
+  useEffect(() => {
+    if (filterMood) (window as any).plausible?.("filter", { props: { type: "mood", value: String(filterMood) } });
+  }, [filterMood]);
 
   useEffect(() => {
     if (selectedDay && !groups.some((g) => g.key === selectedDay)) {
@@ -238,6 +257,54 @@ export function JourneyTimeline() {
             </div>
           </div>
 
+          <div className="journey-filters" aria-label="Filter your steps">
+            <div className="journey-filter-group">
+              <span className="journey-filter-label">Category</span>
+              <button
+                type="button"
+                className={`chip chip--filter${!filterCat ? " chip--on" : ""}`}
+                onClick={() => setFilterCat(null)}
+              >
+                All
+              </button>
+              {CATEGORIES.map((c) => (
+                <button
+                  key={c.id}
+                  type="button"
+                  className={`chip chip--filter${filterCat === c.id ? " chip--on" : ""}`}
+                  onClick={() => setFilterCat(filterCat === c.id ? null : (c.id as Category))}
+                >
+                  {c.label}
+                </button>
+              ))}
+            </div>
+            <div className="journey-filter-group">
+              <span className="journey-filter-label">Mood</span>
+              <button
+                type="button"
+                className={`chip chip--filter${!filterMood ? " chip--on" : ""}`}
+                onClick={() => setFilterMood(null)}
+              >
+                All
+              </button>
+              {MOODS.map((m) => (
+                <button
+                  key={m.value}
+                  type="button"
+                  className={`chip chip--filter${filterMood === m.value ? " chip--on" : ""}`}
+                  onClick={() => setFilterMood(filterMood === m.value ? null : m.value)}
+                >
+                  {m.emoji} {m.label}
+                </button>
+              ))}
+            </div>
+            {(filterCat || filterMood) && (
+              <button type="button" className="btn btn--ghost btn--sm" onClick={() => { setFilterCat(null); setFilterMood(null); }}>
+                Clear filters
+              </button>
+            )}
+          </div>
+
           {loading ? (
             <div
               className="sk-timeline"
@@ -271,18 +338,24 @@ export function JourneyTimeline() {
             <EmptyJourney compact />
           ) : filteredGroups.length === 0 ? (
             <div className="steps-empty steps-empty--story">
-              {query ? (
+              {query || filterCat || filterMood ? (
                 <>
                   <SearchIcon size={32} />
                   <p>
-                    No steps match "<strong>{query}</strong>".
+                    {query ? (
+                      <>
+                        No steps match "<strong>{query}</strong>".
+                      </>
+                    ) : (
+                      "No steps match your filters."
+                    )}
                   </p>
                   <button
                     type="button"
                     className="btn btn--ghost btn--sm"
-                    onClick={() => setQuery("")}
+                    onClick={() => { setQuery(""); setFilterCat(null); setFilterMood(null); }}
                   >
-                    Clear search
+                    Clear filters
                   </button>
                 </>
               ) : (

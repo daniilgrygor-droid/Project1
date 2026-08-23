@@ -274,6 +274,38 @@ export default function Settings() {
       a.remove();
       URL.revokeObjectURL(url);
       toast.push("Your journal is downloaded.");
+      (window as any).plausible?.("export", { props: { format: "json" } });
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  const exportCSV = async () => {
+    if (exporting) return;
+    setExporting(true);
+    try {
+      const steps = await fetchSteps();
+      const escape = (v: string | null | number) => {
+        if (v == null) return "";
+        const s = String(v).replace(/"/g, '""');
+        return `"${s}"`;
+      };
+      const header = ["date", "note", "category", "mood", "ai_response"].join(",");
+      const rows = steps.map((s) =>
+        [s.created_at, s.note, s.category ?? "", s.mood ?? "", s.ai_response ?? ""].map(escape).join(","),
+      );
+      const csv = [header, ...rows].join("\n");
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `small-steps-journal-${new Date().toISOString().slice(0, 10)}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      toast.push("CSV is downloaded.");
+      (window as any).plausible?.("export", { props: { format: "csv" } });
     } finally {
       setExporting(false);
     }
@@ -750,7 +782,15 @@ export default function Settings() {
               onClick={() => void exportJournal()}
               disabled={exporting}
             >
-              {exporting ? "Preparing…" : "Download my journal"}
+              {exporting ? "Preparing…" : "Download JSON"}
+            </button>
+            <button
+              type="button"
+              className="btn btn--ghost"
+              onClick={() => void exportCSV()}
+              disabled={exporting}
+            >
+              {exporting ? "Preparing…" : "Download CSV"}
             </button>
           </div>
         </div>
