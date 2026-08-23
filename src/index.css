@@ -1406,14 +1406,19 @@ a {
   inset: 0;
   pointer-events: none;
   overflow: hidden;
-  z-index: -1;
+  z-index: 0;
+}
+
+.checkin > *:not(.falling-leaves) {
+  position: relative;
+  z-index: 1;
 }
 
 .falling-leaf {
   position: absolute;
   top: -40px;
   color: var(--accent-sage);
-  opacity: 0.12;
+  opacity: 0.28;
   animation: leaf-fall linear infinite, leaf-sway ease-in-out infinite;
 }
 
