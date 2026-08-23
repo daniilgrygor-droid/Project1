@@ -2203,6 +2203,9 @@ a {
 }
 
 .journey-head h1 {
+  font-variation-settings: "WONK" 0;
+  letter-spacing: -0.018em;
+  text-rendering: optimizeLegibility;
   font-size: clamp(1.8rem, 4.4vw, 2.4rem);
   margin-bottom: var(--space-3);
 }
@@ -8198,15 +8201,14 @@ body {
 .privacy-head h1::after {
   content: "";
   display: block;
-  width: 56px;
-  height: 3px;
+  width: 48px;
+  height: 2px;
   margin: var(--space-3) auto 0;
   border-radius: 999px;
   background: linear-gradient(
     90deg,
     var(--success),
-    var(--accent-secondary),
-    var(--accent-rose)
+    var(--accent-secondary)
   );
   opacity: 0.9;
 }
