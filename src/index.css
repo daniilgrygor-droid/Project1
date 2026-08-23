@@ -2210,6 +2210,12 @@ a {
   margin-bottom: var(--space-3);
 }
 
+.journey-j {
+  display: inline-block;
+  transform: translateY(0.3px);
+  font-weight: 700;
+}
+
 .journey-head p {
   color: var(--text-soft);
   max-width: 440px;

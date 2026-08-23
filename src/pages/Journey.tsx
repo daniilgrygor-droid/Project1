@@ -176,7 +176,9 @@ export function JourneyTimeline() {
             <LeafIcon size={13} />
             Your days
           </span>
-          <h1>Your Journey</h1>
+          <h1>
+            Your <span className="journey-j">J</span>ourney
+          </h1>
           <p>
             Everything you've noticed — spread across days, ready to look back
             on.
