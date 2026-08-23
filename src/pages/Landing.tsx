@@ -45,6 +45,7 @@ function FaintBranch({ className }: { className?: string }) {
       className={`quote-branch${className ? ` ${className}` : ""}`}
       aria-hidden="true"
     >
+      {/* Branch */}
       <path
         d="M4 46 C 26 38 52 24 84 6"
         stroke="currentColor"
@@ -52,23 +53,34 @@ function FaintBranch({ className }: { className?: string }) {
         fill="none"
         strokeLinecap="round"
       />
-      <path
-        d="M30 36 C 36 30 42 27 48 25"
-        stroke="currentColor"
-        strokeWidth="1"
-        fill="none"
-        strokeLinecap="round"
-      />
-      <path
-        d="M52 24 C 58 20 64 17 70 15"
-        stroke="currentColor"
-        strokeWidth="1"
-        fill="none"
-        strokeLinecap="round"
-      />
-      <ellipse cx="50" cy="24" rx="7" ry="4" transform="rotate(-18 50 24)" fill="currentColor" />
-      <ellipse cx="72" cy="13" rx="6.5" ry="3.5" transform="rotate(-12 72 13)" fill="currentColor" />
-      <ellipse cx="32" cy="35" rx="6" ry="3.5" transform="rotate(-30 32 35)" fill="currentColor" />
+      {/* Small twigs */}
+      <path d="M30 36 C 36 30 42 27 48 25" stroke="currentColor" strokeWidth="1" fill="none" strokeLinecap="round" />
+      <path d="M52 24 C 58 20 64 17 70 15" stroke="currentColor" strokeWidth="1" fill="none" strokeLinecap="round" />
+      {/* Flower at 32,35 — 5 petals + center */}
+      <g transform="translate(32 35) rotate(-30)">
+        <ellipse cx="0" cy="-4.2" rx="2.1" ry="2.8" fill="currentColor" opacity="0.95" />
+        <ellipse cx="3.9" cy="-1.3" rx="2.1" ry="2.8" fill="currentColor" opacity="0.95" transform="rotate(72 3.9 -1.3)" />
+        <ellipse cx="2.4" cy="3.4" rx="2.1" ry="2.8" fill="currentColor" opacity="0.95" transform="rotate(144 2.4 3.4)" />
+        <ellipse cx="-2.4" cy="3.4" rx="2.1" ry="2.8" fill="currentColor" opacity="0.95" transform="rotate(216 -2.4 3.4)" />
+        <ellipse cx="-3.9" cy="-1.3" rx="2.1" ry="2.8" fill="currentColor" opacity="0.95" transform="rotate(288 -3.9 -1.3)" />
+        <circle cx="0" cy="0" r="1.6" fill="var(--bg)" />
+        <circle cx="0" cy="0" r="0.9" fill="var(--accent-ochre)" />
+      </g>
+      {/* Leaf at 50,24 */}
+      <g transform="translate(50 24) rotate(-18)">
+        <path d="M-7 0 C -2 -4 2 -4 7 0 C 2 4 -2 4 -7 0 Z" fill="currentColor" />
+        <path d="M-7 0 C -1 0 1 0 7 0" stroke="var(--bg)" strokeWidth="0.7" fill="none" strokeLinecap="round" opacity="0.5" />
+      </g>
+      {/* Flower at 72,13 */}
+      <g transform="translate(72 13) rotate(-12)">
+        <ellipse cx="0" cy="-3.8" rx="1.9" ry="2.5" fill="currentColor" opacity="0.95" />
+        <ellipse cx="3.5" cy="-1.1" rx="1.9" ry="2.5" fill="currentColor" opacity="0.95" transform="rotate(72 3.5 -1.1)" />
+        <ellipse cx="2.2" cy="3.1" rx="1.9" ry="2.5" fill="currentColor" opacity="0.95" transform="rotate(144 2.2 3.1)" />
+        <ellipse cx="-2.2" cy="3.1" rx="1.9" ry="2.5" fill="currentColor" opacity="0.95" transform="rotate(216 -2.2 3.1)" />
+        <ellipse cx="-3.5" cy="-1.1" rx="1.9" ry="2.5" fill="currentColor" opacity="0.95" transform="rotate(288 -3.5 -1.1)" />
+        <circle cx="0" cy="0" r="1.4" fill="var(--bg)" />
+        <circle cx="0" cy="0" r="0.8" fill="var(--accent-rose)" />
+      </g>
     </svg>
   );
 }
