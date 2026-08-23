@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { supabase } from "../lib/supabase";
 import { useAuth } from "../lib/auth";
 import { useToast } from "../lib/toast";
@@ -22,6 +22,28 @@ import {
   type TextSizeId,
 } from "../lib/textSize";
 import { deleteAccount, requestEmailChange } from "../lib/account";
+
+function ExportPreview() {
+  const [rows, setRows] = useState<import("../lib/types").Step[] | null>(null);
+  useEffect(() => {
+    fetchSteps().then((s) => setRows(s.slice(0, 3)));
+  }, []);
+  if (!rows) return <p className="hint">Loading preview…</p>;
+  if (rows.length === 0) return <p className="hint">No entries yet — preview will appear after your first step.</p>;
+  return (
+    <div className="export-preview-table">
+      <div className="export-preview-head">date · note · category · mood</div>
+      {rows.map((r) => (
+        <div key={r.id} className="export-preview-row">
+          <span>{new Date(r.created_at).toLocaleDateString()}</span>
+          <span className="export-preview-note">{r.note.slice(0, 48)}{r.note.length > 48 ? "…" : ""}</span>
+          <span>{r.category ?? "—"}</span>
+          <span>{r.mood ?? "—"}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 const THEME_OPTIONS: { id: ThemePreference; label: string; hint: string }[] = [
   { id: "light", label: "Light", hint: "The warm daytime palette." },
@@ -731,6 +753,10 @@ export default function Settings() {
               {exporting ? "Preparing…" : "Download CSV"}
             </button>
           </div>
+          <details className="export-preview">
+            <summary>Preview first 3 rows</summary>
+            <ExportPreview />
+          </details>
         </div>
 
         <div className="settings-card spot-card">
