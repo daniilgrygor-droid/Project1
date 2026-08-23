@@ -10050,3 +10050,11 @@ textarea:-webkit-autofill {
 .export-preview-row{display:grid;grid-template-columns:80px 1fr 70px 40px;gap:8px;padding:6px 0;border-top:1px solid var(--line);color:var(--text-soft)}
 .export-preview-note{color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
+
+/* test */
+
+
+/* — Typography & Spacing polish — */
+:root{--font-sans:'Inter',system-ui,-apple-system,sans-serif;--font-serif:'Fraunces',Georgia,serif}
+body{font-family:var(--font-sans);line-height:1.6;letter-spacing:-0.01em;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--font-serif);font-weight:650;letter-spacing:-0.02em;line-height:1.15}
