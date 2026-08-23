@@ -6,7 +6,7 @@ import AppShell from "../components/AppShell";
 import SproutLoader from "../components/SproutLoader";
 import { deleteAllSteps, fetchSteps } from "../lib/steps";
 import { isPrivate } from "../lib/types";
-import { planLabel, PRICE_YEARLY } from "../lib/billing";
+import { planLabel } from "../lib/billing";
 import {
   applyTheme,
   readThemePreference,
@@ -137,27 +137,6 @@ export default function Settings() {
       }
     } catch (err) {
       console.error("Checkout failed:", err);
-      toast.push("Something went wrong. Please try again.");
-    } finally {
-      setBillingBusy(false);
-    }
-  };
-
-  const openPortal = async () => {
-    if (billingBusy || !profile?.stripe_customer_id) return;
-    setBillingBusy(true);
-    try {
-      const res = await fetch("/api/portal", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ customer_id: profile.stripe_customer_id }),
-      });
-      const data = await res.json();
-      if (data.url) {
-        window.location.href = data.url;
-      }
-    } catch (err) {
-      console.error("Portal failed:", err);
       toast.push("Something went wrong. Please try again.");
     } finally {
       setBillingBusy(false);
@@ -378,47 +357,6 @@ export default function Settings() {
             >
               Sign out
             </button>
-          </div>
-        </div>
-
-        <div className="settings-card spot-card settings-card--plan">
-          <div className="settings-plan-row">
-            <div className="settings-plan-info">
-              <span className={`plan-badge plan-badge--${profile.plan}`}>
-                {planLabel(profile.plan)}
-              </span>
-              <h2>
-                {privatePlan
-                  ? "Your words stay closer."
-                  : "Keep your words closer."}
-              </h2>
-              <p>
-                {privatePlan
-                  ? "Your replies are processed privately — never used to train AI models. Reminders and weekly notes are on."
-                  : `Private is $${PRICE_YEARLY} once a year — replies processed privately, never used to train models, plus gentle reminders and weekly notes.`}
-              </p>
-            </div>
-            <div className="settings-plan-actions">
-              {privatePlan ? (
-                <button
-                  type="button"
-                  className="btn btn--ghost btn--sm"
-                  onClick={() => void openPortal()}
-                  disabled={billingBusy}
-                >
-                  {billingBusy ? "Opening…" : "Manage subscription"}
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  className="btn btn--primary btn--sm"
-                  onClick={() => void goCheckout()}
-                  disabled={billingBusy}
-                >
-                  {billingBusy ? "Redirecting…" : `Go Private — $${PRICE_YEARLY}/yr`}
-                </button>
-              )}
-            </div>
           </div>
         </div>
 
