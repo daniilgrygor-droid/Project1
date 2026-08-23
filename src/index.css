@@ -1401,6 +1401,42 @@ a {
   right: -90px;
 }
 
+.falling-leaves {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: -1;
+}
+
+.falling-leaf {
+  position: absolute;
+  top: -40px;
+  color: var(--accent-sage);
+  opacity: 0.12;
+  animation: leaf-fall linear infinite, leaf-sway ease-in-out infinite;
+}
+
+.falling-leaf:nth-child(2) { color: var(--accent-ochre); }
+.falling-leaf:nth-child(4) { color: var(--plant-leaf); }
+.falling-leaf:nth-child(5) { color: var(--accent-ochre); }
+
+@keyframes leaf-fall {
+  0% { transform: translateY(-40px) rotate(0deg); opacity: 0; }
+  10% { opacity: 0.12; }
+  90% { opacity: 0.12; }
+  100% { transform: translateY(900px) rotate(360deg); opacity: 0; }
+}
+
+@keyframes leaf-sway {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 18px 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .falling-leaves { display: none; }
+}
+
 @media (max-width: 860px) {
   .checkin::before,
   .checkin::after {
