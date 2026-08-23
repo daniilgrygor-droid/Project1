@@ -76,7 +76,7 @@ function initialsOf(email?: string | null): string {
 }
 
 export default function Settings() {
-  const { user, profile, refreshProfile } = useAuth();
+  const { session, user, profile, refreshProfile } = useAuth();
   const toast = useToast();
 
   const [recovering, setRecovering] = useState(profile?.context ?? "");
@@ -142,16 +142,16 @@ export default function Settings() {
   const privatePlan = isPrivate(profile);
 
   const goCheckout = async () => {
-    if (billingBusy || !user) return;
+    if (billingBusy || !user || !session) return;
     setBillingBusy(true);
     try {
       const res = await fetch("/api/checkout", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          user_id: user.id,
-          email: user.email,
-        }),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({}),
       });
       const data = await res.json();
       if (data.url) {

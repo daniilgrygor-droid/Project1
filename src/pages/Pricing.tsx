@@ -147,12 +147,11 @@ export default function Pricing() {
     try {
       const res = await fetch("/api/checkout", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          user_id: session.user.id,
-          email: session.user.email,
-          interval,
-        }),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({ interval }),
       });
       const data = await res.json();
       if (data.url) {
@@ -166,13 +165,16 @@ export default function Pricing() {
   };
 
   const openPortal = async () => {
-    if (!profile?.stripe_customer_id || busy) return;
+    if (!session || busy) return;
     setBusy(true);
     try {
       const res = await fetch("/api/portal", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ customer_id: profile.stripe_customer_id }),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({}),
       });
       const data = await res.json();
       if (data.url) {
