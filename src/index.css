@@ -1409,6 +1409,27 @@ a {
   z-index: 0;
 }
 
+.falling-leaves-global {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.app {
+  position: relative;
+  isolation: isolate;
+}
+
+.app-header,
+.app-main,
+.app-footer,
+.app-tabbar {
+  position: relative;
+  z-index: 1;
+}
+
 .checkin > *:not(.falling-leaves) {
   position: relative;
   z-index: 1;

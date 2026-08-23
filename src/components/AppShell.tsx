@@ -5,6 +5,7 @@ import { useAuth } from "../lib/auth";
 import { isPrivate } from "../lib/types";
 import Wordmark from "./Wordmark";
 import CommandPalette from "./CommandPalette";
+import FallingLeaves from "./FallingLeaves";
 import {
   BookIcon,
   GearIcon,
@@ -106,6 +107,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="app app--tabbed">
+      <FallingLeaves />
       {routeBusy && (
         <div
           className={`route-bar${routeOut ? " route-bar--out" : ""}`}

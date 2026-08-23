@@ -6,6 +6,7 @@ import { useAuth } from "../lib/auth";
 import { isPrivate, type Plan } from "../lib/types";
 import { PLANS, PRICE_MONTHLY, PRICE_YEARLY } from "../lib/billing";
 import { LeafIcon } from "../components/icons";
+import FallingLeaves from "../components/FallingLeaves";
 import { useSpotlight } from "../lib/useSpotlight";
 
 const COMPARE: { feature: string; free: boolean; priv: boolean }[] = [
@@ -182,6 +183,7 @@ export default function Pricing() {
 
   return (
     <div className="app landing">
+      <FallingLeaves />
       <header className="app-header">
         <div className="wrap">
           <Wordmark />

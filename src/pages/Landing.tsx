@@ -5,6 +5,7 @@ import { useAuth } from "../lib/auth";
 import { useRevealOnScroll } from "../lib/useRevealOnScroll";
 import { CountUp } from "../lib/useCountUp";
 import Wordmark from "../components/Wordmark";
+import FallingLeaves from "../components/FallingLeaves";
 import MarketingFooter from "../components/MarketingFooter";
 import Tree from "../components/Tree";
 import Magnet from "../components/Magnet";
@@ -452,6 +453,7 @@ export default function Landing() {
 
   return (
     <div className="app landing">
+      <FallingLeaves />
       {scrollP > 0.02 && (
         <div
           className="scroll-progress"
