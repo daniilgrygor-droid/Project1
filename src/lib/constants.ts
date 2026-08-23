@@ -53,6 +53,11 @@ export const PLANT_STAGES: PlantStage[] = [
   { minSteps: 15, label: "A growing plant", description: "Small things are becoming visible." },
   { minSteps: 30, label: "A flower", description: "Something has begun to bloom." },
   { minSteps: 50, label: "A mature plant", description: "Quietly thriving." },
+  { minSteps: 75, label: "A blooming garden", description: "More blooms appear." },
+  { minSteps: 100, label: "A thriving garden", description: "A hundred small steps." },
+  { minSteps: 150, label: "A small forest", description: "Your steps became a forest." },
+  { minSteps: 200, label: "An enduring grove", description: "Two hundred — and still gentle." },
+  { minSteps: 300, label: "A wild meadow", description: "Beyond counting, still growing." },
 ];
 
 export function plantStageFor(steps: number): PlantStage | null {
