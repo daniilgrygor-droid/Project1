@@ -795,6 +795,23 @@ export default function Settings() {
           </div>
         </div>
 
+        <div className="settings-card spot-card">
+          <h2>Quick tour</h2>
+          <p>See the 4-step guide again — where to write, how filters work, and where your plant grows.</p>
+          <div className="settings-actions">
+            <button
+              type="button"
+              className="btn btn--ghost"
+              onClick={() => {
+                try { localStorage.removeItem("ss-tour-done"); } catch {}
+                window.location.href = "/check-in";
+              }}
+            >
+              Show tour again
+            </button>
+          </div>
+        </div>
+
         <div className="settings-note spot-card settings-note--danger">
           <h2>Your data</h2>
           <p>

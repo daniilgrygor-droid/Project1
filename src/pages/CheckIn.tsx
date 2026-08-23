@@ -11,6 +11,7 @@ import MoodPicker from "../components/MoodPicker";
 import EntryCard from "../components/EntryCard";
 import PlantIcon from "../components/PlantIcon";
 import Plant from "../components/Plant";
+import Tour from "../components/Tour";
 import { plantStageFor, dayKey } from "../lib/constants";
 import { LeafIcon, SproutIcon, SunIcon } from "../components/icons";
 import { useCountUp } from "../lib/useCountUp";
@@ -255,6 +256,7 @@ export default function CheckIn() {
 
   return (
     <AppShell>
+      <Tour />
       <div className="checkin">
         <div className="checkin-head">
           <div className="checkin-date">{today}</div>
