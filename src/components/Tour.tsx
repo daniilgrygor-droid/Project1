@@ -25,6 +25,42 @@ const STEPS = [
 
 const KEY = "ss-tour-done";
 
+function useTyping(text: string, speed = 22, startDelay = 180) {
+  const [out, setOut] = useState("");
+  const [done, setDone] = useState(false);
+
+  // Respect reduced motion — show instantly
+  const reduce = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  useEffect(() => {
+    if (reduce) {
+      setOut(text);
+      setDone(true);
+      return;
+    }
+    setOut("");
+    setDone(false);
+    let i = 0;
+    let t: number | null = null;
+    const start = window.setTimeout(() => {
+      t = window.setInterval(() => {
+        i += 1;
+        setOut(text.slice(0, i));
+        if (i >= text.length) {
+          if (t) clearInterval(t);
+          setDone(true);
+        }
+      }, speed);
+    }, startDelay);
+    return () => {
+      clearTimeout(start);
+      if (t) clearInterval(t);
+    };
+  }, [text, speed, startDelay, reduce]);
+
+  return { out, done };
+}
+
 export default function Tour() {
   const [open, setOpen] = useState(false);
   const [idx, setIdx] = useState(0);
@@ -32,13 +68,17 @@ export default function Tour() {
   useEffect(() => {
     try {
       if (localStorage.getItem(KEY)) return;
-      // Only show for new users (no steps) or first time
-      const t = setTimeout(() => setOpen(true), 800);
+      const t = setTimeout(() => setOpen(true), 420);
       return () => clearTimeout(t);
     } catch {
       return;
     }
   }, []);
+
+  const step = STEPS[idx];
+  const titleTyping = useTyping(step.title, 32, 280);
+  const textTyping = useTyping(step.text, 18, 520);
+  const typingDone = titleTyping.done && textTyping.done;
 
   const close = (done = true) => {
     setOpen(false);
@@ -58,22 +98,19 @@ export default function Tour() {
 
   const prev = () => setIdx((i) => Math.max(0, i - 1));
 
-  // Auto-advance every 3.8s like an animation
+  // Auto-advance after typing is done + pause
   useEffect(() => {
-    if (!open) return;
-    const t = setInterval(() => {
-      setIdx((i) => {
-        if (i + 1 >= STEPS.length) {
-          clearInterval(t);
-          setTimeout(() => close(true), 1200);
-          return i;
-        }
-        (window as any).plausible?.("tour_auto", { props: { step: String(i + 2) } });
-        return i + 1;
-      });
-    }, 3800);
-    return () => clearInterval(t);
-  }, [open]);
+    if (!open || !typingDone) return;
+    const t = setTimeout(() => {
+      if (idx + 1 >= STEPS.length) {
+        setTimeout(() => close(true), 900);
+      } else {
+        setIdx((i) => i + 1);
+        (window as any).plausible?.("tour_auto", { props: { step: String(idx + 2) } });
+      }
+    }, 2200);
+    return () => clearTimeout(t);
+  }, [open, typingDone, idx]);
 
   useEffect(() => {
     if (!open) return;
@@ -88,22 +125,26 @@ export default function Tour() {
 
   if (!open) return null;
 
-  const step = STEPS[idx];
-
   return (
-    <div className="tour" role="dialog" aria-modal="true" aria-label="Quick tour">
-      <div className="tour-scrim" onClick={() => close(false)} />
-      <div className="tour-card spot-card">
+    <div className="tour tour--cinematic" role="dialog" aria-modal="true" aria-label="Quick tour">
+      <div className="tour-scrim tour-scrim--dark" onClick={() => close(false)} />
+      <div className="tour-card spot-card tour-card--cinematic">
         <div key={idx} className="tour-progress" aria-hidden="true" />
         <div className="tour-head">
           <span className="tour-step">{idx + 1} / {STEPS.length}</span>
           <button type="button" className="tour-skip" onClick={() => close(false)}>Skip tour</button>
         </div>
-        <h3>{step.title}</h3>
-        <p>{step.text}</p>
+        <h3 className="tour-title">
+          {titleTyping.out}
+          {!titleTyping.done && <span className="tour-caret" aria-hidden="true">|</span>}
+        </h3>
+        <p className="tour-text">
+          {textTyping.out}
+          {!textTyping.done && <span className="tour-caret" aria-hidden="true">|</span>}
+        </p>
         <div className="tour-actions">
           <button type="button" className="btn btn--ghost btn--sm" onClick={prev} disabled={idx === 0}>Back</button>
-          <button type="button" className="btn btn--primary btn--sm" onClick={next}>
+          <button type="button" className="btn btn--primary btn--sm tour-next" onClick={next} disabled={!typingDone && idx + 1 !== STEPS.length}>
             {idx + 1 === STEPS.length ? "Done — start" : "Next"}
           </button>
         </div>
