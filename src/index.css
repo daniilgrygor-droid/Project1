@@ -9882,6 +9882,7 @@ textarea:-webkit-autofill {
   border-radius: 16px;
   padding: 24px;
   box-shadow: var(--shadow-raised);
+  overflow: hidden;
   animation: tour-in 0.28s cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
@@ -9948,5 +9949,24 @@ textarea:-webkit-autofill {
 .tour-dot--on {
   background: var(--charcoal);
   transform: scale(1.25);
+}
+
+.tour-progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 2px;
+  background: var(--accent-sage);
+  border-radius: 16px 16px 0 0;
+  animation: tour-progress 3.8s linear forwards;
+}
+
+@keyframes tour-progress {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tour-progress { display: none; }
 }
 

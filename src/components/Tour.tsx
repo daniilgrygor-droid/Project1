@@ -58,6 +58,23 @@ export default function Tour() {
 
   const prev = () => setIdx((i) => Math.max(0, i - 1));
 
+  // Auto-advance every 3.8s like an animation
+  useEffect(() => {
+    if (!open) return;
+    const t = setInterval(() => {
+      setIdx((i) => {
+        if (i + 1 >= STEPS.length) {
+          clearInterval(t);
+          setTimeout(() => close(true), 1200);
+          return i;
+        }
+        (window as any).plausible?.("tour_auto", { props: { step: String(i + 2) } });
+        return i + 1;
+      });
+    }, 3800);
+    return () => clearInterval(t);
+  }, [open]);
+
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
@@ -77,6 +94,7 @@ export default function Tour() {
     <div className="tour" role="dialog" aria-modal="true" aria-label="Quick tour">
       <div className="tour-scrim" onClick={() => close(false)} />
       <div className="tour-card spot-card">
+        <div key={idx} className="tour-progress" aria-hidden="true" />
         <div className="tour-head">
           <span className="tour-step">{idx + 1} / {STEPS.length}</span>
           <button type="button" className="tour-skip" onClick={() => close(false)}>Skip tour</button>
