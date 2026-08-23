@@ -68,7 +68,7 @@ export default function Tour() {
   useEffect(() => {
     try {
       if (localStorage.getItem(KEY)) return;
-      const t = setTimeout(() => setOpen(true), 420);
+      const t = setTimeout(() => setOpen(true), 120);
       return () => clearTimeout(t);
     } catch {
       return;
@@ -134,14 +134,16 @@ export default function Tour() {
           <span className="tour-step">{idx + 1} / {STEPS.length}</span>
           <button type="button" className="tour-skip" onClick={() => close(false)}>Skip tour</button>
         </div>
-        <h3 className="tour-title">
-          {titleTyping.out}
-          {!titleTyping.done && <span className="tour-caret" aria-hidden="true">|</span>}
-        </h3>
-        <p className="tour-text">
-          {textTyping.out}
-          {!textTyping.done && <span className="tour-caret" aria-hidden="true">|</span>}
-        </p>
+        <div key={`body-${idx}`} className="tour-body">
+          <h3 className="tour-title">
+            {titleTyping.out}
+            {!titleTyping.done && <span className="tour-caret" aria-hidden="true">|</span>}
+          </h3>
+          <p className="tour-text">
+            {textTyping.out}
+            {!textTyping.done && <span className="tour-caret" aria-hidden="true">|</span>}
+          </p>
+        </div>
         <div className="tour-actions">
           <button type="button" className="btn btn--ghost btn--sm" onClick={prev} disabled={idx === 0}>Back</button>
           <button type="button" className="btn btn--primary btn--sm tour-next" onClick={next} disabled={!typingDone && idx + 1 !== STEPS.length}>
