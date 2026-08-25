@@ -29,6 +29,14 @@ const Terms = lazy(() => import("./pages/Terms"));
 const Pricing = lazy(() => import("./pages/Pricing"));
 const Admin = lazy(() => import("./pages/Admin"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+const Blog = lazy(() => import("./pages/Blog"));
+const BlogPost = lazy(() => import("./pages/BlogPost"));
+const ForBurnout = lazy(() =>
+  import("./pages/seoContent").then((m) => ({ default: m.ForBurnout })),
+);
+const ForSickLeave = lazy(() =>
+  import("./pages/seoContent").then((m) => ({ default: m.ForSickLeave })),
+);
 
 const PAGE_TITLES: [string, string][] = [
   ["/", "Small Steps — small steps back to life"],
@@ -44,6 +52,9 @@ const PAGE_TITLES: [string, string][] = [
   ["/terms", "Terms · Small Steps"],
   ["/pricing", "Pricing · Small Steps"],
   ["/admin", "Payments · Small Steps"],
+  ["/blog", "Blog · Small Steps"],
+  ["/for-burnout", "Journal for burnout recovery · Small Steps"],
+  ["/for-sick-leave", "After a long sick leave · Small Steps"],
   ["/lost", "Off the path · Small Steps"],
 ];
 
@@ -126,6 +137,10 @@ function AnimatedRoutes() {
       <Route path="/privacy" element={<Privacy />} />
       <Route path="/terms" element={<Terms />} />
       <Route path="/pricing" element={<Pricing />} />
+      <Route path="/blog" element={<Blog />} />
+      <Route path="/blog/:slug" element={<BlogPost />} />
+      <Route path="/for-burnout" element={<ForBurnout />} />
+      <Route path="/for-sick-leave" element={<ForSickLeave />} />
       <Route path="/admin" element={
           <RequireAuth>
             <RequireOnboarded>

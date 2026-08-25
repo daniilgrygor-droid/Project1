@@ -28,6 +28,20 @@ export default function MarketingFooter() {
             </ul>
           </div>
           <div className="footer-col">
+            <h4>Recovery</h4>
+            <ul>
+              <li>
+                <Link to="/for-burnout">After burnout</Link>
+              </li>
+              <li>
+                <Link to="/for-sick-leave">After sick leave</Link>
+              </li>
+              <li>
+                <Link to="/blog">Blog</Link>
+              </li>
+            </ul>
+          </div>
+          <div className="footer-col">
             <h4>Support</h4>
             <ul>
               <li>
