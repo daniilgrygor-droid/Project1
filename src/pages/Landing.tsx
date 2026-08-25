@@ -541,32 +541,6 @@ export default function Landing() {
                 “Coming back to life isn't a feat. It's a hundred small steps,
                 and no one is required to notice them. Except us.”
               </blockquote>
-              <div className="quote-fall" aria-hidden="true">
-                {["🌸", "🍃", "🌼", "🍂", "🌿", "🌷", "🍃", "🌸", "🍂", "🌼"].map(
-                  (emoji, i) => (
-                    <span
-                      key={i}
-                      className="quote-fall-item"
-                      style={{
-                        left: `${[6, 16, 27, 38, 50, 62, 73, 84, 92, 45][i]}%`,
-                        fontSize: `${[15, 13, 17, 14, 16, 18, 12, 15, 13, 16][i]}px`,
-                        animationDuration: `${[7, 9, 8, 10, 7.5, 9.5, 8.5, 11, 9, 10.5][i]}s, ${[2.8, 3.2, 2.6, 3, 2.7, 3.3, 2.9, 3.1, 2.5, 2.8][i]}s`,
-                        animationDelay: `${(i * 0.9) % 8}s, ${(i * 0.3) % 2.5}s`,
-                      }}
-                    >
-                      {emoji}
-                    </span>
-                  ),
-                )}
-              </div>
-              <div className="quote-foliage" aria-hidden="true">
-                <button type="button" className="foliage-item" style={{ top: "-8px", left: "2%", fontSize: "16px" }} onClick={(e) => e.currentTarget.classList.toggle("foliage-popped")}>🌸</button>
-                <button type="button" className="foliage-item" style={{ top: "12px", right: "4%", fontSize: "14px" }} onClick={(e) => e.currentTarget.classList.toggle("foliage-popped")}>🍃</button>
-                <button type="button" className="foliage-item" style={{ bottom: "-6px", left: "18%", fontSize: "13px" }} onClick={(e) => e.currentTarget.classList.toggle("foliage-popped")}>🌼</button>
-                <button type="button" className="foliage-item" style={{ bottom: "8px", right: "16%", fontSize: "15px" }} onClick={(e) => e.currentTarget.classList.toggle("foliage-popped")}>🍂</button>
-                <button type="button" className="foliage-item" style={{ top: "42%", left: "-6px", fontSize: "12px" }} onClick={(e) => e.currentTarget.classList.toggle("foliage-popped")}>🌿</button>
-                <button type="button" className="foliage-item" style={{ top: "48%", right: "-8px", fontSize: "13px" }} onClick={(e) => e.currentTarget.classList.toggle("foliage-popped")}>🌷</button>
-              </div>
             </div>
           </div>
         </section>
