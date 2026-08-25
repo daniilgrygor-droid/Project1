@@ -159,7 +159,15 @@ export default function Growth() {
             </p>
 
             <section className="growth-history spot-card">
-              <h2>Growth so far</h2>
+              <div className="growth-history-head">
+                <h2>Growth so far</h2>
+                {milestones && (
+                  <span className="growth-stages-count">
+                    {milestones.filter((m) => m.reached).length} of{" "}
+                    {milestones.length} stages
+                  </span>
+                )}
+              </div>
               {milestones && (
                 <ol className="milestone-timeline">
                   {milestones.map((m) => (

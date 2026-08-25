@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent, type ReactNode } from "react";
 import { supabase } from "../lib/supabase";
 import { useAuth } from "../lib/auth";
 import { useToast } from "../lib/toast";
@@ -14,7 +14,7 @@ import {
   writeThemePreference,
   type ThemePreference,
 } from "../lib/theme";
-import { LeafIcon } from "../components/icons";
+import { BookIcon, EnvelopeIcon, GearIcon, LeafIcon, MoonIcon, SunIcon } from "../components/icons";
 import {
   applyTextSize,
   readTextSize,
@@ -23,8 +23,16 @@ import {
 } from "../lib/textSize";
 import { deleteAccount, requestEmailChange } from "../lib/account";
 
-function ExportPreview() {
-  const [rows, setRows] = useState<import("../lib/types").Step[] | null>(null);
+function SectionTitle({ icon, children }: { icon: ReactNode; children: ReactNode }) {
+  return (
+    <h2 className="settings-h2">
+      <span className="settings-h2-icon">{icon}</span>
+      <span>{children}</span>
+    </h2>
+  );
+}
+
+function ExportPreview() {  const [rows, setRows] = useState<import("../lib/types").Step[] | null>(null);
   useEffect(() => {
     fetchSteps().then((s) => setRows(s.slice(0, 3)));
   }, []);
@@ -488,7 +496,7 @@ export default function Settings() {
         </form>
 
         <div className="settings-note spot-card">
-          <h2>Reminders</h2>
+          <SectionTitle icon={<SunIcon size={14} />}>Reminders</SectionTitle>
           <p>
             A gentle check-in whenever you're ready — nothing that scolds you
             for quiet days. A Private feature.
@@ -566,7 +574,7 @@ export default function Settings() {
         </div>
 
         <div className="settings-note spot-card">
-          <h2>Weekly notes</h2>
+          <SectionTitle icon={<EnvelopeIcon size={14} />}>Weekly notes</SectionTitle>
           <p>
             Once a week you may get a short, warm email looking back at your
             small steps. You can turn it off here. A Private feature.
@@ -610,7 +618,7 @@ export default function Settings() {
         </div>
 
         <div className="settings-note spot-card">
-          <h2>Appearance</h2>
+          <SectionTitle icon={<MoonIcon size={14} />}>Appearance</SectionTitle>
           <p>How the site looks for you — day or evening.</p>
           <div className="choice-row">
             {THEME_OPTIONS.map((t) => (
@@ -631,7 +639,7 @@ export default function Settings() {
         </div>
 
         <div className="settings-note spot-card">
-          <h2>Text size</h2>
+          <SectionTitle icon={<BookIcon size={14} />}>Text size</SectionTitle>
           <p>Make everything a little easier to read.</p>
           <div className="text-size-row">
             {TEXT_SIZES.map((t) => (
@@ -649,7 +657,7 @@ export default function Settings() {
         </div>
 
         <div className="settings-note spot-card">
-          <h2>Password</h2>
+          <SectionTitle icon={<GearIcon size={14} />}>Password</SectionTitle>
           <p>
             Prefer something new? Set a fresh password — we never see the old
             one.
@@ -689,7 +697,7 @@ export default function Settings() {
         </div>
 
         <div className="settings-note spot-card">
-          <h2>Email</h2>
+          <SectionTitle icon={<EnvelopeIcon size={14} />}>Email</SectionTitle>
           <p>
             Your current email: <strong>{user.email}</strong>. To change it,
             enter a new one below — we'll send a confirmation link.
@@ -729,7 +737,7 @@ export default function Settings() {
         </div>
 
         <div className="settings-note spot-card">
-          <h2>Backup your journal</h2>
+          <SectionTitle icon={<BookIcon size={14} />}>Backup your journal</SectionTitle>
           <p>
             Everything you've written, in one portable file — keep it anywhere,
             import it later, or just have it close. A JSON file with all your
@@ -760,7 +768,7 @@ export default function Settings() {
         </div>
 
         <div className="settings-card spot-card">
-          <h2>Quick tour</h2>
+          <SectionTitle icon={<LeafIcon size={14} />}>Quick tour</SectionTitle>
           <p>See the 4-step guide again — where to write, how filters work, and where your plant grows.</p>
           <div className="settings-actions">
             <button
