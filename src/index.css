@@ -10233,8 +10233,16 @@ h1,h2,h3{font-family:var(--font-serif);font-weight:650;letter-spacing:-0.02em;li
 .teaser-card--featured{border-color:color-mix(in srgb,var(--success) 45%,var(--line));background:linear-gradient(180deg,color-mix(in srgb,var(--praise-bg) 50%,var(--surface)) 0%,var(--bg-soft) 130%)}
 .teaser-note{text-align:center;color:var(--text-faint);font-size:.86rem;margin-top:var(--space-5)}
 
-/* — Settings section titles with icons — */
-.settings-h2{display:flex;align-items:center;gap:10px;font-size:1.05rem;font-weight:650;letter-spacing:-.015em}
+/* — Testimonials: equal height cards — */
+.testimonial-grid > div {
+  height: 100%;
+}
+
+.testimonial {
+  height: 100%;
+}
+
+/* — Settings section titles with icons — */.settings-h2{display:flex;align-items:center;gap:10px;font-size:1.05rem;font-weight:650;letter-spacing:-.015em}
 .settings-h2-icon{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;flex:none;background:linear-gradient(135deg,var(--praise-bg),var(--bg-soft));border:1px solid var(--praise-line);border-radius:8px;color:var(--success-ink)}
 
 /* — Growth history header — */
