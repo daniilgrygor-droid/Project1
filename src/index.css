@@ -944,6 +944,7 @@ a {
 .quote-band {
   padding: var(--space-8) 0;
   text-align: center;
+  overflow: hidden;
 }
 
 .quote-band blockquote {
@@ -10240,6 +10241,35 @@ h1,h2,h3{font-family:var(--font-serif);font-weight:650;letter-spacing:-0.02em;li
 
 .testimonial {
   height: 100%;
+}
+
+/* — Quote: falling leaves inside the frame — */
+.quote-fall {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+.quote-fall-item {
+  position: absolute;
+  top: -30px;
+  opacity: 0.5;
+  line-height: 1;
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+  animation: quote-fall linear infinite, leaf-sway ease-in-out infinite;
+}
+
+@keyframes quote-fall {
+  0% { transform: translateY(-30px) rotate(0deg); opacity: 0; }
+  8% { opacity: 0.5; }
+  92% { opacity: 0.5; }
+  100% { transform: translateY(320px) rotate(300deg); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .quote-fall { display: none; }
 }
 
 /* — Settings section titles with icons — */.settings-h2{display:flex;align-items:center;gap:10px;font-size:1.05rem;font-weight:650;letter-spacing:-.015em}

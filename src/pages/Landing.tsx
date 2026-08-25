@@ -34,55 +34,6 @@ function FloatingLeaf({
   );
 }
 
-function FaintBranch({ className }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 90 52"
-      width="90"
-      height="52"
-      className={`quote-branch${className ? ` ${className}` : ""}`}
-      aria-hidden="true"
-    >
-      {/* Branch */}
-      <path
-        d="M4 46 C 26 38 52 24 84 6"
-        stroke="currentColor"
-        strokeWidth="1.2"
-        fill="none"
-        strokeLinecap="round"
-      />
-      {/* Small twigs */}
-      <path d="M30 36 C 36 30 42 27 48 25" stroke="currentColor" strokeWidth="1" fill="none" strokeLinecap="round" />
-      <path d="M52 24 C 58 20 64 17 70 15" stroke="currentColor" strokeWidth="1" fill="none" strokeLinecap="round" />
-      {/* Flower at 32,35 — 5 petals + center */}
-      <g transform="translate(32 35) rotate(-30)">
-        <ellipse cx="0" cy="-4.2" rx="2.1" ry="2.8" fill="currentColor" opacity="0.95" />
-        <ellipse cx="3.9" cy="-1.3" rx="2.1" ry="2.8" fill="currentColor" opacity="0.95" transform="rotate(72 3.9 -1.3)" />
-        <ellipse cx="2.4" cy="3.4" rx="2.1" ry="2.8" fill="currentColor" opacity="0.95" transform="rotate(144 2.4 3.4)" />
-        <ellipse cx="-2.4" cy="3.4" rx="2.1" ry="2.8" fill="currentColor" opacity="0.95" transform="rotate(216 -2.4 3.4)" />
-        <ellipse cx="-3.9" cy="-1.3" rx="2.1" ry="2.8" fill="currentColor" opacity="0.95" transform="rotate(288 -3.9 -1.3)" />
-        <circle cx="0" cy="0" r="1.6" fill="var(--bg)" />
-        <circle cx="0" cy="0" r="0.9" fill="var(--accent-ochre)" />
-      </g>
-      {/* Leaf at 50,24 */}
-      <g transform="translate(50 24) rotate(-18)">
-        <path d="M-7 0 C -2 -4 2 -4 7 0 C 2 4 -2 4 -7 0 Z" fill="currentColor" />
-        <path d="M-7 0 C -1 0 1 0 7 0" stroke="var(--bg)" strokeWidth="0.7" fill="none" strokeLinecap="round" opacity="0.5" />
-      </g>
-      {/* Flower at 72,13 */}
-      <g transform="translate(72 13) rotate(-12)">
-        <ellipse cx="0" cy="-3.8" rx="1.9" ry="2.5" fill="currentColor" opacity="0.95" />
-        <ellipse cx="3.5" cy="-1.1" rx="1.9" ry="2.5" fill="currentColor" opacity="0.95" transform="rotate(72 3.5 -1.1)" />
-        <ellipse cx="2.2" cy="3.1" rx="1.9" ry="2.5" fill="currentColor" opacity="0.95" transform="rotate(144 2.2 3.1)" />
-        <ellipse cx="-2.2" cy="3.1" rx="1.9" ry="2.5" fill="currentColor" opacity="0.95" transform="rotate(216 -2.2 3.1)" />
-        <ellipse cx="-3.5" cy="-1.1" rx="1.9" ry="2.5" fill="currentColor" opacity="0.95" transform="rotate(288 -3.5 -1.1)" />
-        <circle cx="0" cy="0" r="1.4" fill="var(--bg)" />
-        <circle cx="0" cy="0" r="0.8" fill="var(--accent-rose)" />
-      </g>
-    </svg>
-  );
-}
-
 function ProductMockup() {
   const [tilt, setTilt] = useState({ rx: 0, ry: 0 });
   const wrapRef = useRef<HTMLDivElement>(null);
@@ -586,12 +537,28 @@ export default function Landing() {
         <section className="quote-section reveal">
           <div className="wrap">
             <div className="quote-band">
-              <FaintBranch className="quote-branch--left" />
               <blockquote>
                 “Coming back to life isn't a feat. It's a hundred small steps,
                 and no one is required to notice them. Except us.”
               </blockquote>
-              <FaintBranch className="quote-branch--right" />
+              <div className="quote-fall" aria-hidden="true">
+                {["🌸", "🍃", "🌼", "🍂", "🌿", "🌷", "🍃", "🌸", "🍂", "🌼"].map(
+                  (emoji, i) => (
+                    <span
+                      key={i}
+                      className="quote-fall-item"
+                      style={{
+                        left: `${[6, 16, 27, 38, 50, 62, 73, 84, 92, 45][i]}%`,
+                        fontSize: `${[15, 13, 17, 14, 16, 18, 12, 15, 13, 16][i]}px`,
+                        animationDuration: `${[7, 9, 8, 10, 7.5, 9.5, 8.5, 11, 9, 10.5][i]}s, ${[2.8, 3.2, 2.6, 3, 2.7, 3.3, 2.9, 3.1, 2.5, 2.8][i]}s`,
+                        animationDelay: `${(i * 0.9) % 8}s, ${(i * 0.3) % 2.5}s`,
+                      }}
+                    >
+                      {emoji}
+                    </span>
+                  ),
+                )}
+              </div>
               <div className="quote-foliage" aria-hidden="true">
                 <button type="button" className="foliage-item" style={{ top: "-8px", left: "2%", fontSize: "16px" }} onClick={(e) => e.currentTarget.classList.toggle("foliage-popped")}>🌸</button>
                 <button type="button" className="foliage-item" style={{ top: "12px", right: "4%", fontSize: "14px" }} onClick={(e) => e.currentTarget.classList.toggle("foliage-popped")}>🍃</button>
