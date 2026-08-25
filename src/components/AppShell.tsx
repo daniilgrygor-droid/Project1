@@ -10,6 +10,8 @@ import {
   GearIcon,
   LeafIcon,
   PencilIcon,
+  SearchIcon,
+  SignOutIcon,
   SproutIcon,
   SunIcon,
 } from "./icons";
@@ -36,6 +38,28 @@ export default function AppShell({ children }: { children: ReactNode }) {
   const location = useLocation();
   const { user, profile } = useAuth();
   const navRef = useRef<HTMLElement>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onClick = (e: MouseEvent) => {
+      if (!menuRef.current?.contains(e.target as Node)) setMenuOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMenuOpen(false);
+    };
+    document.addEventListener("mousedown", onClick);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onClick);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [menuOpen]);
+
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [location.pathname]);
 
   useEffect(() => {
     const onMove = (e: MouseEvent) => {
@@ -151,6 +175,16 @@ export default function AppShell({ children }: { children: ReactNode }) {
               Settings
             </Link>
             <span className="header-cluster">
+              <button
+                type="button"
+                className="search-pill"
+                onClick={() => setPaletteOpen(true)}
+                aria-label="Search (Ctrl+K)"
+              >
+                <SearchIcon size={14} />
+                <span className="search-pill-text">Search…</span>
+                <kbd>Ctrl K</kbd>
+              </button>
               <Link
                 to="/pricing"
                 className={`plan-pill${profile && isPrivate(profile) ? " plan-pill--private" : ""}`}
@@ -163,26 +197,51 @@ export default function AppShell({ children }: { children: ReactNode }) {
                 <LeafIcon size={12} />
                 {profile && isPrivate(profile) ? "Private" : "Go Private"}
               </Link>
-              <Link to="/settings" className="app-avatar" title="Settings">
-                {initialsOf(user?.email)}
-              </Link>
+              <div className="avatar-menu-wrap" ref={menuRef}>
+                <button
+                  type="button"
+                  className="app-avatar"
+                  aria-haspopup="menu"
+                  aria-expanded={menuOpen}
+                  onClick={() => setMenuOpen((v) => !v)}
+                  title="Account"
+                >
+                  {initialsOf(user?.email)}
+                </button>
+                {menuOpen && (
+                  <div className="avatar-menu spot-card" role="menu">
+                    <div className="avatar-menu-head">
+                      <span className="avatar avatar--menu">
+                        {initialsOf(user?.email)}
+                      </span>
+                      <span className="avatar-menu-id">
+                        <strong>{profile?.name || "Your journal"}</strong>
+                        <span>{user?.email}</span>
+                      </span>
+                    </div>
+                    <div className="avatar-menu-sep" aria-hidden="true" />
+                    <Link to="/settings" className="avatar-menu-item" role="menuitem">
+                      <GearIcon size={15} />
+                      Settings
+                    </Link>
+                    <Link to="/pricing" className="avatar-menu-item" role="menuitem">
+                      <LeafIcon size={15} />
+                      {profile && isPrivate(profile) ? "Manage plan" : "Upgrade to Private"}
+                    </Link>
+                    <div className="avatar-menu-sep" aria-hidden="true" />
+                    <button
+                      type="button"
+                      className="avatar-menu-item avatar-menu-item--danger"
+                      role="menuitem"
+                      onClick={signOut}
+                    >
+                      <SignOutIcon size={15} />
+                      Sign out
+                    </button>
+                  </div>
+                )}
+              </div>
             </span>
-            <button
-              type="button"
-              className="cmd-hint"
-              onClick={() => setPaletteOpen(true)}
-              title="Open command palette (Ctrl+K)"
-            >
-              <kbd>Ctrl K</kbd>
-            </button>
-            <button
-              type="button"
-              className="nav-signout"
-              onClick={signOut}
-              title="Sign out"
-            >
-              Sign out
-            </button>
           </nav>
         </div>
       </header>

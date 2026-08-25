@@ -9776,6 +9776,157 @@ textarea:-webkit-autofill {
   box-shadow: 0 2px 8px rgba(43, 40, 36, 0.12);
 }
 
+/* — SaaS header: search pill + avatar menu — */
+.search-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--text-faint);
+  border-radius: 999px;
+  padding: 6px 8px 6px 12px;
+  font-size: 0.84rem;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+  box-shadow: var(--shadow-xs);
+}
+
+.search-pill:hover {
+  border-color: var(--line-strong);
+  color: var(--text-soft);
+  box-shadow: var(--shadow-sm);
+}
+
+.search-pill-text {
+  min-width: 52px;
+  text-align: left;
+}
+
+.search-pill kbd {
+  background: var(--bg-warm);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 2px 6px;
+  font-size: 0.68rem;
+  font-family: var(--font-sans);
+  color: var(--text-faint);
+}
+
+.avatar-menu-wrap {
+  position: relative;
+}
+
+.app-avatar[aria-expanded="true"] {
+  box-shadow: 0 0 0 3px var(--focus-ring), 0 2px 8px rgba(43, 40, 36, 0.12);
+}
+
+.avatar-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 10px);
+  width: 250px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: var(--shadow-lg), inset 0 1px 0 var(--card-highlight);
+  padding: 8px;
+  z-index: 80;
+  animation: menu-in 0.18s var(--ease-soft);
+}
+
+@keyframes menu-in {
+  0% { opacity: 0; transform: translateY(-4px) scale(0.98); }
+  100% { opacity: 1; transform: none; }
+}
+
+.avatar-menu-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+}
+
+.avatar--menu {
+  background: linear-gradient(135deg, var(--success), var(--accent-secondary));
+  width: 36px;
+  height: 36px;
+  font-size: 0.8rem;
+  flex: none;
+}
+
+.avatar-menu-id {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.35;
+  min-width: 0;
+}
+
+.avatar-menu-id strong {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.avatar-menu-id span {
+  font-size: 0.78rem;
+  color: var(--text-faint);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.avatar-menu-sep {
+  height: 1px;
+  background: var(--line);
+  margin: 6px 4px;
+}
+
+.avatar-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  border: none;
+  background: none;
+  color: var(--text-soft);
+  font-size: 0.88rem;
+  font-weight: 500;
+  padding: 9px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.12s, color 0.12s;
+  text-align: left;
+}
+
+.avatar-menu-item:hover {
+  background: var(--bg-warm);
+  color: var(--text);
+}
+
+.avatar-menu-item--danger {
+  color: var(--danger);
+}
+
+.avatar-menu-item--danger:hover {
+  background: color-mix(in srgb, var(--danger) 8%, transparent);
+  color: var(--danger);
+}
+
+@media (width<=860px) {
+  .search-pill-text,
+  .search-pill kbd {
+    display: none;
+  }
+  .search-pill {
+    padding: 8px;
+  }
+}
+
 /* ── EntryCard / feed polish ── */
 .steps-list {
   gap: 14px;
