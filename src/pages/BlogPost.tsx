@@ -22,6 +22,39 @@ export default function BlogPost() {
     if (post) {
       const meta = document.querySelector('meta[name="description"]');
       meta?.setAttribute("content", post.description);
+
+      // Article structured data for search engines
+      const BASE = "https://small-steps-seven.vercel.app";
+      let ld = document.getElementById("article-jsonld");
+      if (!ld) {
+        ld = document.createElement("script");
+        ld.id = "article-jsonld";
+        (ld as HTMLScriptElement).type = "application/ld+json";
+        document.head.appendChild(ld);
+      }
+      ld.textContent = JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "Article",
+        headline: post.title,
+        description: post.description,
+        datePublished: post.date,
+        author: { "@type": "Organization", name: "Small Steps" },
+        publisher: { "@type": "Organization", name: "Small Steps" },
+        mainEntityOfPage: `${BASE}/blog/${post.slug}`,
+        url: `${BASE}/blog/${post.slug}`,
+      });
+
+      let link = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
+      if (!link) {
+        link = document.createElement("link");
+        link.rel = "canonical";
+        document.head.appendChild(link);
+      }
+      link.href = `${BASE}/blog/${post.slug}`;
+
+      return () => {
+        ld?.remove();
+      };
     }
   }, [post]);
 

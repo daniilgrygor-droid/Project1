@@ -58,6 +58,18 @@ const PAGE_TITLES: [string, string][] = [
   ["/lost", "Off the path · Small Steps"],
 ];
 
+const CANONICAL_BASE = "https://small-steps-seven.vercel.app";
+
+const CANONICAL_PATHS = new Set([
+  "/",
+  "/pricing",
+  "/privacy",
+  "/terms",
+  "/blog",
+  "/for-burnout",
+  "/for-sick-leave",
+]);
+
 /** Keeps the browser tab title in step with the route. */
 function RouteTitle() {
   const { pathname } = useLocation();
@@ -66,6 +78,26 @@ function RouteTitle() {
       p === "/" ? pathname === "/" : pathname.startsWith(p),
     );
     document.title = hit ? hit[1] : "Small Steps";
+
+    // Per-route canonical + og:url (blog posts set their own below).
+    const base = pathname.split("/").slice(0, 2).join("/") || "/";
+    const canonicalPath = CANONICAL_PATHS.has(base)
+      ? base === "/"
+        ? "/"
+        : base
+      : null;
+    let link = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
+    if (canonicalPath) {
+      const url = `${CANONICAL_BASE}${canonicalPath === "/" ? "/" : canonicalPath}`;
+      if (!link) {
+        link = document.createElement("link");
+        link.rel = "canonical";
+        document.head.appendChild(link);
+      }
+      link.href = url;
+      const og = document.querySelector<HTMLMetaElement>('meta[property="og:url"]');
+      og?.setAttribute("content", url);
+    }
   }, [pathname]);
   return null;
 }
