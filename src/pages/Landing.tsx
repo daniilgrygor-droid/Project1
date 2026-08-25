@@ -1,15 +1,13 @@
-import { useEffect, useRef, useState, type CSSProperties, type FormEvent } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { Link } from "react-router-dom";
-import { supabase } from "../lib/supabase";
 import { useAuth } from "../lib/auth";
 import { useRevealOnScroll } from "../lib/useRevealOnScroll";
-import { CountUp } from "../lib/useCountUp";
 import Wordmark from "../components/Wordmark";
 import MarketingFooter from "../components/MarketingFooter";
-import Tree from "../components/Tree";
 import Magnet from "../components/Magnet";
 import { useSpotlight } from "../lib/useSpotlight";
 import { LeafIcon } from "../components/icons";
+import { PRICE_MONTHLY, PRICE_YEARLY } from "../lib/billing";
 
 function FloatingLeaf({
   className,
@@ -221,15 +219,7 @@ const FAQ = [
   },
   {
     q: "Is there really a free tier?",
-    a: "Really. A journal and a warm reply after every entry, free forever. Private adds private AI processing and a few quiet extras for $48 a year — one human decision, not a subscription maze.",
-  },
-  {
-    q: "Do I need to install anything?",
-    a: "No. Small Steps runs in your browser, on any device. Your journal is saved in the cloud and follows you.",
-  },
-  {
-    q: "Who is this for?",
-    a: "People recovering from burnout, a long sick leave, or just a hard season. It's also for anyone who'd rather be a person than a productivity dashboard.",
+    a: "Really. A journal and a warm reply after every entry, free forever. Private adds private AI processing and a few quiet extras for $48 a year — or $5 a month.",
   },
 ];
 
@@ -285,15 +275,6 @@ function TestimonialCard({
     </figure>
   );
 }
-
-const MARQUEE = [
-  "No streaks",
-  "No guilt",
-  "No rush",
-  "Your pace",
-  "Small steps",
-  "Come back anytime",
-];
 
 function ProductShowcase() {
   const [tab, setTab] = useState<ShowcaseTabId>("checkin");
@@ -384,10 +365,6 @@ function ProductShowcase() {
 export default function Landing() {
   const { session } = useAuth();
   useRevealOnScroll();
-  const [email, setEmail] = useState("");
-  const [state, setState] = useState<
-    "idle" | "sending" | "done" | "error"
-  >("idle");
 
   // Thin gradient bar at the very top while the page scrolls.
   const [scrollP, setScrollP] = useState(0);
@@ -403,61 +380,6 @@ export default function Landing() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
-
-  // Final tree scene: staged reveal as it scrolls into view (leaves → canopy
-  // → full tree), with a very slight parallax. Skipped entirely for reduced
-  // motion — the scene simply appears.
-  const sceneRef = useRef<HTMLElement>(null);
-  const [settling, setSettling] = useState(false);
-
-  useEffect(() => {
-    const el = sceneRef.current;
-    if (!el) return;
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const tree = el.querySelector<HTMLElement>(".tree-scene-tree");
-    let raf = 0;
-    const update = () => {
-      raf = 0;
-      const rect = el.getBoundingClientRect();
-      const vh = window.innerHeight;
-      const progress = Math.min(1, Math.max(0, (vh - rect.top) / rect.height));
-      if (progress > 0.25) setSettling(true);
-      if (tree && !reduce) {
-        tree.style.transform = `translateY(${((0.5 - progress) * 24).toFixed(1)}px)`;
-      }
-    };
-    const onScroll = () => {
-      if (!raf) raf = requestAnimationFrame(update);
-    };
-    update();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-      if (raf) cancelAnimationFrame(raf);
-    };
-  }, []);
-
-  const submit = async (e: FormEvent) => {
-    e.preventDefault();
-    const value = email.trim();
-    if (!value || state === "sending") return;
-
-    if (!supabase) {
-      setState("error");
-      return;
-    }
-
-    setState("sending");
-    const { error } = await supabase.from("waitlist").insert({ email: value });
-
-    if (error) {
-      setState("error");
-      return;
-    }
-    setState("done");
-  };
 
   const journalHref = session ? "/check-in" : "/auth?mode=up";
   const journalLabel = session ? "Open your journal" : "Start free";
@@ -554,59 +476,9 @@ export default function Landing() {
                   Your pace, always
                 </span>
               </p>
-
-              <div className="hero-proof">
-                <span className="avatar-stack" aria-hidden="true">
-                  <Avatar name="Anna" className="avatar--anna" />
-                  <Avatar name="Maksym" className="avatar--maksym" />
-                  <Avatar name="Olena" className="avatar--olena" />
-                  <span className="avatar avatar--plus">+</span>
-                </span>
-                <p>
-                  Quiet notes from people coming back — no streaks, no scores.
-                </p>
-              </div>
             </div>
 
             <ProductMockup />
-          </div>
-        </section>
-
-        {/* ------------------------------------------------ proof strip */}
-        <section className="section section--proof reveal">
-          <div className="wrap">
-            <div className="stat-strip">
-              <div className="stat-chip reveal">
-                <strong>
-                  <CountUp value={0} />
-                </strong>
-                <span>streaks, points or guilt</span>
-              </div>
-              <div className="stat-chip reveal" style={{ transitionDelay: "80ms" }}>
-                <strong>
-                  <CountUp prefix="$" value={0} />
-                </strong>
-                <span>to start your journal</span>
-              </div>
-              <div className="stat-chip reveal" style={{ transitionDelay: "160ms" }}>
-                <strong>
-                  <CountUp value={100} suffix="%" />
-                </strong>
-                <span>your pace, always</span>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ------------------------------------------------ marquee */}
-        <section className="marquee" aria-hidden="true">
-          <div className="marquee-track">
-            {[...MARQUEE, ...MARQUEE].map((w, i) => (
-              <span key={i}>
-                {w}
-                <LeafIcon size={13} className="mq-dot" />
-              </span>
-            ))}
           </div>
         </section>
 
@@ -639,58 +511,8 @@ export default function Landing() {
           </div>
         </section>
 
-        {/* ------------------------------------------------ waitlist */}
-        <section className="section section--soft section--waitlist reveal" id="waitlist">
-          <div className="wrap">
-            <div className="section-head">
-              <p className="section-eyebrow">Not ready yet?</p>
-              <h2>Leave an email — one note when something new arrives</h2>
-            </div>
-            <form className="waitlist waitlist--center" onSubmit={submit}>
-              {state === "done" ? (
-                <div className="waitlist-thanks" role="status">
-                  Thank you. If something genuinely new happens, we'll write —
-                  no reminders, no rush.
-                </div>
-              ) : (
-                <>
-                  <div className="waitlist-row">
-                    <input
-                      id="waitlist-email"
-                      className="input"
-                      type="email"
-                      required
-                      autoComplete="email"
-                      placeholder="you@email.com"
-                      value={email}
-                      onChange={(e) => {
-                        setEmail(e.target.value);
-                        if (state === "error") setState("idle");
-                      }}
-                      disabled={state === "sending"}
-                    />
-                    <button
-                      type="submit"
-                      className="btn btn--primary"
-                      disabled={state === "sending"}
-                    >
-                      {state === "sending" ? "Writing it down…" : "Let me know"}
-                    </button>
-                  </div>
-                  {state === "error" && (
-                    <p className="form-error">
-                      That didn't work. Try again a little later.
-                    </p>
-                  )}
-                  <p className="hero-note">
-                    One email if something genuinely new happens. No
-                    newsletters, no “last chance”.
-                  </p>
-                </>
-              )}
-            </form>
-          </div>
-        </section>
+        {/* ------------------------------------------------ product showcase */}
+        <ProductShowcase />
 
         {/* ------------------------------------------------ testimonials */}
         <section className="section reveal">
@@ -718,8 +540,47 @@ export default function Landing() {
           </div>
         </section>
 
-        {/* ------------------------------------------------ product showcase */}
-        <ProductShowcase />
+        {/* ------------------------------------------------ pricing teaser */}
+        <section className="section section--soft section--pricing-teaser reveal" id="pricing">
+          <div className="wrap">
+            <div className="section-head">
+              <p className="section-eyebrow">Pricing</p>
+              <h2>Start free. Stay free. Or go Private.</h2>
+            </div>
+            <div className="teaser-grid">
+              <div className="teaser-card spot-card">
+                <h3>The quiet journal</h3>
+                <p className="teaser-price">$0 <span>forever</span></p>
+                <ul>
+                  <li><LeafIcon size={14} /> One gentle question a day</li>
+                  <li><LeafIcon size={14} /> Warm, personal AI replies</li>
+                  <li><LeafIcon size={14} /> Journey, progress and your plant</li>
+                </ul>
+                <Link to={journalHref} className="btn btn--ghost btn--block">
+                  {session ? "Your current plan" : "Start for free"}
+                </Link>
+              </div>
+              <div className="teaser-card teaser-card--featured spot-card">
+                <span className="pricing-pop" aria-hidden="true">Most popular</span>
+                <h3>Private</h3>
+                <p className="teaser-price">
+                  ${PRICE_MONTHLY}<span>/mo</span> · ${PRICE_YEARLY}<span>/yr</span>
+                </p>
+                <ul>
+                  <li><LeafIcon size={14} /> Everything in the quiet journal</li>
+                  <li><LeafIcon size={14} /> Private AI — never trains models</li>
+                  <li><LeafIcon size={14} /> Gentle reminders & weekly notes</li>
+                </ul>
+                <Link to="/pricing" className="btn btn--primary btn--block">
+                  See Private
+                </Link>
+              </div>
+            </div>
+            <p className="teaser-note">
+              Secure checkout via Stripe · Cancel anytime · Your data stays yours
+            </p>
+          </div>
+        </section>
 
         {/* ------------------------------------------------ quote */}
         <section className="quote-section reveal">
@@ -739,48 +600,6 @@ export default function Landing() {
                 <button type="button" className="foliage-item" style={{ top: "42%", left: "-6px", fontSize: "12px" }} onClick={(e) => e.currentTarget.classList.toggle("foliage-popped")}>🌿</button>
                 <button type="button" className="foliage-item" style={{ top: "48%", right: "-8px", fontSize: "13px" }} onClick={(e) => e.currentTarget.classList.toggle("foliage-popped")}>🌷</button>
               </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ------------------------------------------------ why this exists */}
-        <section className="section reveal" id="why">
-          <div className="wrap">
-            <div className="section-head">
-              <p className="section-eyebrow">Why this exists</p>
-              <h2>A quieter way to look at what's already true</h2>
-              <p>After burnout, the hardest thing is rarely the big plan — it's the first small one.</p>
-            </div>
-            <div className="about-text">
-              <p>
-                A shower. One email. Ten minutes outside. Most tools answer
-                that with streaks and scores. Small Steps answers with one
-                question and a warm reply: what did you do today — and isn't
-                that enough.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* ------------------------------------------------ how we use your entries */}
-        <section className="section section--soft section--privacy reveal">
-          <div className="wrap">
-            <div className="section-head">
-              <p className="section-eyebrow">Privacy</p>
-              <h2>How we use your entries</h2>
-              <p>Honest, and in plain words.</p>
-            </div>
-            <div className="privacy-note">
-              <p>
-                To write your personal reply, your entry is sent to Google's
-                Gemini API. Your journal is never sold or shared with anyone
-                else.
-              </p>
-              <p>
-                On the free tier, data sent to Gemini may be used by Google to
-                improve its models. On Private, replies are processed
-                privately.
-              </p>
             </div>
           </div>
         </section>
@@ -821,48 +640,6 @@ export default function Landing() {
               <Link to={journalHref} className="btn btn--primary btn--lg">
                 {journalLabel}
               </Link>
-            </div>
-          </div>
-        </section>
-
-        {/* ------------------------------------------------ final tree scene */}
-        <section
-          ref={sceneRef}
-          className={`tree-scene reveal${settling ? " tree-scene--settling" : ""}`}
-        >
-          <div className="wrap">
-            <div className="tree-scene-art">
-              <FloatingLeaf
-                className="floating-leaf--bg"
-                style={{ top: "10%", left: "10%", color: "var(--tree-foliage-dark)" }}
-              />
-              <FloatingLeaf
-                className="floating-leaf--near"
-                style={{ top: "26%", right: "12%", color: "var(--accent-secondary)" }}
-              />
-              <FloatingLeaf
-                className="floating-leaf--bg"
-                style={{ bottom: "22%", left: "6%", color: "var(--tree-foliage)" }}
-              />
-              <FloatingLeaf
-                className="floating-leaf--near"
-                style={{ bottom: "30%", right: "6%", color: "var(--tree-foliage-dark)" }}
-              />
-              <FloatingLeaf
-                className="floating-leaf--near"
-                style={{ top: "4%", left: "42%", color: "var(--tree-foliage-dark)" }}
-              />
-              <FloatingLeaf
-                className="floating-leaf--fore"
-                style={{ top: "48%", left: "24%", color: "var(--tree-foliage)" }}
-              />
-              <Tree size={620} variant="scene" className="tree-scene-tree" />
-            </div>
-            <div className="tree-scene-caption">
-              <Wordmark />
-              <p>
-                Small things, over time, become something larger.
-              </p>
             </div>
           </div>
         </section>

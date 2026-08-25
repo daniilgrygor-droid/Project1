@@ -10065,3 +10065,19 @@ h1,h2,h3{font-family:var(--font-serif);font-weight:650;letter-spacing:-0.02em;li
 .foliage-item:active{transform:scale(.85)}
 .foliage-popped{animation:foliage-pop .5s var(--ease-soft)}
 @keyframes foliage-pop{0%{transform:scale(1)}40%{transform:scale(1.7) rotate(12deg)}100%{transform:scale(1.15) rotate(-4deg);opacity:.9}}
+
+/* — Landing pricing teaser — */
+.section--pricing-teaser{padding-top:var(--space-8);padding-bottom:var(--space-8)}
+.teaser-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--space-5);max-width:760px;margin:0 auto}
+@media (width<=720px){.teaser-grid{grid-template-columns:1fr}}
+.teaser-card{position:relative;display:flex;flex-direction:column;gap:var(--space-3);border:1px solid var(--line);border-radius:20px;background:var(--surface);padding:var(--space-6);box-shadow:var(--shadow-sm),inset 0 1px 0 var(--card-highlight);transition:transform .25s var(--ease-soft),box-shadow .25s,border-color .25s}
+.teaser-card:hover{transform:translateY(-3px);border-color:var(--line-strong);box-shadow:var(--shadow-md),inset 0 1px 0 var(--card-highlight)}
+.teaser-card h3{font-size:1.25rem;letter-spacing:-.015em}
+.teaser-price{font-family:var(--font-sans);font-size:2rem;font-weight:700;letter-spacing:-.03em;color:var(--text)}
+.teaser-price span{font-size:.9rem;font-weight:500;color:var(--text-faint);letter-spacing:0}
+.teaser-card ul{display:grid;gap:10px;margin:0 0 var(--space-2);padding:0;list-style:none}
+.teaser-card li{display:flex;align-items:flex-start;gap:10px;color:var(--text-soft);font-size:.94rem;line-height:1.5}
+.teaser-card li svg{color:var(--success-ink);flex:none;margin-top:2px}
+.teaser-card .btn{margin-top:auto}
+.teaser-card--featured{border-color:color-mix(in srgb,var(--success) 45%,var(--line));background:linear-gradient(180deg,color-mix(in srgb,var(--praise-bg) 50%,var(--surface)) 0%,var(--bg-soft) 130%)}
+.teaser-note{text-align:center;color:var(--text-faint);font-size:.86rem;margin-top:var(--space-5)}
