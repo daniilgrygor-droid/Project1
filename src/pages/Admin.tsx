@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
-import { useAuth } from "../lib/auth";
-import { useToast } from "../lib/toast";
+import { useAuth } from "../lib/authContext";
+import { useToast } from "../lib/toastContext";
 import AppShell from "../components/AppShell";
 import SproutLoader from "../components/SproutLoader";
 import { LeafIcon } from "../components/icons";

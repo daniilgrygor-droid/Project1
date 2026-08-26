@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import Wordmark from "../components/Wordmark";
 import MarketingFooter from "../components/MarketingFooter";
 import { LeafIcon } from "../components/icons";
-import { useAuth } from "../lib/auth";
+import { useAuth } from "../lib/authContext";
 
 export interface SeoSection {
   heading: string;

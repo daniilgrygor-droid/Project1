@@ -1,11 +1,29 @@
 import { useState, type FormEvent } from "react";
 import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "../lib/supabase";
-import { useAuth } from "../lib/auth";
+import { useAuth } from "../lib/authContext";
+import { MIN_PASSWORD_LENGTH } from "../lib/constants";
 import Wordmark from "../components/Wordmark";
 import PlantIcon from "../components/PlantIcon";
 
 type Mode = "in" | "up";
+
+/* Quiet strength read-out: four segments, no shaming. */
+function passwordStrength(pw: string): { score: number; label: string } {
+  if (!pw) return { score: 0, label: "" };
+  let raw = 0;
+  if (pw.length >= MIN_PASSWORD_LENGTH) raw += 1;
+  if (pw.length >= 12) raw += 1;
+  if (/[a-z]/.test(pw) && /[A-Z]/.test(pw)) raw += 1;
+  if (/\d/.test(pw)) raw += 1;
+  if (/[^A-Za-z0-9]/.test(pw)) raw += 1;
+  if (pw.length < MIN_PASSWORD_LENGTH) {
+    return { score: 1, label: "A start — a few more characters" };
+  }
+  const score = Math.min(4, raw);
+  const labels = ["", "Okay", "Good", "Sturdy", "Sturdy"];
+  return { score, label: labels[score] };
+}
 
 export default function Auth() {
   const navigate = useNavigate();
@@ -59,6 +77,31 @@ export default function Auth() {
     }
   };
 
+  const sendMagicLink = async () => {
+    if (!supabase || busy) return;
+    if (!email.trim()) {
+      setError("Enter your email above, then tap the link.");
+      return;
+    }
+    setBusy(true);
+    setError(null);
+    setMessage(null);
+
+    const { error: err } = await supabase.auth.signInWithOtp({
+      email: email.trim(),
+      options: { emailRedirectTo: `${window.location.origin}/check-in` },
+    });
+
+    setBusy(false);
+    if (err) {
+      setError(`Couldn't send the link: ${err.message}. Try again later.`);
+    } else {
+      setMessage(
+        "Check your inbox — the link signs you in. No password needed."
+      );
+    }
+  };
+
   const submit = async (e: FormEvent) => {
     e.preventDefault();
     if (!supabase || busy) return;
@@ -103,6 +146,8 @@ export default function Auth() {
 
     setBusy(false);
   };
+
+  const strength = passwordStrength(password);
 
   if (!configured) {
     return (
@@ -208,10 +253,28 @@ export default function Auth() {
               type="password"
               required
               autoComplete={mode === "in" ? "current-password" : "new-password"}
-              minLength={6}
+              minLength={mode === "up" ? MIN_PASSWORD_LENGTH : undefined}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
+            {mode === "up" && (
+              <>
+                <p className="field-hint">At least {MIN_PASSWORD_LENGTH} characters.</p>
+                {password && (
+                  <div className="pw-meter" aria-live="polite">
+                    <div className="pw-meter-bars" aria-hidden="true">
+                      {[1, 2, 3, 4].map((i) => (
+                        <span
+                          key={i}
+                          className={`pw-meter-bar${strength.score >= i ? " pw-meter-bar--on" : ""}`}
+                        />
+                      ))}
+                    </div>
+                    <span className="pw-meter-label">{strength.label}</span>
+                  </div>
+                )}
+              </>
+            )}
             {mode === "in" && (
               <button
                 type="button"
@@ -231,7 +294,7 @@ export default function Auth() {
                 type="password"
                 required
                 autoComplete="new-password"
-                minLength={6}
+                minLength={MIN_PASSWORD_LENGTH}
                 value={confirm}
                 onChange={(e) => {
                   setConfirm(e.target.value);
@@ -254,6 +317,21 @@ export default function Auth() {
                   : "Create account"}
             </button>
           </div>
+          {mode === "in" && (
+            <>
+              <div className="auth-divider" aria-hidden="true">
+                <span>or</span>
+              </div>
+              <button
+                type="button"
+                className="btn btn--ghost btn--block"
+                onClick={() => void sendMagicLink()}
+                disabled={busy}
+              >
+                Email me a sign-in link
+              </button>
+            </>
+          )}
         </form>
 
         {error && (

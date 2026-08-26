@@ -1,5 +1,7 @@
 import type { Category } from "./types";
 
+export const MIN_PASSWORD_LENGTH = 8;
+
 export const CATEGORIES: { id: Category; label: string }[] = [
   { id: "body", label: "Body" },
   { id: "work", label: "Work" },

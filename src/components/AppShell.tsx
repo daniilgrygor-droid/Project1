@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { supabase } from "../lib/supabase";
-import { useAuth } from "../lib/auth";
+import { useAuth } from "../lib/authContext";
 import { isPrivate } from "../lib/types";
 import Wordmark from "./Wordmark";
 import CommandPalette from "./CommandPalette";
@@ -128,6 +128,16 @@ export default function AppShell({ children }: { children: ReactNode }) {
     void supabase?.auth.signOut();
   };
 
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 4);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const privatePlan = profile ? isPrivate(profile) : false;
+
   return (
     <div className="app app--tabbed">
       {routeBusy && (
@@ -139,9 +149,11 @@ export default function AppShell({ children }: { children: ReactNode }) {
           aria-hidden="true"
         />
       )}
-      <header className="app-header">
-        <div className="wrap">
-          <Wordmark />
+      <header className={`app-header${scrolled ? " app-header--scrolled" : ""}`}>
+        <div className="wrap app-header-grid">
+          <Link to="/check-in" className="app-header-brand" aria-label="Small Steps — home">
+            <Wordmark />
+          </Link>
           <nav ref={navRef} className="nav-links nav-links--main" aria-label="Main menu">
             {pill.visible && (
               <span
@@ -165,84 +177,97 @@ export default function AppShell({ children }: { children: ReactNode }) {
                 <span className="nav-link-icon" aria-hidden="true">
                   {l.icon}
                 </span>
-                {l.label}
+                <span className="nav-link-label">{l.label}</span>
               </NavLink>
             ))}
-            <Link to="/settings" className="nav-link">
+            <NavLink
+              to="/settings"
+              className={({ isActive }) =>
+                `nav-link${isActive ? " nav-link--active" : ""}`
+              }
+            >
               <span className="nav-link-icon" aria-hidden="true">
                 <GearIcon size={15} />
               </span>
-              Settings
-            </Link>
-            <span className="header-cluster">
-              <button
-                type="button"
-                className="search-pill"
-                onClick={() => setPaletteOpen(true)}
-                aria-label="Search (Ctrl+K)"
-              >
-                <SearchIcon size={14} />
-                <span className="search-pill-text">Search…</span>
-                <kbd>Ctrl K</kbd>
-              </button>
+              <span className="nav-link-label">Settings</span>
+            </NavLink>
+          </nav>
+          <div className="header-actions">
+            <button
+              type="button"
+              className="search-pill"
+              onClick={() => setPaletteOpen(true)}
+              aria-label="Search (Ctrl+K)"
+              aria-keyshortcuts="Control+K"
+            >
+              <SearchIcon size={14} />
+              <span className="search-pill-text">Search…</span>
+              <kbd>Ctrl K</kbd>
+            </button>
+            {!privatePlan && (
+              <Link to="/pricing" className="plan-cta" title="Upgrade to Private">
+                <LeafIcon size={13} />
+                <span className="plan-cta-label">Go Private</span>
+              </Link>
+            )}
+            {privatePlan && (
               <Link
                 to="/pricing"
-                className={`plan-pill${profile && isPrivate(profile) ? " plan-pill--private" : ""}`}
-                title={
-                  profile && isPrivate(profile)
-                    ? "You're on Private"
-                    : "Upgrade to Private"
-                }
+                className="plan-badge"
+                title="You're on Private — manage your plan"
               >
                 <LeafIcon size={12} />
-                {profile && isPrivate(profile) ? "Private" : "Go Private"}
+                Private
               </Link>
-              <div className="avatar-menu-wrap" ref={menuRef}>
-                <button
-                  type="button"
-                  className="app-avatar"
-                  aria-haspopup="menu"
-                  aria-expanded={menuOpen}
-                  onClick={() => setMenuOpen((v) => !v)}
-                  title="Account"
-                >
-                  {initialsOf(user?.email)}
-                </button>
-                {menuOpen && (
-                  <div className="avatar-menu spot-card" role="menu">
-                    <div className="avatar-menu-head">
-                      <span className="avatar avatar--menu">
-                        {initialsOf(user?.email)}
+            )}
+            <div className="avatar-menu-wrap" ref={menuRef}>
+              <button
+                type="button"
+                className="app-avatar"
+                aria-haspopup="menu"
+                aria-expanded={menuOpen}
+                onClick={() => setMenuOpen((v) => !v)}
+                title="Account"
+              >
+                {initialsOf(user?.email)}
+              </button>
+              {menuOpen && (
+                <div className="avatar-menu spot-card" role="menu">
+                  <div className="avatar-menu-head">
+                    <span className="avatar avatar--menu">
+                      {initialsOf(user?.email)}
+                    </span>
+                    <span className="avatar-menu-id">
+                      <strong>{profile?.name || "Your journal"}</strong>
+                      <span>{user?.email}</span>
+                      <span className={`avatar-menu-plan${privatePlan ? " avatar-menu-plan--private" : ""}`}>
+                        {privatePlan ? "Private plan" : "Free plan"}
                       </span>
-                      <span className="avatar-menu-id">
-                        <strong>{profile?.name || "Your journal"}</strong>
-                        <span>{user?.email}</span>
-                      </span>
-                    </div>
-                    <div className="avatar-menu-sep" aria-hidden="true" />
-                    <Link to="/settings" className="avatar-menu-item" role="menuitem">
-                      <GearIcon size={15} />
-                      Settings
-                    </Link>
-                    <Link to="/pricing" className="avatar-menu-item" role="menuitem">
-                      <LeafIcon size={15} />
-                      {profile && isPrivate(profile) ? "Manage plan" : "Upgrade to Private"}
-                    </Link>
-                    <div className="avatar-menu-sep" aria-hidden="true" />
-                    <button
-                      type="button"
-                      className="avatar-menu-item avatar-menu-item--danger"
-                      role="menuitem"
-                      onClick={signOut}
-                    >
-                      <SignOutIcon size={15} />
-                      Sign out
-                    </button>
+                    </span>
                   </div>
-                )}
-              </div>
-            </span>
-          </nav>
+                  <div className="avatar-menu-sep" aria-hidden="true" />
+                  <Link to="/settings" className="avatar-menu-item" role="menuitem">
+                    <GearIcon size={15} />
+                    Settings
+                  </Link>
+                  <Link to="/pricing" className="avatar-menu-item" role="menuitem">
+                    <LeafIcon size={15} />
+                    {privatePlan ? "Manage plan" : "Upgrade to Private"}
+                  </Link>
+                  <div className="avatar-menu-sep" aria-hidden="true" />
+                  <button
+                    type="button"
+                    className="avatar-menu-item avatar-menu-item--danger"
+                    role="menuitem"
+                    onClick={signOut}
+                  >
+                    <SignOutIcon size={15} />
+                    Sign out
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </header>
 

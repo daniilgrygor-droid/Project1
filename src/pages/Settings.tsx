@@ -1,10 +1,11 @@
 import { useEffect, useState, type FormEvent, type ReactNode } from "react";
 import { supabase } from "../lib/supabase";
-import { useAuth } from "../lib/auth";
-import { useToast } from "../lib/toast";
+import { useAuth } from "../lib/authContext";
+import { useToast } from "../lib/toastContext";
 import AppShell from "../components/AppShell";
 import SproutLoader from "../components/SproutLoader";
 import { deleteAllSteps, fetchSteps } from "../lib/steps";
+import { MIN_PASSWORD_LENGTH } from "../lib/constants";
 import { isPrivate } from "../lib/types";
 import { planLabel } from "../lib/billing";
 import {
@@ -159,7 +160,7 @@ export default function Settings() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${session.access_token}`,
         },
-        body: JSON.stringify({}),
+        body: JSON.stringify({ interval: "year" }),
       });
       const data = await res.json();
       if (data.url) {
@@ -684,7 +685,7 @@ export default function Settings() {
               type="button"
               className="btn btn--ghost"
               onClick={() => void updatePassword()}
-              disabled={pwBusy || newPassword.trim().length < 8}
+              disabled={pwBusy || newPassword.trim().length < MIN_PASSWORD_LENGTH}
             >
               {pwBusy ? "Working…" : "Update password"}
             </button>

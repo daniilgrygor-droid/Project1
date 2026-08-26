@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent, ty
 import { Link } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import { saveStep } from "../lib/ai";
-import { useAuth } from "../lib/auth";
+import { useAuth } from "../lib/authContext";
 import { type Category, type Step } from "../lib/types";
 import AppShell from "../components/AppShell";
 import PraiseCard from "../components/PraiseCard";
@@ -15,7 +15,7 @@ import Tour from "../components/Tour";
 import { plantStageFor, dayKey } from "../lib/constants";
 import { LeafIcon, SproutIcon, SunIcon } from "../components/icons";
 import { useCountUp } from "../lib/useCountUp";
-import { useToast } from "../lib/toast";
+import { useToast } from "../lib/toastContext";
 import { smallStepsNoticed } from "../lib/copy";
 import { registerUndoRestore } from "../lib/undoStore";
 

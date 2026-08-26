@@ -11,6 +11,19 @@ interface State {
   error: Error | null;
 }
 
+// A deploy replaces hashed chunks; an open tab still running the old code
+// then fails to lazy-load a route. A single quiet reload picks up the new
+// build (same as a manual refresh). The timestamp guards against loops.
+const CHUNK_LOAD_ERROR =
+  /failed to fetch dynamically imported module|importing a module script failed|error loading dynamically imported module|loading chunk \d+ failed/i;
+const RELOAD_KEY = "ss-chunk-reload-at";
+const RELOAD_WINDOW_MS = 15_000;
+
+function isChunkLoadError(error: Error | null): boolean {
+  if (!error) return false;
+  return CHUNK_LOAD_ERROR.test(error.message) || CHUNK_LOAD_ERROR.test(String(error.stack));
+}
+
 export default class ErrorBoundary extends Component<Props, State> {
   state: State = { hasError: false, error: null };
 
@@ -20,6 +33,17 @@ export default class ErrorBoundary extends Component<Props, State> {
 
   componentDidCatch(error: Error, info: React.ErrorInfo) {
     console.error("[ErrorBoundary]", error, info.componentStack);
+    if (isChunkLoadError(error)) {
+      try {
+        const last = Number(sessionStorage.getItem(RELOAD_KEY) ?? 0);
+        if (Date.now() - last > RELOAD_WINDOW_MS) {
+          sessionStorage.setItem(RELOAD_KEY, String(Date.now()));
+          window.location.reload();
+        }
+      } catch {
+        /* storage unavailable — fall through to the gentle fallback */
+      }
+    }
   }
 
   render() {

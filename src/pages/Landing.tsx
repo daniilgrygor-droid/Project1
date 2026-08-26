@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { Link } from "react-router-dom";
-import { useAuth } from "../lib/auth";
+import { useAuth } from "../lib/authContext";
 import { useRevealOnScroll } from "../lib/useRevealOnScroll";
 import Wordmark from "../components/Wordmark";
 import MarketingFooter from "../components/MarketingFooter";
@@ -137,6 +137,15 @@ const TESTIMONIALS = [
     role: "Returning after a hard season",
     city: "Odesa",
   },
+];
+
+const COMPARE_ROWS: { feature: string; us: boolean | string; them: boolean | string }[] = [
+  { feature: "Daily question", us: "One, optional", them: "Checklists and quotas" },
+  { feature: "Missed days", us: true, them: false },
+  { feature: "Streaks and points", us: false, them: false },
+  { feature: "Response to your words", us: "A warm, personal reply", them: "Badges and confetti" },
+  { feature: "Reminders", us: "Off until you ask", them: "Push notifications by default" },
+  { feature: "Your data", us: "Export or delete anytime", them: "Often locked in" },
 ];
 
 const SHOWCASE_TABS = [
@@ -487,6 +496,70 @@ export default function Landing() {
                   />
                 </div>
               ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ------------------------------------------------ comparison */}
+        <section className="section reveal" id="compare">
+          <div className="wrap">
+            <div className="section-head">
+              <p className="section-eyebrow">A different kind of tracker</p>
+              <h2>Built calm, on purpose</h2>
+              <p>
+                Most habit apps compete for your attention. Small Steps is
+                built to need as little of it as possible.
+              </p>
+            </div>
+            <div className="compare-wrap spot-card">
+              <table className="compare-table">
+                <thead>
+                  <tr>
+                    <th scope="col">
+                      <span className="visually-hidden">Feature</span>
+                    </th>
+                    <th scope="col" className="compare-us">
+                      Small Steps
+                    </th>
+                    <th scope="col" className="compare-them">
+                      Typical habit trackers
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {COMPARE_ROWS.map((row) => (
+                    <tr key={row.feature}>
+                      <th scope="row">{row.feature}</th>
+                      <td className="compare-us">
+                        {typeof row.us === "string" ? (
+                          row.us
+                        ) : row.us ? (
+                          <span className="compare-yes" aria-label="Yes">
+                            <LeafIcon size={13} />
+                          </span>
+                        ) : (
+                          <span className="compare-no" aria-label="No">
+                            —
+                          </span>
+                        )}
+                      </td>
+                      <td className="compare-them">
+                        {typeof row.them === "string" ? (
+                          row.them
+                        ) : row.them ? (
+                          <span className="compare-yes" aria-label="Yes">
+                            <LeafIcon size={13} />
+                          </span>
+                        ) : (
+                          <span className="compare-no" aria-label="No">
+                            —
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
         </section>

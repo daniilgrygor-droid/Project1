@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import Wordmark from "../components/Wordmark";
 import MarketingFooter from "../components/MarketingFooter";
-import { useAuth } from "../lib/auth";
+import { useAuth } from "../lib/authContext";
 import { isPrivate, type Plan } from "../lib/types";
 import { PLANS, PRICE_MONTHLY, PRICE_YEARLY } from "../lib/billing";
 import { LeafIcon } from "../components/icons";

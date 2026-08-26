@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase, supabaseConfigured } from "../lib/supabase";
-import { useAuth } from "../lib/auth";
+import { useAuth } from "../lib/authContext";
 import AppShell from "../components/AppShell";
 import PlantIcon from "../components/PlantIcon";
 import { LeafIcon, SproutIcon, SunIcon } from "../components/icons";

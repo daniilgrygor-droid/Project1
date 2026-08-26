@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "../lib/supabase";
+import { MIN_PASSWORD_LENGTH } from "../lib/constants";
 import Wordmark from "../components/Wordmark";
 import PlantIcon from "../components/PlantIcon";
 
@@ -67,7 +68,7 @@ export default function ResetPassword() {
                   type="password"
                   required
                   autoComplete="new-password"
-                  minLength={6}
+                  minLength={MIN_PASSWORD_LENGTH}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />

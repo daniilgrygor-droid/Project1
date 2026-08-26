@@ -11,6 +11,25 @@ const supabase = createClient(
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
 
+// Stripe moved current_period_* onto subscription items in newer API
+// versions; older payloads keep them on the subscription root. Read both.
+type Periods = { current_period_start?: number; current_period_end?: number };
+
+function subscriptionPeriods(sub: Stripe.Subscription): Periods {
+  const item = sub.items.data[0] as Stripe.SubscriptionItem & Periods;
+  const root = sub as unknown as Periods;
+  return {
+    current_period_start: item?.current_period_start ?? root.current_period_start,
+    current_period_end: item?.current_period_end ?? root.current_period_end,
+  };
+}
+
+function isoFromUnix(unix: number | undefined, fallbackMs: number): string {
+  return unix
+    ? new Date(unix * 1000).toISOString()
+    : new Date(fallbackMs).toISOString();
+}
+
 async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   const userId = session.metadata?.supabase_user_id;
   if (!userId) {
@@ -32,20 +51,69 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     })
     .eq("id", userId);
 
-  // Record payment
+  // Record payment with the real amount and period from Stripe
+  let amount = session.amount_total ?? 0;
+  let periods: Periods = {};
+  if (subscriptionId) {
+    const sub = await stripe.subscriptions.retrieve(subscriptionId);
+    amount = sub.items.data[0]?.price?.unit_amount ?? amount;
+    periods = subscriptionPeriods(sub);
+  }
+
   await supabase.from("payments").insert({
     user_id: userId,
     email: session.customer_email || "",
-    amount: session.amount_total || 4800,
+    amount,
     currency: (session.currency || "usd").toUpperCase(),
     status: "confirmed",
-    period_start: new Date().toISOString(),
-    period_end: new Date(Date.now() + 365 * 86400000).toISOString(),
+    period_start: isoFromUnix(periods.current_period_start, Date.now()),
+    period_end: isoFromUnix(periods.current_period_end, Date.now() + 365 * 86400000),
     confirmed_at: new Date().toISOString(),
     stripe_session_id: session.id,
   });
 
   console.log(`[webhook] Checkout completed for user ${userId}`);
+}
+
+// Renewals: every paid invoice after the first one (checkout already
+// recorded the subscription_create invoice).
+async function handleInvoicePaid(invoice: Stripe.Invoice) {
+  if (invoice.billing_reason === "subscription_create") return;
+
+  const subRef = invoice as unknown as {
+    subscription?: string | { id?: string } | null;
+  };
+  const subscriptionId =
+    typeof subRef.subscription === "string"
+      ? subRef.subscription
+      : subRef.subscription?.id;
+  if (!subscriptionId) return;
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("id, email")
+    .eq("stripe_subscription_id", subscriptionId)
+    .maybeSingle();
+  if (!profile) return;
+
+  const line = invoice.lines?.data[0];
+  const period = line?.period as { start?: number; end?: number } | undefined;
+
+  await supabase.from("payments").insert({
+    user_id: profile.id,
+    email: invoice.customer_email || profile.email || "",
+    amount: invoice.amount_paid ?? line?.amount ?? 0,
+    currency: (invoice.currency || "usd").toUpperCase(),
+    status: "confirmed",
+    period_start: isoFromUnix(period?.start, Date.now()),
+    period_end: isoFromUnix(period?.end, Date.now() + 365 * 86400000),
+    confirmed_at: new Date().toISOString(),
+    stripe_session_id: invoice.id,
+  });
+
+  console.log(
+    `[webhook] Renewal recorded for user ${profile.id} (invoice ${invoice.id})`,
+  );
 }
 
 async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
@@ -113,6 +181,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         await handleCheckoutCompleted(
           event.data.object as Stripe.Checkout.Session,
         );
+        break;
+      case "invoice.paid":
+        await handleInvoicePaid(event.data.object as Stripe.Invoice);
         break;
       case "customer.subscription.updated":
         await handleSubscriptionUpdated(

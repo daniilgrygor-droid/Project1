@@ -33,14 +33,3 @@ export const PLANS: Record<
 export function planLabel(plan: Plan): string {
   return PLANS[plan].label;
 }
-
-/** Owner revokes their own Private plan (no guilt, no refunds talk). */
-export async function cancelPrivate(userId: string): Promise<boolean> {
-  const { supabase } = await import("./supabase");
-  if (!supabase) return false;
-  const { error } = await supabase
-    .from("profiles")
-    .update({ plan: "free", plan_updated_at: new Date().toISOString() })
-    .eq("id", userId);
-  return !error;
-}

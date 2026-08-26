@@ -1,28 +1,17 @@
 import {
-  createContext,
   useCallback,
-  useContext,
   useRef,
   useState,
   type ReactNode,
 } from "react";
 import { LeafIcon } from "../components/icons";
-
-type ToastTone = "ok" | "info";
+import { ToastCtx, type ToastTone } from "./toastContext";
 
 interface Toast {
   id: number;
   text: string;
   tone: ToastTone;
 }
-
-interface ToastCtxValue {
-  push: (text: string, tone?: ToastTone) => void;
-}
-
-const ToastCtx = createContext<ToastCtxValue>({ push: () => {} });
-
-export const useToast = () => useContext(ToastCtx);
 
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);

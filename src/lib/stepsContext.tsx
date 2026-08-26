@@ -1,18 +1,8 @@
-import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { supabase } from "./supabase";
-import { useAuth } from "./auth";
+import { useAuth } from "./authContext";
+import { StepsContext } from "./useSteps";
 import type { Step } from "./types";
-
-interface StepsState {
-  steps: Step[] | null;
-  loading: boolean;
-  refresh: () => Promise<void>;
-  addStep: (step: Step) => void;
-  updateStep: (step: Step) => void;
-  removeStep: (id: string) => void;
-}
-
-const StepsContext = createContext<StepsState | null>(null);
 
 export function StepsProvider({ children }: { children: ReactNode }) {
   const { session } = useAuth();
@@ -60,10 +50,4 @@ export function StepsProvider({ children }: { children: ReactNode }) {
       {children}
     </StepsContext.Provider>
   );
-}
-
-export function useSteps() {
-  const ctx = useContext(StepsContext);
-  if (!ctx) throw new Error("useSteps must be used within StepsProvider");
-  return ctx;
 }

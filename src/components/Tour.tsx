@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 const STEPS = [
   {
@@ -80,23 +80,26 @@ export default function Tour() {
   const textTyping = useTyping(step.text, 18, 520);
   const typingDone = titleTyping.done && textTyping.done;
 
-  const close = (done = true) => {
-    setOpen(false);
-    if (done) {
-      try { localStorage.setItem(KEY, "1"); } catch {}
-      (window as any).plausible?.("tour_complete", { props: { step: String(idx + 1) } });
-    }
-  };
+  const close = useCallback(
+    (done = true) => {
+      setOpen(false);
+      if (done) {
+        try { localStorage.setItem(KEY, "1"); } catch {}
+        (window as any).plausible?.("tour_complete", { props: { step: String(idx + 1) } });
+      }
+    },
+    [idx],
+  );
 
-  const next = () => {
+  const next = useCallback(() => {
     if (idx + 1 >= STEPS.length) close(true);
     else {
       setIdx((i) => i + 1);
       (window as any).plausible?.("tour_step", { props: { step: String(idx + 2) } });
     }
-  };
+  }, [close, idx]);
 
-  const prev = () => setIdx((i) => Math.max(0, i - 1));
+  const prev = useCallback(() => setIdx((i) => Math.max(0, i - 1)), []);
 
   // Auto-advance after typing is done + pause
   useEffect(() => {
@@ -110,7 +113,7 @@ export default function Tour() {
       }
     }, 2200);
     return () => clearTimeout(t);
-  }, [open, typingDone, idx]);
+  }, [open, typingDone, idx, close]);
 
   useEffect(() => {
     if (!open) return;
@@ -121,7 +124,7 @@ export default function Tour() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [open, idx]);
+  }, [open, close, next, prev]);
 
   if (!open) return null;
 
