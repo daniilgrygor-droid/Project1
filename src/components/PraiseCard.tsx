@@ -11,8 +11,6 @@ interface PraiseCardProps {
   mood?: number | null;
   /** While an AI reply is being written, show a quiet typing indicator. */
   typing?: boolean;
-  /** True while the note is still flying in — keeps its seat empty. */
-  hideNote?: boolean;
   /** True right after a fresh submission — the reply types itself in. */
   typeResponse?: boolean;
   /** Called once the typewriter has finished (or was skipped). */
@@ -26,7 +24,6 @@ export default function PraiseCard({
   category = null,
   mood = null,
   typing = false,
-  hideNote = false,
   typeResponse = false,
   onTyped,
 }: PraiseCardProps) {
@@ -57,9 +54,7 @@ export default function PraiseCard({
         <span className="praise-note-leaf">
           <LeafIcon size={14} />
         </span>
-        <span className={`praise-note-text${hideNote ? " praise-note-text--veiled" : ""}`}>
-          «{note}»
-        </span>
+        <span className="praise-note-text">«{note}»</span>
       </blockquote>
       <div className="praise-text">
         {typing ? (

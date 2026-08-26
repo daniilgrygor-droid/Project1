@@ -10800,37 +10800,6 @@ h1,h2,h3{font-family:var(--font-serif);font-weight:650;letter-spacing:-0.02em;li
   );
 }
 
-/* --- note flight: textarea → quoted seat in the praise card --- */
-.praise-note-text{
-  display:inline;
-  transition:opacity .45s var(--ease-soft),transform .45s var(--ease-soft);
-}
-
-.praise-note-text--veiled{
-  opacity:0;
-  transform:translateY(6px);
-}
-
-.flight-clone{
-  position:fixed;
-  z-index:100;
-  pointer-events:none;
-  font-family:var(--font-serif);
-  font-style:italic;
-  font-size:1.12rem;
-  line-height:1.5;
-  color:var(--text-soft);
-  white-space:pre-wrap;
-  transform-origin:0 0;
-  will-change:transform,opacity;
-  text-shadow:0 1px 6px color-mix(in srgb,var(--bg) 70%,transparent);
-}
-
-@media (prefers-reduced-motion:reduce){
-  .praise-note-text{transition:none}
-  .flight-clone{display:none}
-}
-
 /* typewriter caret while the reply is being written in */
 .type-caret{
   display:inline-block;
