@@ -10680,3 +10680,122 @@ h1,h2,h3{font-family:var(--font-serif);font-weight:650;letter-spacing:-0.02em;li
     border-color:color-mix(in srgb,var(--sage) 32%,transparent);
   }
 }
+
+/* ============================================================ */
+/* Visible design pass: hero step-chips + praise card warmth    */
+/* ============================================================ */
+
+/* --- floating step chips around the hero mockup --- */
+.hero-chips{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  z-index:2;
+}
+
+.hero-chip{
+  position:absolute;
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  padding:8px 13px;
+  border-radius:999px;
+  background:color-mix(in srgb,var(--surface) 90%,transparent);
+  border:1px solid var(--line);
+  box-shadow:var(--shadow-sm);
+  font-size:.8rem;
+  font-weight:500;
+  color:var(--text-soft);
+  white-space:nowrap;
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+  animation:chip-float 7s ease-in-out infinite;
+}
+
+.hero-chip svg{
+  color:var(--success);
+  flex:none;
+}
+
+.hero-chip--a{top:7%;left:-8%}
+.hero-chip--b{top:46%;right:-10%;animation-delay:1.4s;animation-duration:8s}
+.hero-chip--c{bottom:-2%;left:-3%;animation-delay:2.8s;animation-duration:9s}
+
+@keyframes chip-float{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-9px)}
+}
+
+@media (max-width:1120px){
+  .hero-chip--a{left:-3%}
+  .hero-chip--b{right:-3%}
+}
+
+@media (max-width:900px){
+  .hero-chips{display:none}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .hero-chip{animation:none}
+}
+
+/* --- praise card: warmer, letter-like --- */
+.praise{
+  position:relative;
+  overflow:hidden;
+  background:linear-gradient(
+    160deg,
+    color-mix(in srgb,var(--praise-bg) 62%,var(--surface)),
+    var(--praise-bg) 70%
+  );
+  border-radius:calc(var(--radius) + 6px);
+  box-shadow:var(--elevation-2),inset 0 1px 0 var(--card-highlight);
+}
+
+.praise::before{
+  content:"";
+  position:absolute;
+  right:-48px;
+  bottom:-64px;
+  width:210px;
+  height:210px;
+  border-radius:50%;
+  background:radial-gradient(
+    circle,
+    color-mix(in srgb,var(--success) 13%,transparent),
+    transparent 70%
+  );
+  pointer-events:none;
+}
+
+.praise > *{
+  position:relative;
+  z-index:1;
+}
+
+.praise-head svg{
+  color:var(--success);
+}
+
+.praise-head{
+  letter-spacing:.12em;
+}
+
+.praise-text{
+  font-family:var(--font-serif);
+  font-size:1.12rem;
+  line-height:1.75;
+}
+
+.praise-text .praise-fallback{
+  font-family:var(--font-body);
+  font-size:.95rem;
+}
+
+[data-theme="dark"] .praise::before{
+  background:radial-gradient(
+    circle,
+    color-mix(in srgb,var(--success) 17%,transparent),
+    transparent 70%
+  );
+}

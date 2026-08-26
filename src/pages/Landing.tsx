@@ -7,7 +7,7 @@ import MarketingFooter from "../components/MarketingFooter";
 import Magnet from "../components/Magnet";
 import { useSpotlight } from "../lib/useSpotlight";
 import FaqJsonLd from "../components/FaqJsonLd";
-import { LeafIcon } from "../components/icons";
+import { BookIcon, CupIcon, FootprintIcon, LeafIcon } from "../components/icons";
 import { PRICE_MONTHLY, PRICE_YEARLY } from "../lib/billing";
 
 function FloatingLeaf({
@@ -94,6 +94,20 @@ function ProductMockup() {
         </div>
       </div>
       <span className="mock-glow" aria-hidden="true" />
+      <div className="hero-chips" aria-hidden="true">
+        <span className="hero-chip hero-chip--a">
+          <CupIcon size={14} />
+          Morning tea, slowly
+        </span>
+        <span className="hero-chip hero-chip--b">
+          <FootprintIcon size={14} />
+          Walked to the corner
+        </span>
+        <span className="hero-chip hero-chip--c">
+          <BookIcon size={14} />
+          One page read
+        </span>
+      </div>
     </div>
   );
 }
