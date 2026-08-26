@@ -15,6 +15,7 @@ import Tour from "../components/Tour";
 import { plantStageFor, dayKey } from "../lib/constants";
 import { LeafIcon, SproutIcon, SunIcon } from "../components/icons";
 import { useCountUp } from "../lib/useCountUp";
+import { useTypewriter } from "../lib/useTypewriter";
 import { useToast } from "../lib/toastContext";
 import { smallStepsNoticed } from "../lib/copy";
 import { registerUndoRestore } from "../lib/undoStore";
@@ -123,6 +124,10 @@ export default function CheckIn() {
   useEffect(() => {
     if (!overlay) return;
     document.body.style.overflow = "hidden";
+    if (!overlay.response && !fallback) {
+      // Nothing to type out — let the moment breathe, then return.
+      overlayTimer.current = window.setTimeout(closeOverlay, 2400);
+    }
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") closeOverlay();
     };
@@ -131,7 +136,7 @@ export default function CheckIn() {
       document.body.style.overflow = "";
       window.removeEventListener("keydown", onKey);
     };
-  }, [overlay, closeOverlay]);
+  }, [overlay, closeOverlay, fallback]);
 
   useEffect(
     () => () => {
@@ -368,6 +373,10 @@ export default function CheckIn() {
     );
   }, [latest]);
   const hour = new Date().getHours();
+  const overlayText = overlay ? overlay.response ?? fallback ?? null : null;
+  const typedReply = useTypewriter(overlayText, typeReply, onOverlayTyped);
+  const overlayTyping =
+    typeReply && overlayText != null && typedReply < overlayText.length;
   const greeting =
     hour < 5
       ? "Resting well"
@@ -385,17 +394,35 @@ export default function CheckIn() {
           className="reply-overlay"
           role="dialog"
           aria-modal="true"
-          aria-label="A personal reply"
+          aria-label="A conversation about your step"
         >
-          <PraiseCard
-            note={overlay.note}
-            response={overlay.response}
-            fallback={fallback}
-            category={overlay.category}
-            mood={overlay.mood}
-            typeResponse={typeReply}
-            onTyped={onOverlayTyped}
-          />
+          <div className="chat-thread">
+            {overlay.note && (
+              <div
+                className="chat-bubble chat-bubble--me"
+                style={{ animationDelay: ".1s" }}
+              >
+                {overlay.note}
+              </div>
+            )}
+            <div
+              className="chat-bubble chat-bubble--ai"
+              style={{ animationDelay: ".55s" }}
+            >
+              <span className="chat-avatar" aria-hidden="true">
+                <SproutIcon size={13} />
+              </span>
+              <span className="chat-text">
+                <span aria-hidden="true">
+                  {(overlayText ?? "").slice(0, typedReply)}
+                </span>
+                <span className="visually-hidden">{overlayText}</span>
+                {overlayTyping && (
+                  <span className="type-caret" aria-hidden="true" />
+                )}
+              </span>
+            </div>
+          </div>
           <button
             type="button"
             className="reply-skip"

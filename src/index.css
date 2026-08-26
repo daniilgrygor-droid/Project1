@@ -10906,6 +10906,75 @@ h1,h2,h3{font-family:var(--font-serif);font-weight:650;letter-spacing:-0.02em;li
   box-shadow:0 0 0 3px var(--focus-ring);
 }
 
+/* chat bubbles inside the overlay */
+.chat-thread{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  width:100%;
+  max-width:560px;
+}
+
+.chat-bubble{
+  max-width:88%;
+  padding:14px 18px;
+  border-radius:18px;
+  font-size:1.05rem;
+  line-height:1.7;
+  animation:bubble-in .5s var(--ease-soft) both;
+}
+
+.chat-bubble--me{
+  align-self:flex-end;
+  background:var(--charcoal);
+  color:var(--on-dark);
+  border-bottom-right-radius:6px;
+  box-shadow:0 2px 10px -4px rgba(43,40,36,.3);
+}
+
+.chat-bubble--ai{
+  position:relative;
+  align-self:flex-start;
+  padding-left:48px;
+  background:var(--surface);
+  border:1px solid var(--line);
+  color:var(--text);
+  border-bottom-left-radius:6px;
+  box-shadow:var(--shadow-sm);
+}
+
+.chat-avatar{
+  position:absolute;
+  left:14px;
+  top:15px;
+  width:24px;
+  height:24px;
+  border-radius:50%;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  background:color-mix(in srgb,var(--sage) 16%,transparent);
+  color:var(--success-ink);
+}
+
+.chat-text{
+  display:block;
+}
+
+@keyframes bubble-in{
+  from{opacity:0;transform:translateY(14px) scale(.97)}
+  to{opacity:1;transform:none}
+}
+
+@media (max-width:640px){
+  .chat-bubble{font-size:1rem;max-width:94%}
+  .chat-bubble--ai{padding-left:44px}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .chat-bubble{animation:none}
+}
+
 @media (max-width:640px){
   .reply-overlay{padding:var(--space-4)}
   .reply-overlay .praise{padding:var(--space-4)}

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useTypewriter } from "../lib/useTypewriter";
 import { CategoryIcon, LeafIcon, SproutIcon } from "./icons";
 import { CATEGORY_LABEL, MOOD_LABEL, moodEmoji } from "../lib/constants";
 import type { Category } from "../lib/types";
@@ -30,49 +30,7 @@ export default function PraiseCard({
   typeResponse = false,
   onTyped,
 }: PraiseCardProps) {
-  const [shown, setShown] = useState(() => response?.length ?? 0);
-
-  // Typewriter for a freshly arrived reply: eases out so it starts brisk
-  // and settles calmly. Full text stays available to screen readers.
-  useEffect(() => {
-    if (!response) {
-      setShown(0);
-      return;
-    }
-    if (!typeResponse) {
-      setShown(response.length);
-      return;
-    }
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setShown(response.length);
-      onTyped?.();
-      return;
-    }
-
-    setShown(0);
-    const total = response.length;
-    const duration = Math.min(4200, Math.max(1400, total * 18));
-    const start = performance.now();
-    let raf = 0;
-
-    const tick = (now: number) => {
-      const p = Math.min(1, (now - start) / duration);
-      const eased = 1 - Math.pow(1 - p, 2);
-      const n = Math.round(total * eased);
-      setShown(n);
-      if (p < 1) {
-        raf = requestAnimationFrame(tick);
-      } else {
-        setShown(total);
-        onTyped?.();
-      }
-    };
-
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [typeResponse, response]);
-
+  const shown = useTypewriter(response, typeResponse, onTyped);
   const isTyping = typeResponse && response != null && shown < response.length;
 
   return (
