@@ -96,6 +96,7 @@ export default function CheckIn() {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [flight, setFlight] = useState<{ text: string } | null>(null);
   const [noteRevealed, setNoteRevealed] = useState(true);
+  const [typeReply, setTypeReply] = useState(false);
 
   const hints = note.trim() ? TYPING_HINTS : SHOWED_UP_HINTS;
 
@@ -280,6 +281,7 @@ export default function CheckIn() {
       setShowPraise(false);
       setBtnState("saved");
       setFeedback(true);
+      setTypeReply(true);
       window.setTimeout(() => setBtnState("idle"), 700);
       window.setTimeout(() => setShowPraise(true), 260);
       window.setTimeout(() => setFeedback(false), 2200);
@@ -508,6 +510,8 @@ export default function CheckIn() {
               category={latest.category}
               mood={latest.mood}
               hideNote={!noteRevealed}
+              typeResponse={typeReply}
+              onTyped={() => setTypeReply(false)}
             />
           )
         )}

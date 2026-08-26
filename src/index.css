@@ -10830,3 +10830,22 @@ h1,h2,h3{font-family:var(--font-serif);font-weight:650;letter-spacing:-0.02em;li
   .praise-note-text{transition:none}
   .flight-clone{display:none}
 }
+
+/* typewriter caret while the reply is being written in */
+.type-caret{
+  display:inline-block;
+  width:2px;
+  height:1em;
+  margin-left:2px;
+  vertical-align:-0.12em;
+  background:var(--text);
+  animation:caret-blink .9s steps(1) infinite;
+}
+
+@keyframes caret-blink{
+  50%{opacity:0}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .type-caret{animation:none}
+}
