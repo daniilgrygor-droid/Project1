@@ -10916,3 +10916,67 @@ h1,h2,h3{font-family:var(--font-serif);font-weight:650;letter-spacing:-0.02em;li
   .reply-overlay{animation:none}
   .reply-overlay .praise{animation:none}
 }
+
+/* --- form text must stay readable, always --- */
+.checkin-form .textarea{
+  color:var(--text);
+  font-size:1.02rem;
+  font-weight:450;
+  -webkit-text-fill-color:var(--text);
+}
+
+.checkin-form .textarea::placeholder{
+  color:var(--text-faint);
+  -webkit-text-fill-color:var(--text-faint);
+}
+
+.checkin-form .textarea:disabled{
+  color:var(--text);
+  opacity:1;
+  -webkit-text-fill-color:var(--text);
+  cursor:progress;
+}
+
+.checkin-form .picker-option,
+.checkin-form .mood-option{
+  color:var(--text-soft);
+  font-weight:500;
+}
+
+.checkin-form .picker-option--on,
+.checkin-form .mood-option--on{
+  color:var(--success-ink);
+  font-weight:600;
+}
+
+/* dark theme: the form card stays "paper on a dark desk", so its ink
+   must stay dark too — theme tokens would flip to light and vanish */
+[data-theme="dark"] .checkin-form .textarea{
+  color:#2c2925;
+  -webkit-text-fill-color:#2c2925;
+}
+
+[data-theme="dark"] .checkin-form .textarea::placeholder{
+  color:#9a9590;
+  -webkit-text-fill-color:#9a9590;
+}
+
+[data-theme="dark"] .checkin-form .textarea:disabled{
+  color:#2c2925;
+  -webkit-text-fill-color:#2c2925;
+}
+
+[data-theme="dark"] .checkin-form .char-count,
+[data-theme="dark"] .checkin-form .picker-label{
+  color:#8a847c;
+}
+
+[data-theme="dark"] .checkin-form .picker-option,
+[data-theme="dark"] .checkin-form .mood-option{
+  color:#5d564d;
+}
+
+[data-theme="dark"] .checkin-form .picker-option--on,
+[data-theme="dark"] .checkin-form .mood-option--on{
+  color:#5e775f;
+}
