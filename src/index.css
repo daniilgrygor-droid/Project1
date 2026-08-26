@@ -10849,3 +10849,70 @@ h1,h2,h3{font-family:var(--font-serif);font-weight:650;letter-spacing:-0.02em;li
 @media (prefers-reduced-motion:reduce){
   .type-caret{animation:none}
 }
+
+/* --- full-screen reply moment: your words + the reply, nothing else --- */
+.reply-overlay{
+  position:fixed;
+  inset:0;
+  z-index:90;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:var(--space-4);
+  padding:var(--space-5);
+  background:color-mix(in srgb,var(--bg) 90%,transparent);
+  backdrop-filter:blur(14px) saturate(1.1);
+  -webkit-backdrop-filter:blur(14px) saturate(1.1);
+  animation:overlay-in .45s var(--ease-soft) both;
+}
+
+@keyframes overlay-in{
+  from{opacity:0}
+  to{opacity:1}
+}
+
+.reply-overlay .praise{
+  width:100%;
+  max-width:640px;
+  margin:0;
+  animation:praise-in .5s cubic-bezier(0.22,0.61,0.36,1) .1s both;
+}
+
+.reply-overlay .praise-text{
+  font-size:1.18rem;
+  line-height:1.8;
+}
+
+.reply-skip{
+  border:none;
+  background:transparent;
+  color:var(--text-faint);
+  font-size:.88rem;
+  font-weight:500;
+  cursor:pointer;
+  padding:8px 18px;
+  border-radius:999px;
+  transition:color .2s ease,background .2s ease;
+}
+
+.reply-skip:hover{
+  color:var(--text);
+  background:var(--hover-wash);
+}
+
+.reply-skip:focus-visible{
+  outline:none;
+  box-shadow:0 0 0 3px var(--focus-ring);
+}
+
+@media (max-width:640px){
+  .reply-overlay{padding:var(--space-4)}
+  .reply-overlay .praise{padding:var(--space-4)}
+  .reply-overlay .praise-text{font-size:1.05rem}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .reply-overlay{animation:none}
+  .reply-overlay .praise{animation:none}
+}

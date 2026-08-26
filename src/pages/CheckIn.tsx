@@ -97,6 +97,48 @@ export default function CheckIn() {
   const [flight, setFlight] = useState<{ text: string } | null>(null);
   const [noteRevealed, setNoteRevealed] = useState(true);
   const [typeReply, setTypeReply] = useState(false);
+  const [overlay, setOverlay] = useState<null | {
+    note: string;
+    response: string | null;
+    category: Category | null;
+    mood: number | null;
+  }>(null);
+  const overlayTimer = useRef<number | null>(null);
+
+  const closeOverlay = useCallback(() => {
+    if (overlayTimer.current) {
+      window.clearTimeout(overlayTimer.current);
+      overlayTimer.current = null;
+    }
+    setOverlay(null);
+    setTypeReply(false);
+  }, []);
+
+  // Once the reply has finished typing itself in, let the moment breathe,
+  // then return to the page. Skip is always available.
+  const onOverlayTyped = useCallback(() => {
+    overlayTimer.current = window.setTimeout(closeOverlay, 2400);
+  }, [closeOverlay]);
+
+  useEffect(() => {
+    if (!overlay) return;
+    document.body.style.overflow = "hidden";
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeOverlay();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = "";
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [overlay, closeOverlay]);
+
+  useEffect(
+    () => () => {
+      if (overlayTimer.current) window.clearTimeout(overlayTimer.current);
+    },
+    [],
+  );
 
   const hints = note.trim() ? TYPING_HINTS : SHOWED_UP_HINTS;
 
@@ -282,6 +324,14 @@ export default function CheckIn() {
       setBtnState("saved");
       setFeedback(true);
       setTypeReply(true);
+      if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        setOverlay({
+          note: saved.note ?? "",
+          response: saved.ai_response,
+          category: saved.category ?? null,
+          mood: saved.mood ?? null,
+        });
+      }
       window.setTimeout(() => setBtnState("idle"), 700);
       window.setTimeout(() => setShowPraise(true), 260);
       window.setTimeout(() => setFeedback(false), 2200);
@@ -330,6 +380,32 @@ export default function CheckIn() {
   return (
     <AppShell>
       <Tour />
+      {overlay && (
+        <div
+          className="reply-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-label="A personal reply"
+        >
+          <PraiseCard
+            note={overlay.note}
+            response={overlay.response}
+            fallback={fallback}
+            category={overlay.category}
+            mood={overlay.mood}
+            typeResponse={typeReply}
+            onTyped={onOverlayTyped}
+          />
+          <button
+            type="button"
+            className="reply-skip"
+            onClick={closeOverlay}
+            autoFocus
+          >
+            Skip
+          </button>
+        </div>
+      )}
       <div className="checkin">
         <div className="checkin-head">
           <div className="checkin-date">{today}</div>
