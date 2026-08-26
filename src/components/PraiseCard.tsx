@@ -10,6 +10,8 @@ interface PraiseCardProps {
   mood?: number | null;
   /** While an AI reply is being written, show a quiet typing indicator. */
   typing?: boolean;
+  /** True while the note is still flying in — keeps its seat empty. */
+  hideNote?: boolean;
 }
 
 export default function PraiseCard({
@@ -19,6 +21,7 @@ export default function PraiseCard({
   category = null,
   mood = null,
   typing = false,
+  hideNote = false,
 }: PraiseCardProps) {
   return (
     <section className="praise praise--enter" aria-live="polite">
@@ -44,7 +47,9 @@ export default function PraiseCard({
         <span className="praise-note-leaf">
           <LeafIcon size={14} />
         </span>
-        <span>«{note}»</span>
+        <span className={`praise-note-text${hideNote ? " praise-note-text--veiled" : ""}`}>
+          «{note}»
+        </span>
       </blockquote>
       <div className="praise-text">
         {typing ? (

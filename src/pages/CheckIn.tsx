@@ -93,6 +93,9 @@ export default function CheckIn() {
   const [feedback, setFeedback] = useState(false);
   const [typing, setTyping] = useState(false);
   const [hintIdx, setHintIdx] = useState(0);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [flight, setFlight] = useState<{ text: string } | null>(null);
+  const [noteRevealed, setNoteRevealed] = useState(true);
 
   const hints = note.trim() ? TYPING_HINTS : SHOWED_UP_HINTS;
 
@@ -107,6 +110,67 @@ export default function CheckIn() {
     );
     return () => window.clearInterval(t);
   }, [submitting, hints.length]);
+
+  // The note's journey: a clone lifts off from the textarea and settles
+  // into its quoted seat in the reply card. FLIP-style, WAAPI-driven.
+  useEffect(() => {
+    if (!flight) return;
+    let raf = 0;
+    let clone: HTMLSpanElement | null = null;
+    let done = false;
+
+    const finish = () => {
+      if (done) return;
+      done = true;
+      clone?.remove();
+      setFlight(null);
+      setNoteRevealed(true);
+    };
+
+    const start = () => {
+      if (done) return;
+      const target = document.querySelector<HTMLElement>(".praise-note-text");
+      if (!target) {
+        // Card never appeared (save failed) — just let the seat fill.
+        finish();
+        return;
+      }
+      const tr = target.getBoundingClientRect();
+      const sr = textareaRef.current?.getBoundingClientRect();
+      if (!sr || !tr.width) {
+        finish();
+        return;
+      }
+      clone = document.createElement("span");
+      clone.className = "flight-clone";
+      clone.textContent = flight.text;
+      clone.style.left = `${tr.left}px`;
+      clone.style.top = `${tr.top}px`;
+      clone.style.width = `${tr.width}px`;
+      document.body.appendChild(clone);
+      const anim = clone.animate(
+        [
+          {
+            transform: `translate(${sr.left - tr.left}px, ${sr.top - tr.top}px) scale(${Math.max(0.35, sr.width / tr.width)}, ${Math.max(0.2, sr.height / tr.height)})`,
+            opacity: 0.55,
+          },
+          { transform: "none", opacity: 1 },
+        ],
+        { duration: 700, easing: "cubic-bezier(0.22, 0.61, 0.36, 1)" },
+      );
+      anim.onfinish = finish;
+      anim.oncancel = finish;
+    };
+
+    raf = requestAnimationFrame(start);
+    return () => {
+      cancelAnimationFrame(raf);
+      if (!done) {
+        done = true;
+        clone?.remove();
+      }
+    };
+  }, [flight]);
 
   const feedCount = steps?.length ?? 0;
   const animatedCount = useCountUp(feedCount);
@@ -183,7 +247,14 @@ export default function CheckIn() {
     setBtnState("saving");
     setError(null);
     setFallback(undefined);
-    if (!showedUp && note.trim()) setTyping(true);
+    if (!showedUp && note.trim()) {
+      setTyping(true);
+      // Send the note flying from the textarea to its seat in the card.
+      if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        setNoteRevealed(false);
+        setFlight({ text: note.trim() });
+      }
+    }
 
     const res = await saveStep(note, showedUp, { category, mood });
     setSubmitting(false);
@@ -348,6 +419,7 @@ export default function CheckIn() {
             </label>
             <textarea
               id="step-note"
+              ref={textareaRef}
               className="textarea"
               placeholder="e.g. went outside for 10 minutes"
               value={note}
@@ -424,6 +496,7 @@ export default function CheckIn() {
             typing
             category={category}
             mood={mood}
+            hideNote={!noteRevealed}
           />
         ) : (
           showPraise &&
@@ -434,6 +507,7 @@ export default function CheckIn() {
               fallback={fallback}
               category={latest.category}
               mood={latest.mood}
+              hideNote={!noteRevealed}
             />
           )
         )}
