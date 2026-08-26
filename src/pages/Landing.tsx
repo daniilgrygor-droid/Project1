@@ -6,6 +6,7 @@ import Wordmark from "../components/Wordmark";
 import MarketingFooter from "../components/MarketingFooter";
 import Magnet from "../components/Magnet";
 import { useSpotlight } from "../lib/useSpotlight";
+import FaqJsonLd from "../components/FaqJsonLd";
 import { LeafIcon } from "../components/icons";
 import { PRICE_MONTHLY, PRICE_YEARLY } from "../lib/billing";
 
@@ -639,6 +640,7 @@ export default function Landing() {
                 </details>
               ))}
             </div>
+            <FaqJsonLd items={FAQ} />
           </div>
         </section>
 

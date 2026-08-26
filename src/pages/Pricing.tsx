@@ -7,6 +7,7 @@ import { isPrivate, type Plan } from "../lib/types";
 import { PLANS, PRICE_MONTHLY, PRICE_YEARLY } from "../lib/billing";
 import { LeafIcon } from "../components/icons";
 import { useSpotlight } from "../lib/useSpotlight";
+import FaqJsonLd from "../components/FaqJsonLd";
 
 const COMPARE: { feature: string; free: boolean; priv: boolean }[] = [
   { feature: "One gentle question a day", free: true, priv: true },
@@ -354,6 +355,7 @@ export default function Pricing() {
                 </details>
               ))}
             </div>
+            <FaqJsonLd items={FAQ} />
           </section>
         </section>
       </main>

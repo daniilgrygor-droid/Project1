@@ -23,9 +23,17 @@ test.describe("SEO and metadata", () => {
   test("has JSON-LD structured data", async ({ page }) => {
     await page.goto("/");
     const jsonLd = page.locator('script[type="application/ld+json"]');
-    await expect(jsonLd).toBeAttached();
-    const content = await jsonLd.textContent();
-    expect(content).toContain("WebApplication");
+    await expect(jsonLd.first()).toBeAttached();
+    const all = await jsonLd.allTextContents();
+    expect(all.join("\n")).toContain("WebApplication");
+  });
+
+  test("emits FAQPage structured data", async ({ page }) => {
+    await page.goto("/");
+    const faqLd = page.locator('script[type="application/ld+json"]');
+    await expect(faqLd).toHaveCount(2);
+    const all = await faqLd.allTextContents();
+    expect(all.join("\n")).toContain("FAQPage");
   });
 
   test("has viewport meta tag", async ({ page }) => {

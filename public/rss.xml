@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Small Steps — journal</title>
+    <link>https://small-steps-seven.vercel.app/blog</link>
+    <description>Notes on recovery without streaks, points or guilt — one small step a day.</description>
+    <language>en</language>
+    <atom:link href="https://small-steps-seven.vercel.app/rss.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Why streaks hurt recovery (and what helps instead)</title>
+      <link>https://small-steps-seven.vercel.app/blog/why-streaks-hurt-recovery</link>
+      <guid isPermaLink="true">https://small-steps-seven.vercel.app/blog/why-streaks-hurt-recovery</guid>
+      <pubDate>Thu, 20 Aug 2026 00:00:00 GMT</pubDate>
+      <description>Streak mechanics are great for habits — and quietly cruel for anyone recovering from burnout or illness. Here's the psychology, and the alternative.</description>
+    </item>
+    <item>
+      <title>The smallest step counts: a field guide to tiny wins</title>
+      <link>https://small-steps-seven.vercel.app/blog/smallest-step-counts</link>
+      <guid isPermaLink="true">https://small-steps-seven.vercel.app/blog/smallest-step-counts</guid>
+      <pubDate>Wed, 12 Aug 2026 00:00:00 GMT</pubDate>
+      <description>Got out of bed. Drank water. Replied to one email. Why naming tiny wins out loud rewires how a hard season feels.</description>
+    </item>
+    <item>
+      <title>Returning after long sick leave: a pace-first guide</title>
+      <link>https://small-steps-seven.vercel.app/blog/returning-after-sick-leave</link>
+      <guid isPermaLink="true">https://small-steps-seven.vercel.app/blog/returning-after-sick-leave</guid>
+      <pubDate>Wed, 05 Aug 2026 00:00:00 GMT</pubDate>
+      <description>The world expects you to be 'back' on day one. Your energy disagrees. Here's how to structure a return that doesn't re-break you.</description>
+    </item>
+  </channel>
+</rss>

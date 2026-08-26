@@ -10651,3 +10651,32 @@ h1,h2,h3{font-family:var(--font-serif);font-weight:650;letter-spacing:-0.02em;li
 [data-theme="dark"] .app-header--scrolled{
   box-shadow:0 8px 24px -20px rgba(0,0,0,.6);
 }
+
+/* --- mobile tabbar: matches the header's pill language --- */
+@media (max-width:640px){
+  .tabbar-link{
+    margin:6px 3px;
+    border-radius:14px;
+    gap:4px;
+    padding:2px 0;
+  }
+
+  .tabbar-icon{
+    display:inline-flex;
+    padding:5px 16px;
+    border-radius:999px;
+    border:1px solid transparent;
+    transition:background .2s ease,border-color .2s ease,transform .2s var(--ease-soft);
+  }
+
+  .tabbar-link--active .tabbar-icon{
+    transform:translateY(-1px);
+    background:color-mix(in srgb,var(--sage) 14%,transparent);
+    border-color:color-mix(in srgb,var(--sage) 28%,transparent);
+  }
+
+  [data-theme="dark"] .tabbar-link--active .tabbar-icon{
+    background:color-mix(in srgb,var(--sage) 18%,transparent);
+    border-color:color-mix(in srgb,var(--sage) 32%,transparent);
+  }
+}
