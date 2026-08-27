@@ -9,6 +9,7 @@ import { LeafIcon } from "../components/icons";
 import { useSpotlight } from "../lib/useSpotlight";
 import FaqJsonLd from "../components/FaqJsonLd";
 import { getPricingVariant, type PricingVariant } from "../lib/ab";
+import { useToast } from "../lib/toastContext";
 
 const COMPARE: { feature: string; free: boolean; priv: boolean }[] = [
   { feature: "One gentle question a day", free: true, priv: true },
@@ -115,6 +116,7 @@ function TierCard({
 
 export default function Pricing() {
   const { session, profile, loading } = useAuth();
+  const toast = useToast();
   const [busy, setBusy] = useState(false);
   const [interval, setInterval] = useState<"month" | "year">("year");
   const [variant] = useState<PricingVariant>(() => getPricingVariant());
@@ -168,9 +170,12 @@ export default function Pricing() {
       const data = await res.json();
       if (data.url) {
         window.location.href = data.url;
+      } else {
+        toast.push(data.error || "Couldn't open checkout. Please try again.");
       }
     } catch (err) {
       console.error("Checkout failed:", err);
+      toast.push("Couldn't open checkout. Please try again.");
     } finally {
       setBusy(false);
     }
@@ -192,9 +197,12 @@ export default function Pricing() {
       const data = await res.json();
       if (data.url) {
         window.location.href = data.url;
+      } else {
+        toast.push(data.error || "Couldn't open billing portal. Please try again.");
       }
     } catch (err) {
       console.error("Portal failed:", err);
+      toast.push("Couldn't open billing portal. Please try again.");
     } finally {
       setBusy(false);
     }

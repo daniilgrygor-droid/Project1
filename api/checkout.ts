@@ -29,8 +29,8 @@ async function getAuthUser(req: VercelRequest) {
   if (!authHeader?.startsWith("Bearer ")) return null;
 
   const supabase = createClient(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_ANON_KEY!,
+    (process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL)!,
+    (process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY)!,
     { global: { headers: { Authorization: authHeader } } },
   );
 
