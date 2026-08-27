@@ -8,6 +8,7 @@ import {
 import { AuthProvider } from "./lib/auth";
 import { ToastProvider } from "./lib/toast";
 import { StepsProvider } from "./lib/stepsContext";
+import { LangProvider } from "./lib/i18n";
 import { RequireAuth, RequireOnboarded } from "./components/Guards";
 import { applyTextSize, readTextSize } from "./lib/textSize";
 import { applyTheme, readThemePreference } from "./lib/theme";
@@ -223,8 +224,9 @@ export default function App() {
   }, []);
 
   return (
-    <AuthProvider>
-      <BrowserRouter>
+    <LangProvider>
+      <AuthProvider>
+        <BrowserRouter>
         <div className="ambient" aria-hidden="true">
           <span className="ambient-glows" />
           <span className="ambient-blob ambient-blob--a" />
@@ -245,6 +247,7 @@ export default function App() {
         </ToastProvider>
         <UndoToast />
       </BrowserRouter>
-    </AuthProvider>
+      </AuthProvider>
+    </LangProvider>
   );
 }

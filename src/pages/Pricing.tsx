@@ -8,6 +8,7 @@ import { PLANS, PRICE_MONTHLY, PRICE_YEARLY } from "../lib/billing";
 import { LeafIcon } from "../components/icons";
 import { useSpotlight } from "../lib/useSpotlight";
 import FaqJsonLd from "../components/FaqJsonLd";
+import { getPricingVariant, type PricingVariant } from "../lib/ab";
 
 const COMPARE: { feature: string; free: boolean; priv: boolean }[] = [
   { feature: "One gentle question a day", free: true, priv: true },
@@ -116,6 +117,7 @@ export default function Pricing() {
   const { session, profile, loading } = useAuth();
   const [busy, setBusy] = useState(false);
   const [interval, setInterval] = useState<"month" | "year">("year");
+  const [variant] = useState<PricingVariant>(() => getPricingVariant());
 
   useEffect(() => {
     (window as any).plausible?.("pricing_toggle", { props: { interval } });
@@ -124,6 +126,10 @@ export default function Pricing() {
   useEffect(() => {
     (window as any).plausible?.("pricing_view");
   }, []);
+
+  useEffect(() => {
+    (window as any).plausible?.("ab_pricing", { props: { variant } });
+  }, [variant]);
 
   const [showSticky, setShowSticky] = useState(false);
   const gridRef = useRef<HTMLDivElement>(null);
@@ -149,7 +155,7 @@ export default function Pricing() {
     }
     if (busy) return;
     setBusy(true);
-    (window as any).plausible?.("checkout_start", { props: { interval } });
+    (window as any).plausible?.("checkout_start", { props: { interval, variant } });
     try {
       const res = await fetch("/api/checkout", {
         method: "POST",
@@ -244,7 +250,7 @@ export default function Pricing() {
               aria-pressed={interval === "year"}
             >
               Yearly — ${PRICE_YEARLY}/yr
-              <span className="pricing-toggle-save">Save $12</span>
+              <span className="pricing-toggle-save">{variant === "A" ? "Save $12" : "2 months free"}</span>
             </button>
           </div>
 

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+﻿import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../lib/authContext";
 import { useRevealOnScroll } from "../lib/useRevealOnScroll";
@@ -9,6 +9,7 @@ import { useSpotlight } from "../lib/useSpotlight";
 import FaqJsonLd from "../components/FaqJsonLd";
 import { BookIcon, CupIcon, FootprintIcon, LeafIcon } from "../components/icons";
 import { saveReferralFromUrl } from "../lib/referral";
+import { useI18n } from "../lib/useI18n";
 import { PRICE_MONTHLY, PRICE_YEARLY } from "../lib/billing";
 
 function FloatingLeaf({
@@ -85,7 +86,7 @@ function ProductMockup() {
           <p className="mock-question">What did you do today?</p>
           <div className="mock-input">
             <LeafIcon size={15} />
-            Write something small…
+            Write something smallвЂ¦
             <span className="mock-caret" aria-hidden="true" />
           </div>
           <div className="mock-reply">
@@ -117,17 +118,17 @@ const STEPS = [
   {
     num: "01",
     title: "One quiet question",
-    text: "Each day opens with a small question — that's all. No checklists, no quotas, no must-dos.",
+    text: "Each day opens with a small question вЂ” that's all. No checklists, no quotas, no must-dos.",
   },
   {
     num: "02",
     title: "A warm reply, not a grade",
-    text: "Your words get a personal response that actually hears you — never a canned “great job”.",
+    text: "Your words get a personal response that actually hears you вЂ” never a canned вЂњgreat jobвЂќ.",
   },
   {
     num: "03",
     title: "Small things, over time",
-    text: "Your journal quietly grows into a record you can look back on — your own gentle progress.",
+    text: "Your journal quietly grows into a record you can look back on вЂ” your own gentle progress.",
   },
 ];
 
@@ -187,15 +188,15 @@ const FAQ = [
   },
   {
     q: "What happens to my entries?",
-    a: "Each entry gets one warm reply written by Google's Gemini API. Your journal is never sold or shared. On Private, replies are processed privately — on the free tier, data sent to Gemini may be used by Google to improve its models.",
+    a: "Each entry gets one warm reply written by Google's Gemini API. Your journal is never sold or shared. On Private, replies are processed privately вЂ” on the free tier, data sent to Gemini may be used by Google to improve its models.",
   },
   {
     q: "What if I disappear for a month?",
-    a: "Nothing breaks. Your journal waits for you, exactly as you left it. Coming back after a long pause is one more small step — and it's celebrated, not scolded.",
+    a: "Nothing breaks. Your journal waits for you, exactly as you left it. Coming back after a long pause is one more small step вЂ” and it's celebrated, not scolded.",
   },
   {
     q: "Is there really a free tier?",
-    a: "Really. A journal and a warm reply after every entry, free forever. Private adds private AI processing and a few quiet extras for $48 a year — or $5 a month.",
+    a: "Really. A journal and a warm reply after every entry, free forever. Private adds private AI processing and a few quiet extras for $48 a year вЂ” or $5 a month.",
   },
 ];
 
@@ -293,7 +294,7 @@ function ProductShowcase() {
                 <p className="mock-question">What did you do today?</p>
                 <div className="mock-input">
                   <LeafIcon size={15} />
-                  Write something small…
+                  Write something smallвЂ¦
                   <span className="mock-caret" aria-hidden="true" />
                 </div>
                 <div className="mock-reply">
@@ -340,6 +341,7 @@ function ProductShowcase() {
 
 export default function Landing() {
   const { session } = useAuth();
+  const { t } = useI18n();
   useRevealOnScroll();
 
   useEffect(() => {
@@ -410,18 +412,13 @@ export default function Landing() {
         <section className="hero">
           <div className="wrap hero-wrap">
             <div className="hero-copy reveal">
-              <p className="hero-eyebrow">For those coming back</p>
+              <p className="hero-eyebrow">{t("hero.eyebrow")}</p>
               <h1>
-                Small steps
+                {t("hero.title1")}
                 <br />
-                <span className="hero-title-accent text-grad">
-                  back to life
-                </span>
+                <span className="hero-title-accent text-grad">{t("hero.title2")}</span>
               </h1>
-              <p className="hero-sub">
-                A quiet place to notice what you did today — one question, one
-                warm reply, no streaks and no guilt.
-              </p>
+              <p className="hero-sub">{t("hero.sub")}</p>
 
               <div className="hero-actions">
                 <Magnet>
@@ -431,7 +428,7 @@ export default function Landing() {
                 </Magnet>
                 <Magnet strength={5}>
                   <a href="#how" className="btn btn--ghost btn--lg">
-                    See how it works
+                    {t("hero.how")}
                   </a>
                 </Magnet>
               </div>
@@ -439,19 +436,19 @@ export default function Landing() {
               <p className="trustline">
                 <span>
                   <span className="tick" aria-hidden="true">
-                    ✓
+                    вњ“
                   </span>
                   No streaks, ever
                 </span>
                 <span>
                   <span className="tick" aria-hidden="true">
-                    ✓
+                    вњ“
                   </span>
                   $0 to start
                 </span>
                 <span>
                   <span className="tick" aria-hidden="true">
-                    ✓
+                    вњ“
                   </span>
                   Your pace, always
                 </span>
@@ -482,7 +479,7 @@ export default function Landing() {
                   <p>{s.text}</p>
                   {i < STEPS.length - 1 && (
                     <span className="step-arrow" aria-hidden="true">
-                      →
+                      в†’
                     </span>
                   )}
                 </div>
@@ -559,7 +556,7 @@ export default function Landing() {
                           </span>
                         ) : (
                           <span className="compare-no" aria-label="No">
-                            —
+                            вЂ”
                           </span>
                         )}
                       </td>
@@ -572,7 +569,7 @@ export default function Landing() {
                           </span>
                         ) : (
                           <span className="compare-no" aria-label="No">
-                            —
+                            вЂ”
                           </span>
                         )}
                       </td>
@@ -608,11 +605,11 @@ export default function Landing() {
                 <span className="pricing-pop" aria-hidden="true">Most popular</span>
                 <h3>Private</h3>
                 <p className="teaser-price">
-                  ${PRICE_MONTHLY}<span>/mo</span> · ${PRICE_YEARLY}<span>/yr</span>
+                  ${PRICE_MONTHLY}<span>/mo</span> В· ${PRICE_YEARLY}<span>/yr</span>
                 </p>
                 <ul>
                   <li><LeafIcon size={14} /> Everything in the quiet journal</li>
-                  <li><LeafIcon size={14} /> Private AI — never trains models</li>
+                  <li><LeafIcon size={14} /> Private AI вЂ” never trains models</li>
                   <li><LeafIcon size={14} /> Gentle reminders & weekly notes</li>
                 </ul>
                 <Link to="/pricing" className="btn btn--primary btn--block">
@@ -621,7 +618,7 @@ export default function Landing() {
               </div>
             </div>
             <p className="teaser-note">
-              Secure checkout via Stripe · Cancel anytime · Your data stays yours
+              Secure checkout via Stripe В· Cancel anytime В· Your data stays yours
             </p>
           </div>
         </section>
@@ -631,8 +628,8 @@ export default function Landing() {
           <div className="wrap">
             <div className="quote-band">
               <blockquote>
-                “Coming back to life isn't a feat. It's a hundred small steps,
-                and no one is required to notice them. Except us.”
+                вЂњComing back to life isn't a feat. It's a hundred small steps,
+                and no one is required to notice them. Except us.вЂќ
               </blockquote>
             </div>
           </div>
@@ -669,7 +666,7 @@ export default function Landing() {
             <div className="cta-band">
               <h2>Start when you're ready.</h2>
               <p>
-                There's no rush. Begin with one small step — free, and forever
+                There's no rush. Begin with one small step вЂ” free, and forever
                 quiet.
               </p>
               <Link to={journalHref} className="btn btn--primary btn--lg">

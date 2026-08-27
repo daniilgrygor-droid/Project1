@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent } from "react";
+﻿import { useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import { saveStep } from "../lib/ai";
 import { useAuth } from "../lib/authContext";
+import { useI18n } from "../lib/useI18n";
 import { type Category, type Step } from "../lib/types";
 import AppShell from "../components/AppShell";
 import PraiseCard from "../components/PraiseCard";
@@ -48,7 +49,7 @@ function writeDraft(note: string) {
     const today = new Date().toISOString().slice(0, 10);
     localStorage.setItem(DRAFT_KEY, JSON.stringify({ date: today, note }));
   } catch {
-    /* storage unavailable — skip */
+    /* storage unavailable вЂ” skip */
   }
 }
 
@@ -56,23 +57,23 @@ function clearDraft() {
   try {
     localStorage.removeItem(DRAFT_KEY);
   } catch {
-    /* storage unavailable — skip */
+    /* storage unavailable вЂ” skip */
   }
 }
 
 type ButtonState = "idle" | "saving" | "saved";
 
-/* Quiet phrases shown while the reply is being written — one at a time,
+/* Quiet phrases shown while the reply is being written вЂ” one at a time,
    no percentages, no countdowns. */
 const TYPING_HINTS = [
-  "reading what you wrote…",
-  "finding the right words…",
-  "letting the reply settle…",
+  "reading what you wroteвЂ¦",
+  "finding the right wordsвЂ¦",
+  "letting the reply settleвЂ¦",
 ];
 
 const SHOWED_UP_HINTS = [
-  "noting that you showed up…",
-  "holding that moment…",
+  "noting that you showed upвЂ¦",
+  "holding that momentвЂ¦",
 ];
 
 export default function CheckIn() {
@@ -89,6 +90,7 @@ export default function CheckIn() {
   const [steps, setSteps] = useState<Step[] | null>(null);
   const [latest, setLatest] = useState<Step | null>(null);
   const toast = useToast();
+  const { t } = useI18n();
   const [fallback, setFallback] = useState<string | undefined>(undefined);
   const [showPraise, setShowPraise] = useState(true);
   const [newStepId, setNewStepId] = useState<string | null>(null);
@@ -96,6 +98,8 @@ export default function CheckIn() {
   const [typing, setTyping] = useState(false);
   const [hintIdx, setHintIdx] = useState(0);
   const [queuedCount, setQueuedCount] = useState(() => (typeof window !== "undefined" && hasQueued() ? getQueue().length : 0));
+  const [isListening, setIsListening] = useState(false);
+  const recognitionRef = useRef<any>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [flight, setFlight] = useState<{ text: string } | null>(null);
   const [noteRevealed, setNoteRevealed] = useState(true);
@@ -127,7 +131,7 @@ export default function CheckIn() {
     if (!overlay) return;
     document.body.style.overflow = "hidden";
     if (!overlay.response && !fallback) {
-      // Nothing to type out — let the moment breathe, then return.
+      // Nothing to type out вЂ” let the moment breathe, then return.
       overlayTimer.current = window.setTimeout(closeOverlay, 2400);
     }
     const onKey = (e: KeyboardEvent) => {
@@ -181,7 +185,7 @@ export default function CheckIn() {
       if (done) return;
       const target = document.querySelector<HTMLElement>(".praise-note-text");
       if (!target) {
-        // Card never appeared (save failed) — just let the seat fill.
+        // Card never appeared (save failed) вЂ” just let the seat fill.
         finish();
         return;
       }
@@ -239,6 +243,45 @@ export default function CheckIn() {
     if (draftTimer.current != null) window.clearTimeout(draftTimer.current);
     draftTimer.current = window.setTimeout(() => writeDraft(value), 500);
   };
+
+  const toggleMic = useCallback(() => {
+    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SR) {
+      toast.push("Voice input not supported вЂ” try Chrome or Edge.");
+      return;
+    }
+    if (isListening) {
+      recognitionRef.current?.stop();
+      return;
+    }
+    const rec = new SR();
+    rec.lang = navigator.language || "en-US";
+    rec.interimResults = true;
+    rec.continuous = false;
+    rec.onstart = () => setIsListening(true);
+    rec.onend = () => setIsListening(false);
+    rec.onerror = () => setIsListening(false);
+    rec.onresult = (e: any) => {
+      let final = "";
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        if (e.results[i].isFinal) final += e.results[i][0].transcript + " ";
+      }
+      if (final) {
+        setNote((prev) => {
+          const base = prev ? prev.trim() + " " : "";
+          const next = (base + final.trim()).slice(0, 2000);
+          if (draftTimer.current != null) window.clearTimeout(draftTimer.current);
+          draftTimer.current = window.setTimeout(() => writeDraft(next), 500);
+          return next;
+        });
+        textareaRef.current?.focus();
+      }
+    };
+    recognitionRef.current = rec;
+    rec.start();
+  }, [isListening, toast]);
+
+  useEffect(() => () => recognitionRef.current?.stop(), []);
 
   useEffect(() => {
     return () => {
@@ -339,7 +382,7 @@ export default function CheckIn() {
       setNoteRevealed(true);
       setFlight(null);
       setBtnState("idle");
-      toast.push(res.message ?? "You're offline — saved locally and will sync when you're back.");
+      toast.push(res.message ?? "You're offline вЂ” saved locally and will sync when you're back.");
       setQueuedCount(getQueue().length);
       setNote("");
       setCategory(null);
@@ -352,7 +395,7 @@ export default function CheckIn() {
       setBtnState("idle");
       if (res.reason === "not-configured") {
         setError(
-          "The database isn't connected yet. Add your Supabase keys to .env — see README."
+          "The database isn't connected yet. Add your Supabase keys to .env вЂ” see README."
         );
       } else {
         setError(res.message ?? "Couldn't save it. Give it another try.");
@@ -419,12 +462,12 @@ export default function CheckIn() {
     typeReply && overlayText != null && typedReply < overlayText.length;
   const greeting =
     hour < 5
-      ? "Resting well"
+      ? t("checkin.greeting.night")
       : hour < 12
-        ? "Good morning"
+        ? t("checkin.greeting.morning")
         : hour < 18
-          ? "Good afternoon"
-          : "Good evening";
+          ? t("checkin.greeting.afternoon")
+          : t("checkin.greeting.evening");
 
   return (
     <AppShell>
@@ -481,11 +524,8 @@ export default function CheckIn() {
             {greeting}
             {profile?.name ? `, ${profile.name}` : ""}
           </span>
-          <h1>What's one small thing you did today?</h1>
-          <p>
-            Any step counts — even the one that felt like “nothing”. Write it
-            down, and I'll respond. Or just let me know you showed up.
-          </p>
+          <h1>{t("checkin.question")}</h1>
+          <p>{t("checkin.hint")}</p>
           {stage && (
             <Link
               to="/growth"
@@ -510,21 +550,21 @@ export default function CheckIn() {
         {markedToday && (
           <p className="today-done">
             <LeafIcon size={13} />
-            Already noticed today — anything else counts too.
+            Already noticed today вЂ” anything else counts too.
           </p>
         )}
 
         {returnGap >= 2 && (
           <p className="welcome-back">
             <SproutIcon size={14} />
-            Welcome back. It's been {returnGap} days since your last step —
+            Welcome back. It's been {returnGap} days since your last step вЂ”
             that quiet return counts too.
           </p>
         )}
 
         {queuedCount > 0 && (
           <p className="offline-queue" role="status">
-            {queuedCount} offline step{queuedCount > 1 ? "s" : ""} — will sync when you're back.
+            {queuedCount} offline step{queuedCount > 1 ? "s" : ""} вЂ” will sync when you're back.
           </p>
         )}
 
@@ -579,6 +619,21 @@ export default function CheckIn() {
               maxLength={2000}
               rows={4}
             />
+            <button
+              type="button"
+              className={`mic-btn${isListening ? " mic-btn--active" : ""}`}
+              onClick={toggleMic}
+              disabled={submitting}
+              aria-label={isListening ? "Stop listening" : "Start voice input"}
+              title={isListening ? "Stop listening" : "Voice input"}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v5a3 3 0 0 0 3 3Z" />
+                <path d="M19 10a7 7 0 0 1-14 0" />
+                <path d="M12 19v4" />
+                <path d="M8 23h8" />
+              </svg>
+            </button>
             {note.length > 0 && (
               <span className="char-count" aria-live="polite">
                 {note.length}/2000
@@ -600,13 +655,13 @@ export default function CheckIn() {
               {submitting && (
                 <span className="btn-dot" aria-hidden="true" />
               )}
-              {submitting ? "Holding it…" : btnState === "saved" ? (
+              {submitting ? "Holding itвЂ¦" : btnState === "saved" ? (
                 <>
                   <LeafIcon size={15} />
                   Noticed
                 </>
               ) : (
-                "Mark it"
+                t("checkin.mark")
               )}
             </button>
             <button
@@ -615,7 +670,7 @@ export default function CheckIn() {
               disabled={submitting}
               onClick={() => void doSubmit(true)}
             >
-              I showed up today
+              {t("checkin.showed")}
             </button>
           </div>
 
@@ -695,7 +750,7 @@ export default function CheckIn() {
               <div className="steps-empty steps-empty--story steps-empty--seed">
                 <Plant steps={0} size={150} showLabel={false} />
                 <p>
-                  Your journal is ready. Nothing here yet — and that's okay.
+                  Your journal is ready. Nothing here yet вЂ” and that's okay.
                 </p>
                 <p className="steps-empty-hint">
                   Write one small thing you did today. It can be anything: "got out
@@ -703,7 +758,7 @@ export default function CheckIn() {
                 </p>
               </div>
               <div className="steps-empty-examples" aria-label="Examples">
-                <p className="steps-empty-examples-label">How others start — tap to try</p>
+                <p className="steps-empty-examples-label">How others start вЂ” tap to try</p>
                 <button
                   type="button"
                   className="step-item spot-card step-item--example"
