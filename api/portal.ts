@@ -1,6 +1,7 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
+import Sentry from "./_sentry";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 const APP_URL = process.env.APP_URL || "https://small-steps-seven.vercel.app";
@@ -56,6 +57,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(200).json({ url: session.url });
   } catch (err) {
     console.error("[portal]", err);
+    Sentry.captureException(err);
     return res.status(500).json({ error: "Failed to create portal session" });
   }
 }

@@ -52,6 +52,18 @@ export default function BlogPost() {
       }
       link.href = `${BASE}/blog/${post.slug}`;
 
+      const ogUrl = `${BASE}/api/og?title=${encodeURIComponent(post.title)}&tag=${encodeURIComponent(post.tag)}&description=${encodeURIComponent(post.description)}`;
+      for (const sel of ['meta[property="og:image"]', 'meta[name="twitter:image"]']) {
+        let m = document.querySelector<HTMLMetaElement>(sel);
+        if (!m) {
+          m = document.createElement("meta");
+          if (sel.includes("og:")) m.setAttribute("property", "og:image");
+          else m.setAttribute("name", "twitter:image");
+          document.head.appendChild(m);
+        }
+        m.setAttribute("content", ogUrl);
+      }
+
       return () => {
         ld?.remove();
       };

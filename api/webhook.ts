@@ -1,6 +1,7 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
+import Sentry from "./_sentry";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
@@ -172,6 +173,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     );
   } catch (err) {
     console.error("[webhook] Signature verification failed:", err);
+    Sentry.captureException(err);
     return res.status(400).json({ error: "Invalid signature" });
   }
 
@@ -201,6 +203,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
   } catch (err) {
     console.error(`[webhook] Error handling ${event.type}:`, err);
+    Sentry.captureException(err);
     return res.status(500).json({ error: "Webhook handler failed" });
   }
 

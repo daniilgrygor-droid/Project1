@@ -120,6 +120,11 @@ export default function Pricing() {
   useEffect(() => {
     (window as any).plausible?.("pricing_toggle", { props: { interval } });
   }, [interval]);
+
+  useEffect(() => {
+    (window as any).plausible?.("pricing_view");
+  }, []);
+
   const [showSticky, setShowSticky] = useState(false);
   const gridRef = useRef<HTMLDivElement>(null);
 
@@ -168,6 +173,7 @@ export default function Pricing() {
   const openPortal = async () => {
     if (!session || busy) return;
     setBusy(true);
+    (window as any).plausible?.("portal_open");
     try {
       const res = await fetch("/api/portal", {
         method: "POST",

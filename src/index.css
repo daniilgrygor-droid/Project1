@@ -37,17 +37,7 @@
   --elevation-2: 0 4px 12px rgba(43, 40, 36, 0.07), 0 2px 4px rgba(43, 40, 36, 0.04);
   --sage-grad-end: #a8c4a0;
 
-  --radius: 16px;
-  --radius-sm: 10px;
   --radius-pill: 999px;
-  --space-1: 4px;
-  --space-2: 8px;
-  --space-3: 12px;
-  --space-4: 16px;
-  --space-5: 20px;
-  --space-6: 24px;
-  --space-7: 32px;
-  --space-8: 40px;
 
   /* calm-premium ambient: very faint sage/terra glows + film grain */
   --glow-sage: rgba(122, 154, 120, 0.08);
@@ -11016,6 +11006,73 @@ h1,h2,h3{font-family:var(--font-serif);font-weight:650;letter-spacing:-0.02em;li
 .checkin-form .mood-option--on{
   color:var(--success-ink);
   font-weight:600;
+}
+
+.steps-empty-examples{
+  margin-top: var(--space-5);
+  display: grid;
+  gap: var(--space-3);
+}
+.steps-empty-examples-label{
+  font-size: .82rem;
+  color: var(--text-faint);
+  text-align: center;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+.step-item--example{
+  text-align: left;
+  width: 100%;
+  border-style: dashed;
+  opacity: .92;
+  cursor: pointer;
+  transition: transform .18s var(--ease-soft), box-shadow .18s ease, border-color .18s ease;
+}
+.step-item--example:hover{
+  transform: translateY(-2px);
+  border-color: var(--sage);
+  box-shadow: var(--elevation-2);
+}
+.step-item--example .step-note{
+  font-weight: 500;
+}
+.offline-queue{
+  margin-top: var(--space-3);
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--sage) 10%, var(--bg-warm));
+  border: 1px solid color-mix(in srgb, var(--sage) 22%, transparent);
+  color: var(--text-soft);
+  font-size: .88rem;
+  text-align: center;
+}
+.onboard-progress{
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  margin-top: var(--space-3);
+}
+.onboard-dot{
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--line);
+  transition: background .2s ease, transform .2s ease;
+}
+.onboard-dot--active{
+  background: var(--sage);
+  transform: scale(1.2);
+}
+.onboard-preview{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: var(--space-4);
+  padding: var(--space-3);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--sage) 8%, transparent);
+  font-size: .9rem;
+  color: var(--text-soft);
 }
 
 /* dark theme: the form card stays "paper on a dark desk", so its ink

@@ -768,6 +768,40 @@ export default function Settings() {
           </details>
         </div>
 
+        {profile?.referral_code && (
+          <div className="settings-note spot-card">
+            <SectionTitle icon={<LeafIcon size={14} />}>Invite a friend</SectionTitle>
+            <p>Someone coming back too? Share this link — they get a calm start, you get quiet thanks.</p>
+            <div className="field">
+              <label className="field-label" htmlFor="referral-link">Your invite link</label>
+              <div style={{ display: "flex", gap: 8 }}>
+                <input
+                  id="referral-link"
+                  className="input"
+                  readOnly
+                  value={`https://small-steps-seven.vercel.app/?ref=${profile.referral_code}`}
+                  onFocus={(e) => e.currentTarget.select()}
+                />
+                <button
+                  type="button"
+                  className="btn btn--ghost"
+                  onClick={async () => {
+                    try {
+                      await navigator.clipboard.writeText(`https://small-steps-seven.vercel.app/?ref=${profile.referral_code}`);
+                      toast.push("Link copied.");
+                      (window as unknown as { plausible?: (e: string) => void }).plausible?.("referral_copy");
+                    } catch {
+                      toast.push("Copy failed — select and copy manually.");
+                    }
+                  }}
+                >
+                  Copy
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="settings-card spot-card">
           <SectionTitle icon={<LeafIcon size={14} />}>Quick tour</SectionTitle>
           <p>See the 4-step guide again — where to write, how filters work, and where your plant grows.</p>

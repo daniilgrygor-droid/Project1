@@ -16,6 +16,7 @@ import { plantStageFor, dayKey } from "../lib/constants";
 import { LeafIcon, SproutIcon, SunIcon } from "../components/icons";
 import { useCountUp } from "../lib/useCountUp";
 import { useTypewriter } from "../lib/useTypewriter";
+import { flushQueue, getQueue, hasQueued } from "../lib/offlineQueue";
 import { useToast } from "../lib/toastContext";
 import { smallStepsNoticed } from "../lib/copy";
 import { registerUndoRestore } from "../lib/undoStore";
@@ -94,6 +95,7 @@ export default function CheckIn() {
   const [feedback, setFeedback] = useState(false);
   const [typing, setTyping] = useState(false);
   const [hintIdx, setHintIdx] = useState(0);
+  const [queuedCount, setQueuedCount] = useState(() => (typeof window !== "undefined" && hasQueued() ? getQueue().length : 0));
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [flight, setFlight] = useState<{ text: string } | null>(null);
   const [noteRevealed, setNoteRevealed] = useState(true);
@@ -261,6 +263,31 @@ export default function CheckIn() {
     void loadSteps();
   }, [loadSteps]);
 
+  // Offline: flush queued steps when we come back online.
+  useEffect(() => {
+    const flush = async () => {
+      if (!hasQueued()) {
+        setQueuedCount(0);
+        return;
+      }
+      const n = await flushQueue(async (item) => {
+        const r = await saveStep(item.note, item.showedUpOnly, {
+          category: item.category,
+          mood: item.mood,
+        });
+        return { ok: r.ok && !r.queued };
+      });
+      if (n > 0) {
+        toast.push(n === 1 ? "Synced 1 offline step." : `Synced ${n} offline steps.`);
+        void loadSteps();
+      }
+      setQueuedCount(hasQueued() ? getQueue().length : 0);
+    };
+    void flush();
+    window.addEventListener("online", flush);
+    return () => window.removeEventListener("online", flush);
+  }, [loadSteps, toast]);
+
   useEffect(
     () =>
       registerUndoRestore((restored) => {
@@ -307,6 +334,19 @@ export default function CheckIn() {
     const res = await saveStep(note, showedUp, { category, mood });
     setSubmitting(false);
     setTyping(false);
+
+    if (res.queued) {
+      setNoteRevealed(true);
+      setFlight(null);
+      setBtnState("idle");
+      toast.push(res.message ?? "You're offline — saved locally and will sync when you're back.");
+      setQueuedCount(getQueue().length);
+      setNote("");
+      setCategory(null);
+      setMood(null);
+      clearDraft();
+      return;
+    }
 
     if (!res.ok) {
       setBtnState("idle");
@@ -482,6 +522,12 @@ export default function CheckIn() {
           </p>
         )}
 
+        {queuedCount > 0 && (
+          <p className="offline-queue" role="status">
+            {queuedCount} offline step{queuedCount > 1 ? "s" : ""} — will sync when you're back.
+          </p>
+        )}
+
         {feedCount > 0 && (
           <div className="reflect-grid checkin-stats" aria-label="A quick summary">
             <div className="reflect-tile spot-card">
@@ -645,16 +691,51 @@ export default function CheckIn() {
           )}
 
           {empty && (
-            <div className="steps-empty steps-empty--story steps-empty--seed">
-              <Plant steps={0} size={150} showLabel={false} />
-              <p>
-                Your journal is ready. Nothing here yet — and that's okay.
-              </p>
-              <p className="steps-empty-hint">
-                Write one small thing you did today. It can be anything: "got out
-                of bed", "drank water", "sat in the sun for a minute."
-              </p>
-            </div>
+            <>
+              <div className="steps-empty steps-empty--story steps-empty--seed">
+                <Plant steps={0} size={150} showLabel={false} />
+                <p>
+                  Your journal is ready. Nothing here yet — and that's okay.
+                </p>
+                <p className="steps-empty-hint">
+                  Write one small thing you did today. It can be anything: "got out
+                  of bed", "drank water", "sat in the sun for a minute."
+                </p>
+              </div>
+              <div className="steps-empty-examples" aria-label="Examples">
+                <p className="steps-empty-examples-label">How others start — tap to try</p>
+                <button
+                  type="button"
+                  className="step-item spot-card step-item--example"
+                  onClick={() => { setNote("Got out of bed before 10"); textareaRef.current?.focus(); }}
+                >
+                  <div className="step-body">
+                    <div className="step-note">Got out of bed before 10</div>
+                    <div className="step-ai"><em>That counts. Starting the day is a step.</em></div>
+                  </div>
+                </button>
+                <button
+                  type="button"
+                  className="step-item spot-card step-item--example"
+                  onClick={() => { setNote("Drank water slowly"); textareaRef.current?.focus(); }}
+                >
+                  <div className="step-body">
+                    <div className="step-note">Drank water slowly</div>
+                    <div className="step-ai"><em>Small care, noticed.</em></div>
+                  </div>
+                </button>
+                <button
+                  type="button"
+                  className="step-item spot-card step-item--example"
+                  onClick={() => { setNote("Sat in the sun for a minute"); textareaRef.current?.focus(); }}
+                >
+                  <div className="step-body">
+                    <div className="step-note">Sat in the sun for a minute</div>
+                    <div className="step-ai"><em>Rest is a step too.</em></div>
+                  </div>
+                </button>
+              </div>
+            </>
           )}
 
           {steps && steps.length > 0 && (

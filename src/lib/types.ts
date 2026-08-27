@@ -26,6 +26,9 @@ export interface Profile {
   plan_updated_at: string | null;
   stripe_customer_id: string | null;
   stripe_subscription_id: string | null;
+  referral_code: string | null;
+  referred_by: string | null;
+  referral_credited: boolean;
 }
 
 export function isPrivate(profile: Pick<Profile, "plan">): boolean {
@@ -79,6 +82,7 @@ export interface SaveStepResult {
   ok: boolean;
   step?: Step;
   aiFailed?: boolean;
+  queued?: boolean;
   reason?: "not-configured" | "error";
   message?: string;
 }

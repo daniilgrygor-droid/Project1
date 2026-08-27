@@ -14,9 +14,11 @@
     "test:headed": "playwright test --headed"
   },
   "dependencies": {
+    "@sentry/node": "^10.71.0",
     "@sentry/react": "^10.70.0",
     "@supabase/supabase-js": "^2.112.2",
     "@vercel/node": "^5.10.2",
+    "@vercel/og": "^1.0.2",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "react-router-dom": "^7.18.2",

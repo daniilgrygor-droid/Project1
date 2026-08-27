@@ -8,6 +8,7 @@ import Magnet from "../components/Magnet";
 import { useSpotlight } from "../lib/useSpotlight";
 import FaqJsonLd from "../components/FaqJsonLd";
 import { BookIcon, CupIcon, FootprintIcon, LeafIcon } from "../components/icons";
+import { saveReferralFromUrl } from "../lib/referral";
 import { PRICE_MONTHLY, PRICE_YEARLY } from "../lib/billing";
 
 function FloatingLeaf({
@@ -340,6 +341,10 @@ function ProductShowcase() {
 export default function Landing() {
   const { session } = useAuth();
   useRevealOnScroll();
+
+  useEffect(() => {
+    saveReferralFromUrl();
+  }, []);
 
   // Thin gradient bar at the very top while the page scrolls.
   const [scrollP, setScrollP] = useState(0);
