@@ -52,29 +52,30 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
 
   const subscriptionId = session.subscription as string;
 
-  // Retrieve the subscription to get the real period_end for the profile.
-  let periodEnd: string | null = null;
   let amount = session.amount_total ?? 0;
   let periods: Periods = {};
+  let periodEnd: string | null = null;
+
   if (subscriptionId) {
     const sub = await stripe.subscriptions.retrieve(subscriptionId);
     amount = sub.items.data[0]?.price?.unit_amount ?? amount;
     periods = subscriptionPeriods(sub);
-    periodEnd = new Date(
-      (sub as unknown as { current_period_end?: number }).current_period_end ??
-        Date.now() + 365 * 86400000,
-    ).toISOString();
+    const end = (sub as unknown as { current_period_end?: number }).current_period_end
+      ?? Date.now() + 365 * 86400000;
+    periodEnd = new Date(end * 1000).toISOString();
   }
+
+  const nowISO = new Date().toISOString();
 
   await serviceClient()
     .from("profiles")
     .update({
       plan: "private",
-      plan_updated_at: new Date().toISOString(),
+      plan_updated_at: nowISO,
       stripe_customer_id: session.customer as string,
       stripe_subscription_id: subscriptionId,
       period_end,
-      updated_at: new Date().toISOString(),
+      updated_at: nowISO,
     })
     .eq("id", userId);
 
@@ -85,8 +86,9 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     currency: (session.currency || "usd").toUpperCase(),
     status: "confirmed",
     period_start: isoFromUnix(periods.current_period_start, Date.now()),
-    period_end: isoFromUnix(periods.current_period_end, Date.now() + 365 * 86400000),
-    confirmed_at: new Date().toISOString(),
+    period_end: isoFromUnix(periods.current_period_end,
+      periodEnd ? new Date(periodEnd).getTime() : Date.now() + 365 * 86400000),
+    confirmed_at: nowISO,
     stripe_session_id: session.id,
   });
 
