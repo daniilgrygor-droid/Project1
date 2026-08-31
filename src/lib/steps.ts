@@ -48,6 +48,17 @@ export async function deleteStep(id: string): Promise<boolean> {
   return !error;
 }
 
+export async function fetchPayments(userId: string): Promise<import("./types").Payment[]> {
+  if (!supabase) return [];
+  const { data } = await supabase
+    .from("payments")
+    .select("*")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false })
+    .limit(20);
+  return (data as import("./types").Payment[]) ?? [];
+}
+
 export async function deleteAllSteps(): Promise<boolean> {
   if (!supabase) return false;
   const {

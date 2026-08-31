@@ -6,6 +6,16 @@ import Sentry from "./_sentry.js";
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 const APP_URL = process.env.APP_URL || "https://small-steps-seven.vercel.app";
 
+const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY ||
+                    process.env.SERVICE_ROLE_KEY;
+
+function serviceClient() {
+  return createClient(
+    (process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL)!,
+    SERVICE_KEY!,
+  );
+}
+
 async function getAuthUser(req: VercelRequest) {
   const authHeader = req.headers.authorization;
   if (!authHeader?.startsWith("Bearer ")) return null;
@@ -34,12 +44,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const supabase = createClient(
-      (process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL)!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    );
-
-    const { data: profile } = await supabase
+    const { data: profile } = await serviceClient()
       .from("profiles")
       .select("stripe_customer_id")
       .eq("id", user.id)

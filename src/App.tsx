@@ -59,7 +59,9 @@ const PAGE_TITLES: [string, string][] = [
   ["/lost", "Off the path · Small Steps"],
 ];
 
-const CANONICAL_BASE = "https://small-steps-seven.vercel.app";
+const CANONICAL_BASE = typeof window !== "undefined"
+  ? window.location.origin
+  : "https://small-steps-seven.vercel.app";
 
 const CANONICAL_PATHS = new Set([
   "/",

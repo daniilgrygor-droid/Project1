@@ -1,10 +1,11 @@
 ﻿import { useEffect, useState, type FormEvent, type ReactNode } from "react";
+import { Link } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import { useAuth } from "../lib/authContext";
 import { useToast } from "../lib/toastContext";
 import AppShell from "../components/AppShell";
 import SproutLoader from "../components/SproutLoader";
-import { deleteAllSteps, fetchSteps } from "../lib/steps";
+import { deleteAllSteps, fetchPayments, fetchSteps } from "../lib/steps";
 import { MIN_PASSWORD_LENGTH } from "../lib/constants";
 import { isPrivate } from "../lib/types";
 import { planLabel } from "../lib/billing";
@@ -117,6 +118,23 @@ export default function Settings() {
   const [exporting, setExporting] = useState(false);
   const [importRowsState, setImportRowsState] = useState<ImportRow[] | null>(null);
   const [importing, setImporting] = useState(false);
+
+  // Billing history (read via RLS — the user only sees their own payments)
+  const [payments, setPayments] = useState<import("../lib/types").Payment[]>([]);
+  const [paymentsLoading, setPaymentsLoading] = useState(true);
+  useEffect(() => {
+    if (!user) {
+      setPaymentsLoading(false);
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      const fetched = await fetchPayments(user.id);
+      if (!cancelled) setPayments(fetched);
+      if (!cancelled) setPaymentsLoading(false);
+    })();
+    return () => { cancelled = true; };
+  }, [user]);
 
   const [newEmail, setNewEmail] = useState("");
   const [emailBusy, setEmailBusy] = useState(false);
@@ -402,6 +420,65 @@ export default function Settings() {
             </button>
           </div>
         </div>
+
+        {privatePlan && (
+          <section className="settings-card spot-card" aria-labelledby="billing-h2">
+            <div className="field">
+              <h2 id="billing-h2" className="settings-h2">
+                Billing history
+              </h2>
+              <p className="hint">
+                Your payment history, refreshed automatically. Receipts are
+                also available from your Stripe account.
+              </p>
+            </div>
+
+            {paymentsLoading ? (
+              <div className="settings-note spot-card">
+                <div className="settings-loading" aria-label="Loading payment history" />
+              </div>
+            ) : payments.length === 0 ? (
+              <div className="settings-note spot-card">
+                <p>No payments yet.</p>
+                <p className="hint">
+                  When you subscribe, your receipts will appear here.
+                </p>
+              </div>
+            ) : (
+              <ul className="billing-history">
+                {payments.map((p) => {
+                  const date = new Date(p.confirmed_at ?? p.created_at);
+                  const formatted = date.toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
+                  });
+                  const amount = new Intl.NumberFormat("en-US", {
+                    style: "currency",
+                    currency: p.currency,
+                    minimumFractionDigits: 2,
+                  }).format(p.amount / 100);
+                  return (
+                    <li key={p.id} className="billing-row">
+                      <div className="billing-row-main">
+                        <span className="billing-row-amount">{amount}</span>
+                        <span className="billing-row-currency">{p.currency}</span>
+                      </div>
+                      <div className="billing-row-meta">
+                        <span className="billing-row-date">{formatted}</span>
+                        <span className="billing-row-period">
+                          {p.period_start && p.period_end
+                            ? `Valid ${new Date(p.period_start).toLocaleDateString("en-US", { month: "short", year: "numeric" })} – ${new Date(p.period_end).toLocaleDateString("en-US", { month: "short", year: "numeric" })}`
+                            : "One-time"}
+                        </span>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </section>
+        )}
 
         {deletedMsg && (
           <div className="settings-note spot-card" role="status">

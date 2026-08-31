@@ -4,11 +4,17 @@ import { createClient } from "@supabase/supabase-js";
 import Sentry from "./_sentry.js";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+const APP_URL = process.env.APP_URL || "https://small-steps-seven.vercel.app";
 
-const supabase = createClient(
-  (process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL)!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-);
+const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY ||
+                    process.env.SERVICE_ROLE_KEY;
+
+function serviceClient() {
+  return createClient(
+    (process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL)!,
+    SERVICE_KEY!,
+  );
+}
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
 
@@ -31,6 +37,12 @@ function isoFromUnix(unix: number | undefined, fallbackMs: number): string {
     : new Date(fallbackMs).toISOString();
 }
 
+function planForStatus(status: string | null | undefined): "private" | "free" {
+  // Active + trialing keep Private; everything else degrades gracefully.
+  if (status === "active" || status === "trialing") return "private";
+  return "free";
+}
+
 async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   const userId = session.metadata?.supabase_user_id;
   if (!userId) {
@@ -40,28 +52,33 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
 
   const subscriptionId = session.subscription as string;
 
-  // Update profile to private
-  await supabase
-    .from("profiles")
-    .update({
-      plan: "private",
-      plan_updated_at: new Date().toISOString(),
-      stripe_customer_id: session.customer as string,
-      stripe_subscription_id: subscriptionId,
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", userId);
-
-  // Record payment with the real amount and period from Stripe
+  // Retrieve the subscription to get the real period_end for the profile.
+  let periodEnd: string | null = null;
   let amount = session.amount_total ?? 0;
   let periods: Periods = {};
   if (subscriptionId) {
     const sub = await stripe.subscriptions.retrieve(subscriptionId);
     amount = sub.items.data[0]?.price?.unit_amount ?? amount;
     periods = subscriptionPeriods(sub);
+    periodEnd = new Date(
+      (sub as unknown as { current_period_end?: number }).current_period_end ??
+        Date.now() + 365 * 86400000,
+    ).toISOString();
   }
 
-  await supabase.from("payments").insert({
+  await serviceClient()
+    .from("profiles")
+    .update({
+      plan: "private",
+      plan_updated_at: new Date().toISOString(),
+      stripe_customer_id: session.customer as string,
+      stripe_subscription_id: subscriptionId,
+      period_end,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", userId);
+
+  await serviceClient().from("payments").insert({
     user_id: userId,
     email: session.customer_email || "",
     amount,
@@ -90,7 +107,7 @@ async function handleInvoicePaid(invoice: Stripe.Invoice) {
       : subRef.subscription?.id;
   if (!subscriptionId) return;
 
-  const { data: profile } = await supabase
+  const { data: profile } = await serviceClient()
     .from("profiles")
     .select("id, email")
     .eq("stripe_subscription_id", subscriptionId)
@@ -100,7 +117,7 @@ async function handleInvoicePaid(invoice: Stripe.Invoice) {
   const line = invoice.lines?.data[0];
   const period = line?.period as { start?: number; end?: number } | undefined;
 
-  await supabase.from("payments").insert({
+  await serviceClient().from("payments").insert({
     user_id: profile.id,
     email: invoice.customer_email || profile.email || "",
     amount: invoice.amount_paid ?? line?.amount ?? 0,
@@ -109,7 +126,7 @@ async function handleInvoicePaid(invoice: Stripe.Invoice) {
     period_start: isoFromUnix(period?.start, Date.now()),
     period_end: isoFromUnix(period?.end, Date.now() + 365 * 86400000),
     confirmed_at: new Date().toISOString(),
-    stripe_session_id: invoice.id,
+    stripe_invoice_id: invoice.id,
   });
 
   console.log(
@@ -121,19 +138,31 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
   const userId = subscription.metadata?.supabase_user_id;
   if (!userId) return;
 
-  const isActive = subscription.status === "active";
+  const nextPlan = planForStatus(subscription.status);
 
-  await supabase
+  await serviceClient()
     .from("profiles")
     .update({
-      plan: isActive ? "private" : "free",
+      plan: nextPlan,
       plan_updated_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     })
     .eq("id", userId);
 
+  if (nextPlan === "free") {
+    // Subscription lapsed/failed — clear the billing refs so the portal
+    // doesn't point at a dead subscription.
+    await serviceClient()
+      .from("profiles")
+      .update({
+        stripe_subscription_id: null,
+        period_end: null,
+      })
+      .eq("id", userId);
+  }
+
   console.log(
-    `[webhook] Subscription ${subscription.id} → ${subscription.status} for user ${userId}`,
+    `[webhook] Subscription ${subscription.id} → ${subscription.status} for user ${userId} → ${nextPlan}`,
   );
 }
 
@@ -141,12 +170,15 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
   const userId = subscription.metadata?.supabase_user_id;
   if (!userId) return;
 
-  await supabase
+  await serviceClient()
     .from("profiles")
     .update({
       plan: "free",
       plan_updated_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
+      stripe_subscription_id: null,
+      stripe_customer_id: null,
+      period_end: null,
     })
     .eq("id", userId);
 

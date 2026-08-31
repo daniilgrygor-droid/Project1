@@ -57,17 +57,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const { interval } = req.body as { interval?: string };
 
   try {
-    // Find or create Stripe customer for THIS user only
-    const existing = await stripe.customers.list({ email: user.email, limit: 1 });
+    // Find or create Stripe customer for THIS user only — keyed by metadata,
+    // never by email (email can change without the Stripe customer following).
+    const existing = await stripe.customers.list({
+      metadata: { supabase_user_id: user.id },
+      limit: 1,
+    });
     let customer: Stripe.Customer;
 
     if (existing.data.length > 0) {
       customer = existing.data[0];
-      if (customer.metadata.supabase_user_id !== user.id) {
-        customer = await stripe.customers.update(customer.id, {
-          metadata: { supabase_user_id: user.id },
-        });
-      }
     } else {
       customer = await stripe.customers.create({
         email: user.email,

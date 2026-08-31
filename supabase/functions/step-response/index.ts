@@ -36,7 +36,10 @@ const LENGTH_GUIDANCE = {
 } as const;
 
 const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Origin": Deno.env.get("SUPABASE_URL")?.replace(
+    /https?:\/\//,
+    "",
+  )?.split("/")[0] ?? "https://small-steps-seven.vercel.app",
   "Access-Control-Allow-Headers":
     "authorization, x-client-info, apikey, content-type",
   "Access-Control-Allow-Methods": "POST, OPTIONS",

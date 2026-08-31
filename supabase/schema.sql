@@ -32,7 +32,15 @@ create table if not exists public.profiles (
   reminder_days    text not null default '1,2,3,4,5,6,7',
   onboarded_at     timestamptz,
   created_at       timestamptz not null default now(),
-  updated_at       timestamptz not null default now()
+  updated_at       timestamptz not null default now(),
+
+  -- Billing (set by webhook; nil until the user subscribes)
+  plan             text not null default 'free'
+                   check (plan in ('free', 'private')),
+  plan_updated_at  timestamptz,
+  stripe_customer_id      text,
+  stripe_subscription_id  text,
+  period_end       timestamptz
 );
 
 alter table public.profiles enable row level security;
@@ -87,6 +95,33 @@ create policy "steps select own" on public.steps for select using (auth.uid() = 
 create policy "steps insert own" on public.steps for insert with check (auth.uid() = user_id);
 create policy "steps update own" on public.steps for update using (auth.uid() = user_id);
 create policy "steps delete own" on public.steps for delete using (auth.uid() = user_id);
+
+-- ---------- Платежи -------------------------------------------------------
+-- Узкая таблица платежей — читается клиентом для истории в Settings.
+-- Пишется только вебхуком Stripe.
+create table if not exists public.payments (
+  id              uuid primary key default gen_random_uuid(),
+  user_id         uuid not null references auth.users (id) on delete cascade,
+  email           text not null default '',
+  amount          integer not null default 0,
+  currency        text not null default 'USD',
+  status          text not null default 'pending'
+                  check (status in ('pending','confirmed','cancelled')),
+  period_start    timestamptz,
+  period_end      timestamptz,
+  stripe_session_id text,
+  stripe_invoice_id text,
+  confirmed_at    timestamptz,
+  created_at      timestamptz not null default now()
+);
+
+create index if not exists payments_user_created_idx
+  on public.payments (user_id, created_at desc);
+
+alter table public.payments enable row level security;
+
+create policy "payments select own" on public.payments
+  for select using (auth.uid() = user_id);
 
 -- ---------- Еженедельная тёплая сводка (расписание) --------------------------
 -- Требуется расширение pg_cron и pg_net:
