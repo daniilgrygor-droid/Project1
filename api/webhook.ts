@@ -74,7 +74,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       plan_updated_at: nowISO,
       stripe_customer_id: session.customer as string,
       stripe_subscription_id: subscriptionId,
-      period_end,
+      period_end: periodEnd,
       updated_at: nowISO,
     })
     .eq("id", userId);

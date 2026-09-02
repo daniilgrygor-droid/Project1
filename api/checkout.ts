@@ -57,17 +57,28 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const { interval } = req.body as { interval?: string };
 
   try {
-    // Find or create Stripe customer for THIS user only — keyed by metadata,
-    // never by email (email can change without the Stripe customer following).
-    const existing = await stripe.customers.list({
-      metadata: { supabase_user_id: user.id },
-      limit: 1,
-    });
-    let customer: Stripe.Customer;
-
-    if (existing.data.length > 0) {
-      customer = existing.data[0];
-    } else {
+    // Find or create Stripe customer for THIS user only.
+    // Stripe's API doesn't support filtering customers by metadata directly,
+    // so we search by the user's email first, then create if not found.
+    // We tag the customer with supabase_user_id metadata so the webhook can
+    // match it back to the right account if the email changes.
+    let existing: Stripe.ApiList<Stripe.Customer>;
+    try {
+      existing = await stripe.customers.list({
+        email: user.email,
+        limit: 10,
+      });
+    } catch {
+      existing = { data: [] };
+    }
+    let customer: Stripe.Customer | null = null;
+    for (const c of existing.data) {
+      if (c.metadata?.supabase_user_id === user.id) {
+        customer = c;
+        break;
+      }
+    }
+    if (!customer) {
       customer = await stripe.customers.create({
         email: user.email,
         metadata: { supabase_user_id: user.id },
