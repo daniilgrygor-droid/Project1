@@ -69,7 +69,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         limit: 10,
       });
     } catch {
-      existing = { data: [] };
+      existing = { data: [], object: "list", has_more: false, url: "" } as Stripe.ApiList<Stripe.Customer>;
     }
     let customer: Stripe.Customer | null = null;
     for (const c of existing.data) {
