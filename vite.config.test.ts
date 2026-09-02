@@ -6,8 +6,11 @@ export default defineConfig({
     react(),
   ],
   build: {
+    outDir: 'build-out',
+    emptyOutDir: true,
     chunkSizeWarningLimit: 600,
     rollupOptions: {
+      input: 'index.html',
       output: {
         manualChunks: (id) => {
           const s = String(id)

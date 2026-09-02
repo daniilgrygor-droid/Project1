@@ -429,7 +429,11 @@ export default function Settings() {
               </h2>
               <p className="hint">
                 Your payment history, refreshed automatically. Receipts are
-                also available from your Stripe account.
+                also available from{" "}
+                <Link to="/pricing" className="settings-inline-link">
+                  your Stripe account
+                </Link>
+                .
               </p>
             </div>
 
