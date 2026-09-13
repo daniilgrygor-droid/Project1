@@ -11,6 +11,7 @@ import { BookIcon, CupIcon, FootprintIcon, LeafIcon } from "../components/icons"
 import { saveReferralFromUrl } from "../lib/referral";
 import { useI18n } from "../lib/useI18n";
 import { PRICE_MONTHLY, PRICE_YEARLY } from "../lib/billing";
+import { APP_ORIGIN } from "../lib/url";
 
 function FloatingLeaf({
   className,
@@ -79,7 +80,7 @@ function ProductMockup() {
           <span className="mockup-dot" />
           <span className="mockup-dot" />
           <span className="mockup-dot" />
-          <span className="mockup-url">smallsteps.app/check-in</span>
+          <span className="mockup-url">{APP_ORIGIN?.replace(/^https?:\/\//, '').replace(/\/+$/, '')}/check-in</span>
         </div>
         <div className="mockup-body">
           <span className="mock-date">Today</span>
@@ -285,7 +286,7 @@ function ProductShowcase() {
             <span className="mockup-dot" />
             <span className="mockup-dot" />
             <span className="mockup-dot" />
-            <span className="mockup-url">smallsteps.app/{tab}</span>
+            <span className="mockup-url">{APP_ORIGIN?.replace(/^https?:\/\//, '').replace(/\/+$/, '')}/{tab}</span>
           </div>
           <div className="mockup-body pview" key={tab}>
             {tab === "checkin" && (

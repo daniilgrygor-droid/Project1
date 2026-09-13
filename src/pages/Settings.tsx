@@ -10,6 +10,7 @@ import { MIN_PASSWORD_LENGTH } from "../lib/constants";
 import { isPrivate } from "../lib/types";
 import { planLabel } from "../lib/billing";
 import { importRows, parseCSV, parseDayOne, type ImportRow } from "../lib/importSteps";
+import { APP_ROOT } from "../lib/url";
 import {
   applyTheme,
   readThemePreference,
@@ -149,13 +150,6 @@ export default function Settings() {
     resolveTheme(readThemePreference()),
   );
   const { lang, setLang, t } = useI18n();
-  const [hasPasskey, setHasPasskey] = useState(() => {
-    try {
-      return !!localStorage.getItem("ss-passkey");
-    } catch {
-      return false;
-    }
-  });
 
   const chooseTextSize = (id: TextSizeId) => {
     setTextSize(id);
@@ -773,63 +767,16 @@ export default function Settings() {
         </div>
 
         <div className="settings-note spot-card">
-          <SectionTitle icon={<GearIcon size={14} />}>Passkey</SectionTitle>
-          <p>Sign in without a password — your device holds the key. Fast and phishing-proof.</p>
-          {hasPasskey ? (
-            <div className="settings-actions">
-              <span className="hint" style={{ color: "var(--sage)" }}>✓ Passkey registered on this device</span>
-              <button
-                type="button"
-                className="btn btn--ghost"
-                onClick={() => {
-                  try {
-                    localStorage.removeItem("ss-passkey");
-                  } catch {}
-                  setHasPasskey(false);
-                  toast.push("Passkey removed.");
-                }}
-              >
-                Remove
-              </button>
-            </div>
-          ) : (
-            <div className="settings-actions">
-              <button
-                type="button"
-                className="btn btn--ghost"
-                onClick={async () => {
-                  if (!window.PublicKeyCredential) {
-                    toast.push("Passkeys not supported in this browser.");
-                    return;
-                  }
-                  try {
-                    const cred = await navigator.credentials.create({
-                      publicKey: {
-                        challenge: new Uint8Array([1, 2, 3, 4]),
-                        rp: { name: "Small Steps", id: window.location.hostname },
-                        user: { id: new TextEncoder().encode(user?.id ?? "user"), name: user?.email ?? "user", displayName: profile?.name ?? "User" },
-                        pubKeyCredParams: [{ alg: -7, type: "public-key" }],
-                        authenticatorSelection: { userVerification: "preferred" },
-                        timeout: 60000,
-                      },
-                    } as any);
-                    if (cred) {
-                      try {
-                        localStorage.setItem("ss-passkey", "1");
-                      } catch {}
-                      setHasPasskey(true);
-                      toast.push("Passkey added — next sign-in can use it.");
-                      (window as any).plausible?.("passkey_register");
-                    }
-                  } catch {
-                    toast.push("Couldn't create passkey — try again.");
-                  }
-                }}
-              >
-                Add passkey
-              </button>
-            </div>
-          )}
+          <SectionTitle icon={<LeafIcon size={14} />}>Biometrics</SectionTitle>
+          <p>Sign in with a fingerprint or face unlock — when we support it, you'll see it here. Not available yet.</p>
+          <button
+            type="button"
+            className="btn btn--ghost"
+            disabled
+            title="Not available yet"
+          >
+            Add biometric sign-in
+          </button>
         </div>
 
         <div className="settings-note spot-card">
@@ -841,7 +788,7 @@ export default function Settings() {
               className="btn btn--ghost"
               onClick={async () => {
                 const code = profile?.referral_code || Math.random().toString(36).slice(2, 8).toUpperCase();
-                const link = `https://small-steps-seven.vercel.app/?gift=${code}`;
+                const link = `${APP_ROOT}?gift=${code}`;
                 try {
                   await navigator.clipboard.writeText(link);
                   toast.push("Gift link copied.");
@@ -1052,7 +999,7 @@ export default function Settings() {
                   id="referral-link"
                   className="input"
                   readOnly
-                  value={`https://small-steps-seven.vercel.app/?ref=${profile.referral_code}`}
+                  value={`${APP_ROOT}?ref=${profile.referral_code}`}
                   onFocus={(e) => e.currentTarget.select()}
                 />
                 <button
@@ -1060,7 +1007,7 @@ export default function Settings() {
                   className="btn btn--ghost"
                   onClick={async () => {
                     try {
-                      await navigator.clipboard.writeText(`https://small-steps-seven.vercel.app/?ref=${profile.referral_code}`);
+                      await navigator.clipboard.writeText(`${APP_ROOT}?ref=${profile.referral_code}`);
                       toast.push("Link copied.");
                       (window as unknown as { plausible?: (e: string) => void }).plausible?.("referral_copy");
                     } catch {

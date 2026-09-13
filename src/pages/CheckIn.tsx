@@ -110,6 +110,7 @@ export default function CheckIn() {
     category: Category | null;
     mood: number | null;
   }>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
   const overlayTimer = useRef<number | null>(null);
 
   const closeOverlay = useCallback(() => {
@@ -478,8 +479,29 @@ export default function CheckIn() {
           role="dialog"
           aria-modal="true"
           aria-label="A conversation about your step"
+          onKeyDown={(e) => {
+            if (e.key === "Escape") {
+              closeOverlay();
+            } else if (e.key === "Tab") {
+              // Keep focus inside the dialog: trap Tab between the chat
+              // thread and the Skip button.
+              const focusable = overlayRef.current?.querySelectorAll<HTMLElement>(
+                'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+              );
+              if (!focusable?.length) return;
+              const first = focusable[0];
+              const last = focusable[focusable.length - 1];
+              if (e.shiftKey && document.activeElement === first) {
+                e.preventDefault();
+                last.focus();
+              } else if (!e.shiftKey && document.activeElement === last) {
+                e.preventDefault();
+                first.focus();
+              }
+            }
+          }}
         >
-          <div className="chat-thread">
+          <div className="chat-thread" ref={overlayRef}>
             {overlay.note && (
               <div
                 className="chat-bubble chat-bubble--me"

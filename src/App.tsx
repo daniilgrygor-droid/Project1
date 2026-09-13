@@ -12,6 +12,7 @@ import { LangProvider } from "./lib/i18n";
 import { RequireAuth, RequireOnboarded } from "./components/Guards";
 import { applyTextSize, readTextSize } from "./lib/textSize";
 import { applyTheme, readThemePreference } from "./lib/theme";
+import { BUILD_APP_URL } from "./lib/url";
 import Landing from "./pages/Landing";
 import SproutLoader from "./components/SproutLoader";
 import UndoToast from "./components/UndoToast";
@@ -61,7 +62,7 @@ const PAGE_TITLES: [string, string][] = [
 
 const CANONICAL_BASE = typeof window !== "undefined"
   ? window.location.origin
-  : "https://small-steps-seven.vercel.app";
+  : BUILD_APP_URL;
 
 const CANONICAL_PATHS = new Set([
   "/",

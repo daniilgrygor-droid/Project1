@@ -116,42 +116,40 @@ export default function Growth() {
               </span>
             </p>
 
-            {total < 50 && nextStage ? (
-              <div className="growth-stages" aria-label="Growth stages">
-                <div className="growth-stages-track">
-                  {PLANT_STAGES.map((st, i) => (
-                    <span
-                      key={st.minSteps}
-                      className={`growth-stage-dot${
-                        i <= stageIndex
-                          ? " growth-stage-dot--reached"
-                          : i === stageIndex + 1
-                            ? " growth-stage-dot--current"
-                            : ""
-                      }`}
-                      style={{ animationDelay: `${i * 0.06}s` }}
-                      title={st.label}
-                    />
-                  ))}
-                </div>
-                <div className="growth-stage-labels" aria-hidden="true">
-                  {PLANT_STAGES.map((st, i) => (
-                    <span
-                      key={st.minSteps}
-                      className={i <= stageIndex ? "growth-stage-label--reached" : undefined}
-                    >
-                      {st.label.replace(/^A /, "")}
-                    </span>
-                  ))}
-                </div>
-                <p className="growth-next">
-                  {toNext} step{toNext === 1 ? "" : "s"} to go — until{" "}
-                  {nextStage.label.toLowerCase()}. No rush.
-                </p>
+            {/* All 11 stages are shown — the track compresses gracefully on small screens. */}
+            <div className="growth-stages" aria-label="Growth stages">
+              <div className="growth-stages-track">
+                {PLANT_STAGES.map((st, i) => (
+                  <span
+                    key={st.minSteps}
+                    className={`growth-stage-dot${
+                      i <= stageIndex
+                        ? " growth-stage-dot--reached"
+                        : i === stageIndex + 1
+                          ? " growth-stage-dot--current"
+                          : ""
+                    }`}
+                    style={{ animationDelay: `${i * 0.06}s` }}
+                    title={st.label}
+                  />
+                ))}
               </div>
-            ) : (
-              <p className="growth-next">Quietly thriving. No rush.</p>
-            )}
+              <div className="growth-stage-labels" aria-hidden="true">
+                {PLANT_STAGES.map((st, i) => (
+                  <span
+                    key={st.minSteps}
+                    className={i <= stageIndex ? "growth-stage-label--reached" : undefined}
+                  >
+                    {st.label.replace(/^A /, "")}
+                  </span>
+                ))}
+              </div>
+              <p className="growth-next">
+                {toNext > 0
+                  ? `${toNext} step${toNext === 1 ? "" : "s"} to go — until ${nextStage.label.toLowerCase()}. No rush.`
+                  : "Quietly thriving. No rush."}
+              </p>
+            </div>
 
             <p className="progress-gentle">
               {total} small step{total === 1 ? "" : "s"} so far · you showed up

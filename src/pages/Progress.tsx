@@ -256,7 +256,7 @@ export function ProgressOverview() {
     );
   }
 
-  const empty = steps.length === 0;
+  const empty = steps.length === 0 && profile?.plan === "free";
 
   const recapLine =
     weekEntryCount === 0
@@ -462,11 +462,13 @@ export function ProgressOverview() {
                 {cats.length === 0 ? (
                   <div className="empty-state">
                     <span className="empty-state-icon">
-                      <SproutIcon size={20} />
+                      <LeafIcon size={20} />
                     </span>
-                    <p>Pick a category on the check-in to start seeing this.</p>
+                    <p>
+                      {children}
+                    </p>
                   </div>
-                ) : (
+                  ) : (
                   <>
                     <div className="cat-bars">
                       {cats.map((c) => (

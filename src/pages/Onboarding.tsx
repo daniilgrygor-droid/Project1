@@ -125,7 +125,7 @@ export default function Onboarding() {
           </div>
         </div>
 
-        <div className="onboard-card spot-card">
+        <div className="onboard-card">
           {step === 1 ? (
             <>
               <div className="how-card">
@@ -149,28 +149,37 @@ export default function Onboarding() {
                 </ul>
               </div>
 
-              <form onSubmit={submit}>
-                <div className="onboard-questions">
-                  <div className="field">
-                    <h2>What can I call you?</h2>
-                    <input className="input" type="text" autoComplete="nickname" placeholder="A name — or just leave it" value={name} onChange={(e) => setName(e.target.value)} />
-                    <p className="hint">Optional. You can leave it empty.</p>
-                  </div>
-                  <div className="field">
-                    <h2>What are you recovering from?</h2>
-                    <textarea className="textarea" placeholder="e.g. burnout, a long sick leave, a hard season — anything you want me to keep in mind" value={recovering} onChange={(e) => setRecovering(e.target.value)} />
-                    <p className="hint">Also optional, and totally skippable. It just helps me respond a little more gently.</p>
-                  </div>
+              <div className="onboard-questions">
+                <div className="field">
+                  <h2>What can I call you?</h2>
+                  <input className="input" type="text" autoComplete="nickname" placeholder="A name — or just leave it" value={name} onChange={(e) => setName(e.target.value)} />
+                  <p className="hint">Optional. You can leave it empty.</p>
                 </div>
-                {error && <p className="form-error" role="alert">{error}</p>}
-                <div className="onboard-actions">
+                <details className="onboard-context">
+                  <summary className="field-label">
+                    <span>What are you recovering from?</span>
+                    <span className="hint inline" aria-hidden="true">optional — helps me respond a little more gently</span>
+                  </summary>
+                  <div className="onboard-context-body" style={{ paddingTop: "var(--space-3)" }}>
+                    <textarea
+                      className="textarea"
+                      placeholder="e.g. burnout, a long sick leave, a hard season — anything you want me to keep in mind"
+                      value={recovering}
+                      onChange={(e) => setRecovering(e.target.value)}
+                      style={{ resize: "vertical", minHeight: "64px" }}
+                    />
+                    <p className="hint">Also optional, and totally skippable.</p>
+                  </div>
+                </details>
+              </div>
+              {error && <p className="form-error" role="alert">{error}</p>}
+              <div className="onboard-actions">
                   <button type="submit" className="btn btn--primary btn--block" disabled={busy}>
                     {busy && <span className="btn-dot" aria-hidden="true" />}
                     {busy ? "Saving…" : "Continue"}
                   </button>
                   <button type="button" className="auth-inline-link onboard-skip" onClick={skip} disabled={busy}>Skip — start writing</button>
                 </div>
-              </form>
             </>
           ) : (
             <form onSubmit={submit}>
@@ -200,7 +209,7 @@ export default function Onboarding() {
                 </>
               )}
               <div className="onboard-preview">
-                <Plant steps={3} size={80} showLabel={false} />
+                <PlantIcon size={48} />
                 <span>Your plant starts as a seed — one step at a time.</span>
               </div>
               {error && <p className="form-error" role="alert">{error}</p>}

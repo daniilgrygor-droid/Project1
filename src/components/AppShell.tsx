@@ -140,6 +140,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="app app--tabbed">
+      <div className="ambient" aria-hidden="true" />
       {routeBusy && (
         <div
           className={`route-bar${routeOut ? " route-bar--out" : ""}`}

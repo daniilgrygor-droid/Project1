@@ -1342,6 +1342,62 @@ a {
   margin-top: var(--space-6);
 }
 
+.onboard-context {
+  margin-top: var(--space-5);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--bg-soft);
+}
+
+.onboard-context summary {
+  list-style: none;
+  cursor: pointer;
+  padding: var(--space-3) var(--space-4);
+  font-weight: 600;
+  font-size: 0.97rem;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.onboard-context summary::-webkit-details-marker {
+  display: none;
+}
+
+.onboard-context summary::after {
+  content: "";
+  flex: 0 0 auto;
+  width: 10px;
+  height: 10px;
+  border-right: 2px solid var(--text-soft);
+  border-bottom: 2px solid var(--text-soft);
+  transform: translateY(-60%) rotate(-45deg);
+  transition: transform 0.2s var(--ease-soft);
+}
+
+.onboard-context[open] summary::after {
+  transform: translateY(-50%) rotate(45deg);
+}
+
+.onboard-context[open] summary {
+  border-bottom: 1px solid var(--line);
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+}
+
+.onboard-context-body {
+  padding: var(--space-3) var(--space-4) var(--space-4);
+}
+
+.onboard-context textarea {
+  width: 100%;
+}
+
+.onboard-context-body > .field {
+  display: contents;
+}
+
 @keyframes onboard-rise {
   from {
     opacity: 0;
@@ -1654,15 +1710,20 @@ a {
 }
 
 .mood-emoji {
-  font-size: 1.45rem;
+  font-size: 1.25rem;
   line-height: 1;
   font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
   filter: saturate(1.05);
 }
 
 .mood-caption {
-  font-size: 0.68rem;
-  color: var(--text-soft);
+  font-size: 0.88rem;
+  color: var(--text);
+  font-weight: 500;
+}
+
+.mood-option--on .mood-caption {
+  color: var(--success-ink);
 }
 
 /* A tiny settle when a category pill or mood emoji is tapped — a direct
@@ -6529,12 +6590,7 @@ html:not([data-theme="dark"])[data-time="night"] {
   --chip-bg: var(--bg-warm);
 }
 
-/* Sans-serif UI everywhere; serif stays for the big editorial headlines. */
-body {
-  font-family: var(--font-sans);
-}
-
-/* ---- header: glassier, crisper ---- */
+/* ---- header: slightly deeper but still quiet ---- */
 .app-header {
   border-bottom-color: color-mix(in srgb, var(--line) 72%, transparent);
   backdrop-filter: blur(16px) saturate(1.35);
@@ -6542,7 +6598,7 @@ body {
     0 14px 34px -28px rgba(42, 38, 34, 0.32);
 }
 
-/* ---- segmented main nav (Linear/Vercel-style tabs) ---- */
+/* ---- header: slightly deeper but still quiet ---- */
 .nav-links--main {
   gap: 2px;
   padding: 5px;
@@ -6579,11 +6635,12 @@ body {
   border-radius: 9px;
 }
 
-/* ---- buttons: crisp, slightly graded, tactile ---- */
+/* ---- button + input system: quiet, tactile, one language ---- */
 .btn {
   border-radius: var(--radius-btn);
   font-weight: 600;
   letter-spacing: 0.01em;
+  font-family: var(--font-sans);
 }
 
 .btn--primary {
