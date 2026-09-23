@@ -410,6 +410,20 @@ export default function Landing() {
       <main className="app-main">
         {/* ------------------------------------------------ hero */}
         <section className="hero">
+          <video
+            className="hero-video"
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+            poster="/tree-loop.jpg"
+            aria-hidden="true"
+            tabIndex={-1}
+          >
+            <source src="/tree-loop.mp4" type="video/mp4" />
+          </video>
+          <div className="hero-veil" aria-hidden="true" />
           <div className="wrap hero-wrap">
             <div className="hero-copy reveal">
               <p className="hero-eyebrow">{t("hero.eyebrow")}</p>
