@@ -86,7 +86,7 @@ function ProductMockup() {
           <p className="mock-question">What did you do today?</p>
           <div className="mock-input">
             <LeafIcon size={15} />
-            Write something smallвЂ¦
+            Write something small¦
             <span className="mock-caret" aria-hidden="true" />
           </div>
           <div className="mock-reply">
@@ -118,17 +118,17 @@ const STEPS = [
   {
     num: "01",
     title: "One quiet question",
-    text: "Each day opens with a small question вЂ” that's all. No checklists, no quotas, no must-dos.",
+    text: "Each day opens with a small question ” that's all. No checklists, no quotas, no must-dos.",
   },
   {
     num: "02",
     title: "A warm reply, not a grade",
-    text: "Your words get a personal response that actually hears you вЂ” never a canned вЂњgreat jobвЂќ.",
+    text: "Your words get a personal response that actually hears you ” never a canned њgreat jobќ.",
   },
   {
     num: "03",
     title: "Small things, over time",
-    text: "Your journal quietly grows into a record you can look back on вЂ” your own gentle progress.",
+    text: "Your journal quietly grows into a record you can look back on ” your own gentle progress.",
   },
 ];
 
@@ -188,15 +188,15 @@ const FAQ = [
   },
   {
     q: "What happens to my entries?",
-    a: "Each entry gets one warm reply written by Google's Gemini API. Your journal is never sold or shared. On Private, replies are processed privately вЂ” on the free tier, data sent to Gemini may be used by Google to improve its models.",
+    a: "Each entry gets one warm reply written by Google's Gemini API. Your journal is never sold or shared. On Private, replies are processed privately ” on the free tier, data sent to Gemini may be used by Google to improve its models.",
   },
   {
     q: "What if I disappear for a month?",
-    a: "Nothing breaks. Your journal waits for you, exactly as you left it. Coming back after a long pause is one more small step вЂ” and it's celebrated, not scolded.",
+    a: "Nothing breaks. Your journal waits for you, exactly as you left it. Coming back after a long pause is one more small step ” and it's celebrated, not scolded.",
   },
   {
     q: "Is there really a free tier?",
-    a: "Really. A journal and a warm reply after every entry, free forever. Private adds private AI processing and a few quiet extras for $48 a year вЂ” or $5 a month.",
+    a: "Really. A journal and a warm reply after every entry, free forever. Private adds private AI processing and a few quiet extras for $48 a year ” or $5 a month.",
   },
 ];
 
@@ -294,7 +294,7 @@ function ProductShowcase() {
                 <p className="mock-question">What did you do today?</p>
                 <div className="mock-input">
                   <LeafIcon size={15} />
-                  Write something smallвЂ¦
+                  Write something small¦
                   <span className="mock-caret" aria-hidden="true" />
                 </div>
                 <div className="mock-reply">
@@ -450,19 +450,19 @@ export default function Landing() {
               <p className="trustline">
                 <span>
                   <span className="tick" aria-hidden="true">
-                    вњ“
+                    ✓
                   </span>
                   No streaks, ever
                 </span>
                 <span>
                   <span className="tick" aria-hidden="true">
-                    вњ“
+                    ✓
                   </span>
                   $0 to start
                 </span>
                 <span>
                   <span className="tick" aria-hidden="true">
-                    вњ“
+                    ✓
                   </span>
                   Your pace, always
                 </span>
@@ -570,7 +570,7 @@ export default function Landing() {
                           </span>
                         ) : (
                           <span className="compare-no" aria-label="No">
-                            вЂ”
+                            ”
                           </span>
                         )}
                       </td>
@@ -583,7 +583,7 @@ export default function Landing() {
                           </span>
                         ) : (
                           <span className="compare-no" aria-label="No">
-                            вЂ”
+                            ”
                           </span>
                         )}
                       </td>
@@ -623,7 +623,7 @@ export default function Landing() {
                 </p>
                 <ul>
                   <li><LeafIcon size={14} /> Everything in the quiet journal</li>
-                  <li><LeafIcon size={14} /> Private AI вЂ” never trains models</li>
+                  <li><LeafIcon size={14} /> Private AI ” never trains models</li>
                   <li><LeafIcon size={14} /> Gentle reminders & weekly notes</li>
                 </ul>
                 <Link to="/pricing" className="btn btn--primary btn--block">
@@ -642,8 +642,8 @@ export default function Landing() {
           <div className="wrap">
             <div className="quote-band">
               <blockquote>
-                вЂњComing back to life isn't a feat. It's a hundred small steps,
-                and no one is required to notice them. Except us.вЂќ
+                њComing back to life isn't a feat. It's a hundred small steps,
+                and no one is required to notice them. Except us.ќ
               </blockquote>
             </div>
           </div>
@@ -680,7 +680,7 @@ export default function Landing() {
             <div className="cta-band">
               <h2>Start when you're ready.</h2>
               <p>
-                There's no rush. Begin with one small step вЂ” free, and forever
+                There's no rush. Begin with one small step ” free, and forever
                 quiet.
               </p>
               <Link to={journalHref} className="btn btn--primary btn--lg">

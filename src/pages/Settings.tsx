@@ -39,17 +39,17 @@ function ExportPreview() {  const [rows, setRows] = useState<import("../lib/type
   useEffect(() => {
     fetchSteps().then((s) => setRows(s.slice(0, 3)));
   }, []);
-  if (!rows) return <p className="hint">Loading previewвЂ¦</p>;
-  if (rows.length === 0) return <p className="hint">No entries yet вЂ” preview will appear after your first step.</p>;
+  if (!rows) return <p className="hint">Loading preview¦</p>;
+  if (rows.length === 0) return <p className="hint">No entries yet ” preview will appear after your first step.</p>;
   return (
     <div className="export-preview-table">
       <div className="export-preview-head">date В· note В· category В· mood</div>
       {rows.map((r) => (
         <div key={r.id} className="export-preview-row">
           <span>{new Date(r.created_at).toLocaleDateString()}</span>
-          <span className="export-preview-note">{r.note.slice(0, 48)}{r.note.length > 48 ? "вЂ¦" : ""}</span>
-          <span>{r.category ?? "вЂ”"}</span>
-          <span>{r.mood ?? "вЂ”"}</span>
+          <span className="export-preview-note">{r.note.slice(0, 48)}{r.note.length > 48 ? "¦" : ""}</span>
+          <span>{r.category ?? "”"}</span>
+          <span>{r.mood ?? "”"}</span>
         </div>
       ))}
     </div>
@@ -366,7 +366,7 @@ export default function Settings() {
       <div className="settings">
         <div className="settings-head">
           <h1>Settings</h1>
-          <p>Small adjustments, no pressure вЂ” change them whenever you like.</p>
+          <p>Small adjustments, no pressure ” change them whenever you like.</p>
         </div>
 
         <div className="settings-note spot-card settings-account">
@@ -408,7 +408,7 @@ export default function Settings() {
             <h2>All done</h2>
             <p>
               Your entries have been deleted. If you ever come back, you can
-              start fresh вЂ” a new seed.
+              start fresh ” a new seed.
             </p>
           </div>
         )}
@@ -421,7 +421,7 @@ export default function Settings() {
             <input
               id="settings-name"
               className="input"
-              placeholder="Your name вЂ” or leave it blank"
+              placeholder="Your name ” or leave it blank"
               autoComplete="name"
               value={name}
               onChange={(e) => {
@@ -436,7 +436,7 @@ export default function Settings() {
             <h2>What are you recovering from?</h2>
             <textarea
               className="textarea"
-              placeholder="e.g. burnout, a long sick leave, a hard season вЂ” anything you want me to keep in mind"
+              placeholder="e.g. burnout, a long sick leave, a hard season ” anything you want me to keep in mind"
               value={recovering}
               onChange={(e) => {
                 setRecovering(e.target.value);
@@ -465,7 +465,7 @@ export default function Settings() {
                   }}
                 />
                 <span>
-                  <strong>Shorter replies</strong> вЂ” a single warm sentence.
+                  <strong>Shorter replies</strong> ” a single warm sentence.
                 </span>
               </label>
               <label className="choice">
@@ -480,7 +480,7 @@ export default function Settings() {
                   }}
                 />
                 <span>
-                  <strong>Longer replies</strong> вЂ” two or three warm sentences.
+                  <strong>Longer replies</strong> ” two or three warm sentences.
                 </span>
               </label>
             </div>
@@ -492,7 +492,7 @@ export default function Settings() {
               className="btn btn--primary"
               disabled={busy}
             >
-              {busy ? "SavingвЂ¦" : "Save"}
+              {busy ? "Saving¦" : "Save"}
             </button>
             {saved && (
               <span className="settings-saved" role="status">
@@ -511,7 +511,7 @@ export default function Settings() {
         <div className="settings-note spot-card">
           <SectionTitle icon={<SunIcon size={14} />}>Reminders</SectionTitle>
           <p>
-            A gentle check-in whenever you're ready вЂ” nothing that scolds you
+            A gentle check-in whenever you're ready ” nothing that scolds you
             for quiet days. A Private feature.
           </p>
           <label className={`choice${!privatePlan ? " choice--locked" : ""}`}>
@@ -528,7 +528,7 @@ export default function Settings() {
           </label>
           {!privatePlan && (
             <p className="hint">
-              Reminders come with the Private plan вЂ”{" "}
+              Reminders come with the Private plan ”{" "}
               <button type="button" className="btn--link" onClick={() => void goCheckout()}>
                 see pricing
               </button>
@@ -621,7 +621,7 @@ export default function Settings() {
           </label>
           {!privatePlan && (
             <p className="hint">
-              Weekly notes come with the Private plan вЂ”{" "}
+              Weekly notes come with the Private plan ”{" "}
               <button type="button" className="btn--link" onClick={() => void goCheckout()}>
                 see pricing
               </button>
@@ -632,7 +632,7 @@ export default function Settings() {
 
         <div className="settings-note spot-card">
           <SectionTitle icon={<MoonIcon size={14} />}>Appearance</SectionTitle>
-          <p>How the site looks for you вЂ” day or evening.</p>
+          <p>How the site looks for you ” day or evening.</p>
           <div className="choice-row">
             {THEME_OPTIONS.map((t) => (
               <label key={t.id} className="choice">
@@ -644,7 +644,7 @@ export default function Settings() {
                   onChange={() => chooseTheme(t.id)}
                 />
                 <span>
-                  <strong>{t.label}</strong> вЂ” {t.hint}
+                  <strong>{t.label}</strong> ” {t.hint}
                 </span>
               </label>
             ))}
@@ -788,7 +788,7 @@ export default function Settings() {
         <div className="settings-note spot-card">
           <SectionTitle icon={<GearIcon size={14} />}>Password</SectionTitle>
           <p>
-            Prefer something new? Set a fresh password вЂ” we never see the old
+            Prefer something new? Set a fresh password ” we never see the old
             one.
           </p>
           <div className="field">
@@ -815,7 +815,7 @@ export default function Settings() {
               onClick={() => void updatePassword()}
               disabled={pwBusy || newPassword.trim().length < MIN_PASSWORD_LENGTH}
             >
-              {pwBusy ? "WorkingвЂ¦" : "Update password"}
+              {pwBusy ? "Working¦" : "Update password"}
             </button>
             {pwError && (
               <p className="form-error" role="alert">
@@ -829,7 +829,7 @@ export default function Settings() {
           <SectionTitle icon={<EnvelopeIcon size={14} />}>Email</SectionTitle>
           <p>
             Your current email: <strong>{user.email}</strong>. To change it,
-            enter a new one below вЂ” we'll send a confirmation link.
+            enter a new one below ” we'll send a confirmation link.
           </p>
           <div className="field">
             <label className="field-label" htmlFor="settings-email">
@@ -855,7 +855,7 @@ export default function Settings() {
               onClick={() => void changeEmail()}
               disabled={emailBusy || !newEmail.trim()}
             >
-              {emailBusy ? "SendingвЂ¦" : "Change email"}
+              {emailBusy ? "Sending¦" : "Change email"}
             </button>
             {emailMsg && (
               <p className="form-error" role="status">
@@ -868,7 +868,7 @@ export default function Settings() {
         <div className="settings-note spot-card">
           <SectionTitle icon={<BookIcon size={14} />}>Backup your journal</SectionTitle>
           <p>
-            Everything you've written, in one portable file вЂ” keep it anywhere,
+            Everything you've written, in one portable file ” keep it anywhere,
             import it later, or just have it close. A JSON file with all your
             steps, moods and categories.
           </p>
@@ -879,7 +879,7 @@ export default function Settings() {
               onClick={() => void exportJournal()}
               disabled={exporting}
             >
-              {exporting ? "PreparingвЂ¦" : "Download JSON"}
+              {exporting ? "Preparing¦" : "Download JSON"}
             </button>
             <button
               type="button"
@@ -887,7 +887,7 @@ export default function Settings() {
               onClick={() => void exportCSV()}
               disabled={exporting}
             >
-              {exporting ? "PreparingвЂ¦" : "Download CSV"}
+              {exporting ? "Preparing¦" : "Download CSV"}
             </button>
             <button
               type="button"
@@ -918,7 +918,7 @@ export default function Settings() {
 
         <div className="settings-note spot-card">
           <SectionTitle icon={<BookIcon size={14} />}>Import journal</SectionTitle>
-          <p>Bring your notes from Day One or a CSV export вЂ” they'll appear in your feed.</p>
+          <p>Bring your notes from Day One or a CSV export ” they'll appear in your feed.</p>
           <p className="hint">CSV needs a <code>note</code> column (optional: category, mood, created_at). Day One: export JSON.</p>
           <input
             type="file"
@@ -954,7 +954,7 @@ export default function Settings() {
                   setImportRowsState(null);
                 }}
               >
-                {importing ? "ImportingвЂ¦" : `Import ${importRowsState.length}`}
+                {importing ? "Importing¦" : `Import ${importRowsState.length}`}
               </button>
             </div>
           )}
@@ -963,7 +963,7 @@ export default function Settings() {
         {profile?.referral_code && (
           <div className="settings-note spot-card">
             <SectionTitle icon={<LeafIcon size={14} />}>Invite a friend</SectionTitle>
-            <p>Someone coming back too? Share this link вЂ” they get a calm start, you get quiet thanks.</p>
+            <p>Someone coming back too? Share this link ” they get a calm start, you get quiet thanks.</p>
             <div className="field">
               <label className="field-label" htmlFor="referral-link">Your invite link</label>
               <div style={{ display: "flex", gap: 8 }}>
@@ -983,7 +983,7 @@ export default function Settings() {
                       toast.push("Link copied.");
                       (window as unknown as { plausible?: (e: string) => void }).plausible?.("referral_copy");
                     } catch {
-                      toast.push("Copy failed вЂ” select and copy manually.");
+                      toast.push("Copy failed ” select and copy manually.");
                     }
                   }}
                 >
@@ -996,7 +996,7 @@ export default function Settings() {
 
         <div className="settings-card spot-card">
           <SectionTitle icon={<LeafIcon size={14} />}>Quick tour</SectionTitle>
-          <p>See the 4-step guide again вЂ” where to write, how filters work, and where your plant grows.</p>
+          <p>See the 4-step guide again ” where to write, how filters work, and where your plant grows.</p>
           <div className="settings-actions">
             <button
               type="button"
@@ -1034,7 +1034,7 @@ export default function Settings() {
                 onClick={() => void wipeData()}
                 disabled={deleting}
               >
-                {deleting ? "DeletingвЂ¦" : "Delete all"}
+                {deleting ? "Deleting¦" : "Delete all"}
               </button>
             </div>
           ) : (
@@ -1071,7 +1071,7 @@ export default function Settings() {
                 onClick={() => void wipeAccount()}
                 disabled={deletingAccount}
               >
-                {deletingAccount ? "DeletingвЂ¦" : "Delete account"}
+                {deletingAccount ? "Deleting¦" : "Delete account"}
               </button>
             </div>
           ) : (
